@@ -1,0 +1,20 @@
+{
+  "language": {
+    "en": "English",
+    "vi": "Vietnamese"
+  },
+  "header": {
+    "button": {
+      "apply": "Apply Now"
+    },
+    "menu": {
+      "home": "Home",
+      "about": "About Us",
+      "news": "News",
+      "contact": "Contact",
+      "life": "Life at BV",
+      "work": "Work at BV",
+      "jobs": "Jobs"
+    }
+  }
+}
