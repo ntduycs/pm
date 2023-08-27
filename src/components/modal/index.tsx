@@ -1,32 +1,25 @@
-import { ROLE, SIZE } from 'baseui/modal';
 import { StyledModal } from '@pm/components/modal/styles.ts';
-import { ReactNode } from 'react';
+import { ReactNode, MouseEvent } from 'react';
 
 interface ModalProps {
+  title: ReactNode;
   children: ReactNode;
-  isOpen?: boolean;
-  onClose?: () => void;
-  size?: 'default' | 'full' | 'auto';
+  isOpen: boolean;
+  onOk?: (e?: MouseEvent<HTMLButtonElement>) => void;
+  onCancel?: (e?: MouseEvent<HTMLButtonElement>) => void;
+  footer?: ReactNode;
 }
 
 export const Modal = (props: ModalProps) => {
   return (
     <StyledModal
-      isOpen={props.isOpen ?? false}
-      onClose={() => {
-        props.onClose?.();
-      }}
-      closeable
-      animate
-      autoFocus
-      size={props.size ?? SIZE.default}
-      // overrides={{
-      //   Root: {
-      //     style: {
-      //       zIndex: 9999,
-      //     },
-      //   },
-      // }}
+      title={props.title}
+      open={props.isOpen}
+      destroyOnClose={true}
+      closable={true}
+      footer={props.footer ?? null}
+      onOk={props.onOk}
+      onCancel={props.onCancel}
     >
       {props.children}
     </StyledModal>

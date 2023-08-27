@@ -2,6 +2,7 @@ import { Member } from '@pm/pages/members/meta.ts';
 import dayjs from 'dayjs';
 
 export const adapt = (member: Member) => ({
+  key: member.name,
   name: member.name,
   level: member.level,
   positions: member.positions.join(', '),

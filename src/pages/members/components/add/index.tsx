@@ -1,54 +1,20 @@
 import { StyledAddMember } from '@pm/pages/members/components/add/styles.ts';
-import { Button, KIND } from 'baseui/button';
-import { SyntheticEvent, useMemo, useState } from 'react';
-import { ModalBody, ModalButton, ModalFooter, ModalHeader } from 'baseui/modal';
+import { useEffect, useState } from 'react';
 import { Modal } from '@pm/components';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { Member } from '@pm/pages/members/meta.ts';
-import { Input } from 'baseui/input';
-import { Combobox } from 'baseui/combobox';
 import { Category, Level, Position, Status } from '@pm/common/constants';
 import dayjs from 'dayjs';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-
-const schema = yup.object({
-  name: yup.string().required().trim(),
-  level: yup.string().required().oneOf(Object.values(Level)),
-  kpi: yup.number().required(),
-  category: yup.string().required().oneOf(Object.values(Category)),
-  positions: yup
-    .array()
-    .of(yup.string().required().oneOf(Object.values(Position)))
-    .required(),
-  joinedDate: yup
-    .string()
-    .required()
-    .matches(/\d{4}-\d{2}-\d{2}/), // YYYY-MM-DD
-  status: yup.string().required().oneOf(Object.values(Status)),
-  totalEffort: yup.number().required().min(0).max(100),
-});
+import { Button, DatePicker, Form, Input, InputNumber, Select } from 'antd';
+import { Member } from '@pm/pages/members/meta.ts';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 export const AddMember = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmittable, setIsSubmittable] = useState(false);
 
-  const [typedLevel, setTypedLevel] = useState('');
+  const [form] = Form.useForm();
+  const formValues = Form.useWatch([], form);
 
-  const { handleSubmit, control } = useForm<Member>({
-    defaultValues: {
-      name: '',
-      level: Level.LV1,
-      kpi: 0,
-      category: Category.OFFICIAL,
-      positions: [],
-      joinedDate: dayjs().format('YYYY-MM-DD'),
-      status: Status.PENDING,
-      totalEffort: 0,
-    },
-    resolver: yupResolver(schema),
-  });
-
-  const openModal = (e: SyntheticEvent<HTMLButtonElement>) => {
+  const openModal = () => {
     setIsOpen(true);
   };
 
@@ -56,68 +22,197 @@ export const AddMember = () => {
     setIsOpen(false);
   };
 
-  const onSubmit: SubmitHandler<Member> = (data: Member) => {
-    console.log(data);
+  const onFormSubmit = (values: Member) => {
+    console.log(values);
+    setIsOpen(false);
   };
 
-  const onClickSubmit = () => {
-    console.log('submit');
+  const onFormCancel = () => {
+    form.resetFields();
+    setIsOpen(false);
   };
 
-  const filteredLevelOptions = useMemo(() => {
-    const options = Object.values(Level).map((level) => ({ id: level, label: level }));
-    return options.filter((level) => level.label.includes(typedLevel));
-  }, [typedLevel]);
+  useEffect(() => {
+    form.validateFields({ validateOnly: true }).then(
+      () => {
+        setIsSubmittable(true);
+      },
+      () => {
+        setIsSubmittable(false);
+      },
+    );
+  }, [form, formValues]);
 
   return (
     <StyledAddMember>
       <Button onClick={openModal}>New Member</Button>
-      <Modal isOpen={isOpen}>
-        <ModalHeader>Add Member</ModalHeader>
-        <ModalBody>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Controller
-              name='name'
-              control={control}
-              render={({ field: { ref, ...field }, formState: { errors } }) => {
-                return (
-                  <Input
-                    clearable
-                    required
-                    {...field}
-                  />
-                );
-              }}
-            />
-            <Controller
-              name='level'
-              control={control}
-              render={({ field: { ref, ...field }, formState: { errors } }) => {
-                return (
-                  <Combobox
-                    options={filteredLevelOptions}
-                    mapOptionToString={(option: { id: string; label: string }) => option.label}
-                    {...field}
-                  />
-                );
-              }}
-            />
-          </form>
-        </ModalBody>
-        <ModalFooter>
-          <ModalButton
-            kind={KIND.tertiary}
-            onClick={closeModal}
+      <Modal
+        isOpen={isOpen}
+        title='Add Member'
+      >
+        <Form
+          form={form}
+          initialValues={{
+            name: '',
+            level: Level.LV1,
+            positions: [],
+            kpi: 0,
+            category: Category.OFFICIAL,
+            totalEffort: 0,
+            joinDate: dayjs(),
+            status: Status.ACTIVE,
+          }}
+          labelCol={{ span: 6 }}
+          labelAlign='left'
+          wrapperCol={{ span: 18 }}
+          autoComplete='off'
+          onFinish={onFormSubmit}
+          scrollToFirstError
+        >
+          <Form.Item
+            name='name'
+            label='Name'
+            rules={[
+              {
+                required: true,
+                message: 'Please input name',
+              },
+            ]}
           >
-            Cancel
-          </ModalButton>
-          <ModalButton
-            onClick={onClickSubmit}
-            kind={KIND.primary}
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name='level'
+            label='Level'
+            rules={[
+              {
+                required: true,
+                message: 'Please select level',
+              },
+            ]}
           >
-            Okay
-          </ModalButton>
-        </ModalFooter>
+            <Select
+              options={Object.values(Level).map((level) => ({
+                label: level,
+                value: level,
+              }))}
+              allowClear={false}
+            />
+          </Form.Item>
+          <Form.Item
+            name='positions'
+            label='Positions'
+            rules={[
+              {
+                required: true,
+                message: 'Please select at least one position',
+              },
+            ]}
+            tooltip={{
+              title: 'Please select at least one position',
+              icon: <InfoCircleOutlined />,
+            }}
+          >
+            <Select
+              mode='multiple'
+              options={Object.values(Position).map((position) => ({
+                label: position,
+                value: position,
+              }))}
+              allowClear
+              autoClearSearchValue
+            />
+          </Form.Item>
+          <Form.Item
+            name='kpi'
+            label='KPI'
+            rules={[
+              {
+                required: true,
+                message: 'Please input KPI',
+              },
+            ]}
+            tooltip={{
+              title: 'Please input KPI (0 - 100)',
+              icon: <InfoCircleOutlined />,
+            }}
+          >
+            <InputNumber
+              min={0}
+              max={100}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+          <Form.Item
+            name='category'
+            label='Category'
+            rules={[
+              {
+                required: true,
+                message: 'Please select category',
+              },
+            ]}
+          >
+            <Select
+              options={Object.values(Category).map((category) => ({
+                label: category,
+                value: category,
+              }))}
+              allowClear={false}
+            />
+          </Form.Item>
+          <Form.Item
+            name='totalEffort'
+            label='Total Effort'
+            rules={[
+              {
+                required: true,
+                message: 'Please input total effort',
+              },
+            ]}
+            tooltip={{
+              title: 'Please input total effort (0 - 100)',
+              icon: <InfoCircleOutlined />,
+            }}
+          >
+            <InputNumber
+              min={0}
+              max={100}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+          <Form.Item
+            name='joinDate'
+            label='Join Date'
+            rules={[
+              {
+                required: true,
+                message: 'Please input join date',
+              },
+            ]}
+          >
+            <DatePicker />
+          </Form.Item>
+          {/*======== Buttons========*/}
+          <Form.Item>
+            <Button
+              type='primary'
+              htmlType='submit'
+              disabled={!isSubmittable}
+            >
+              Save
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type='default'
+              htmlType='button'
+              onClick={onFormCancel}
+            >
+              Cancel
+            </Button>
+          </Form.Item>
+        </Form>
       </Modal>
     </StyledAddMember>
   );

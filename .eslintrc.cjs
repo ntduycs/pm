@@ -16,7 +16,7 @@ module.exports = {
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
-  plugins: ['react-refresh', '@tanstack/query', 'baseui'],
+  plugins: ['react-refresh', '@tanstack/query'],
   rules: {
     'no-unused-vars': 'off',
     'react-refresh/only-export-components': [
@@ -42,8 +42,5 @@ module.exports = {
     '@typescript-eslint/unified-signatures': 'off',
     'react-hooks/exhaustive-deps': 'warn',
     'react-hooks/rules-of-hooks': 'error',
-    'baseui/deprecated-theme-api': "warn",
-    'baseui/deprecated-component-api': "warn",
-    'baseui/no-deep-imports': "warn",
   },
 };
