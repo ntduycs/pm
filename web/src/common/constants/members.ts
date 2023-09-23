@@ -30,12 +30,12 @@ const Status = {
 
 const Position = {
   PM: 'Project Manager' as TPosition,
-  BE: 'Back-end' as TPosition,
-  FE: 'Front-end' as TPosition,
-  QC: 'QA/Tester' as TPosition,
+  BE: 'Backend Engineer' as TPosition,
+  FE: 'Frontend Engineer' as TPosition,
+  QC: 'QA Engineer' as TPosition,
   BA: 'Business Analyst' as TPosition,
-  DESIGNER: 'Designer' as TPosition,
-  MOBILE: 'Mobile' as TPosition,
+  DESIGNER: 'UI/UX Designer' as TPosition,
+  MOBILE: 'Mobile Developer' as TPosition,
 };
 
 export const EMember = {
