@@ -10,6 +10,8 @@ import (
 	"go.uber.org/zap"
 
 	"project-management/ent"
+
+	_ "github.com/lib/pq"
 )
 
 type RepositoryProps struct {

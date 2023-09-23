@@ -15,11 +15,21 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"project-management/controllers"
+	"project-management/mappers"
 	"project-management/repositories"
 	"project-management/routers"
 	"project-management/services"
 )
 
+// @title       Project Management API Document
+// @version     1.0
+// @description Project Management API Document
+
+// @contact.name  Duy Nguyen
+// @contact.email duy.nguyen-thanh@banvien.com.vn
+
+// @host    localhost
+// @schemes http https
 func main() {
 	if err := os.Setenv("TZ", "Asia/Saigon"); err != nil {
 		panic(err)
@@ -57,6 +67,7 @@ func main() {
 			return logger
 		}),
 		repositories.Module,
+		mappers.Module,
 		services.Module,
 		controllers.Module,
 		routers.Module,

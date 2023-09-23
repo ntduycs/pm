@@ -9,6 +9,6 @@ export const adapt = (member: Member) => ({
   kpi: member.kpi,
   category: member.category,
   totalEffort: member.totalEffort,
-  joinedDate: dayjs(member.joinedDate).format('MMM DD, YYYY'),
+  joinedDate: dayjs(member.startDate).format('MMM DD, YYYY'),
   status: member.status,
 });

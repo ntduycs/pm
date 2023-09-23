@@ -12,7 +12,7 @@ type RouterProps struct {
 
 type Router interface {
 	Register(props *RouterProps)
-	SubPath() string
+	GetPrefix() string
 }
 
 func asRouter(f any) any {

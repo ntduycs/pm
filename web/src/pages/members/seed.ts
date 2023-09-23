@@ -9,7 +9,7 @@ export const seedMembers: Member[] = [
     kpi: 100,
     category: EMember.Category.OFFICIAL,
     totalEffort: 100,
-    joinedDate: '2021-01-21',
+    startDate: '2021-01-21',
     status: EMember.Status.ACTIVE,
   },
   {
@@ -19,7 +19,7 @@ export const seedMembers: Member[] = [
     kpi: 100,
     category: EMember.Category.BUFFER,
     totalEffort: 100,
-    joinedDate: '2021-01-01',
+    startDate: '2021-01-01',
     status: EMember.Status.INACTIVE,
   },
   {
@@ -29,7 +29,7 @@ export const seedMembers: Member[] = [
     kpi: 100,
     category: EMember.Category.OJD,
     totalEffort: 50,
-    joinedDate: '2021-01-01',
+    startDate: '2021-01-01',
     status: EMember.Status.PENDING,
   },
 ];

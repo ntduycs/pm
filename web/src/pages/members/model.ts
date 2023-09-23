@@ -1,13 +1,15 @@
 import { TCategory, TLevel, TPosition, TStatus } from '@pm/common/constants';
 
 export interface Member {
+  id: string;
   name: string;
   level: TLevel;
   positions: TPosition[];
   kpi: number;
   category: TCategory;
   totalEffort: number;
-  joinedDate: string; // YYYY-MM-DD
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
   status: TStatus;
 }
 
