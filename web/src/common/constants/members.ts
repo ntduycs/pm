@@ -20,11 +20,6 @@ const Level = {
   LV8: 'LV8' as TLevel,
   LV9: 'LV9' as TLevel,
   LV10: 'LV10' as TLevel,
-  LV11: 'LV11' as TLevel,
-  LV12: 'LV12' as TLevel,
-  LV13: 'LV13' as TLevel,
-  LV14: 'LV14' as TLevel,
-  LV15: 'LV15' as TLevel,
 };
 
 const Status = {

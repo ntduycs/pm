@@ -1,2 +1,2 @@
-export * from './lang.ts';
-export * from './members.ts';
+export * from './lang';
+export * from './members';
