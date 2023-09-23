@@ -15,7 +15,7 @@ func NewMemberRouter(controller *controllers.MemberController) *MemberRouter {
 func (r *MemberRouter) Register(props *RouterProps) {
 	router := props.App.Group(props.Prefix)
 
-	router.Get("/members/:id", r.controller.GetMember)
+	router.Get("/:id", r.controller.GetMember)
 }
 
 func (r *MemberRouter) GetPrefix() string {

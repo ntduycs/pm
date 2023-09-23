@@ -93,7 +93,7 @@ func (mc *MemberCreate) SetStatus(m member.Status) *MemberCreate {
 }
 
 // SetID sets the "id" field.
-func (mc *MemberCreate) SetID(i int32) *MemberCreate {
+func (mc *MemberCreate) SetID(i int) *MemberCreate {
 	mc.mutation.SetID(i)
 	return mc
 }
@@ -194,7 +194,7 @@ func (mc *MemberCreate) sqlSave(ctx context.Context) (*Member, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = int32(id)
+		_node.ID = int(id)
 	}
 	mc.mutation.id = &_node.ID
 	mc.mutation.done = true
@@ -204,7 +204,7 @@ func (mc *MemberCreate) sqlSave(ctx context.Context) (*Member, error) {
 func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Member{config: mc.config}
-		_spec = sqlgraph.NewCreateSpec(member.Table, sqlgraph.NewFieldSpec(member.FieldID, field.TypeInt32))
+		_spec = sqlgraph.NewCreateSpec(member.Table, sqlgraph.NewFieldSpec(member.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = mc.conflict
 	if id, ok := mc.mutation.ID(); ok {
@@ -649,7 +649,7 @@ func (u *MemberUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *MemberUpsertOne) ID(ctx context.Context) (id int32, err error) {
+func (u *MemberUpsertOne) ID(ctx context.Context) (id int, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -658,7 +658,7 @@ func (u *MemberUpsertOne) ID(ctx context.Context) (id int32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *MemberUpsertOne) IDX(ctx context.Context) int32 {
+func (u *MemberUpsertOne) IDX(ctx context.Context) int {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -714,7 +714,7 @@ func (mcb *MemberCreateBulk) Save(ctx context.Context) ([]*Member, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int32(id)
+					nodes[i].ID = int(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

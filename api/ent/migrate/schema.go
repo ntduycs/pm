@@ -11,7 +11,7 @@ import (
 var (
 	// MembersColumns holds the columns for the "members" table.
 	MembersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt32, Increment: true},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "level", Type: field.TypeEnum, Enums: []string{"LV1", "LV2", "LV3", "LV4", "LV5", "LV6", "LV7", "LV8", "LV9", "LV10"}},
 		{Name: "positions", Type: field.TypeString},

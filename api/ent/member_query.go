@@ -81,8 +81,8 @@ func (mq *MemberQuery) FirstX(ctx context.Context) *Member {
 
 // FirstID returns the first Member ID from the query.
 // Returns a *NotFoundError when no Member ID was found.
-func (mq *MemberQuery) FirstID(ctx context.Context) (id int32, err error) {
-	var ids []int32
+func (mq *MemberQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (mq *MemberQuery) FirstID(ctx context.Context) (id int32, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (mq *MemberQuery) FirstIDX(ctx context.Context) int32 {
+func (mq *MemberQuery) FirstIDX(ctx context.Context) int {
 	id, err := mq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +132,8 @@ func (mq *MemberQuery) OnlyX(ctx context.Context) *Member {
 // OnlyID is like Only, but returns the only Member ID in the query.
 // Returns a *NotSingularError when more than one Member ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (mq *MemberQuery) OnlyID(ctx context.Context) (id int32, err error) {
-	var ids []int32
+func (mq *MemberQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (mq *MemberQuery) OnlyID(ctx context.Context) (id int32, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (mq *MemberQuery) OnlyIDX(ctx context.Context) int32 {
+func (mq *MemberQuery) OnlyIDX(ctx context.Context) int {
 	id, err := mq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +177,7 @@ func (mq *MemberQuery) AllX(ctx context.Context) []*Member {
 }
 
 // IDs executes the query and returns a list of Member IDs.
-func (mq *MemberQuery) IDs(ctx context.Context) (ids []int32, err error) {
+func (mq *MemberQuery) IDs(ctx context.Context) (ids []int, err error) {
 	if mq.ctx.Unique == nil && mq.path != nil {
 		mq.Unique(true)
 	}
@@ -189,7 +189,7 @@ func (mq *MemberQuery) IDs(ctx context.Context) (ids []int32, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (mq *MemberQuery) IDsX(ctx context.Context) []int32 {
+func (mq *MemberQuery) IDsX(ctx context.Context) []int {
 	ids, err := mq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -364,7 +364,7 @@ func (mq *MemberQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (mq *MemberQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(member.Table, member.Columns, sqlgraph.NewFieldSpec(member.FieldID, field.TypeInt32))
+	_spec := sqlgraph.NewQuerySpec(member.Table, member.Columns, sqlgraph.NewFieldSpec(member.FieldID, field.TypeInt))
 	_spec.From = mq.sql
 	if unique := mq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

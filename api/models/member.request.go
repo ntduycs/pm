@@ -1,7 +1,7 @@
 package models
 
 type Member struct {
-	ID          int32    `json:"id"`
+	ID          int      `json:"id"`
 	Name        string   `json:"name"`
 	Level       string   `json:"level"`
 	Positions   []string `json:"positions"`

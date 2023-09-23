@@ -21,7 +21,7 @@ func NewMemberRepository(props RepositoryProps) *MemberRepository {
 	}
 }
 
-func (r *MemberRepository) FindById(ctx context.Context, id int32, txClient ...*ent.Client) (*ent.Member, error) {
+func (r *MemberRepository) FindById(ctx context.Context, id int, txClient ...*ent.Client) (*ent.Member, error) {
 	client := useClient(r.ent, txClient...)
 
 	return client.Member.Query().
@@ -29,7 +29,7 @@ func (r *MemberRepository) FindById(ctx context.Context, id int32, txClient ...*
 		Only(ctx)
 }
 
-func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersRequest, txClient ...*ent.Client) ([]*ent.Member, int32, error) {
+func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersRequest, txClient ...*ent.Client) ([]*ent.Member, int, error) {
 	client := useClient(r.ent, txClient...)
 
 	base := client.Member.Query()
@@ -41,8 +41,8 @@ func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersR
 	}
 
 	selectQuery := base.Clone().
-		Offset(int((req.Page - 1) * req.Size)).
-		Limit(int(req.Size)).
+		Offset((req.Page - 1) * req.Size).
+		Limit(req.Size).
 		Order(ent.Asc(member.FieldName))
 
 	memberLst, err := selectQuery.All(ctx)
@@ -51,5 +51,5 @@ func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersR
 		return []*ent.Member{}, 0, err
 	}
 
-	return memberLst, int32(memberCount), nil
+	return memberLst, memberCount, nil
 }

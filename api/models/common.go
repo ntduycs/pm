@@ -1,17 +1,17 @@
 package models
 
 type PageRequest struct {
-	Page      int32  `json:"page"`
-	Size      int32  `json:"size"`
+	Page      int    `json:"page"`
+	Size      int    `json:"size"`
 	Sort      string `json:"sort"`
 	Direction string `json:"direction"`
 }
 
 type PageResponse struct {
-	Page  int32 `json:"page"`
-	Size  int32 `json:"size"`
-	Pages int32 `json:"pages"`
-	Total int32 `json:"total"`
+	Page  int `json:"page"`
+	Size  int `json:"size"`
+	Pages int `json:"pages"`
+	Total int `json:"total"`
 }
 
 type ErrorResponse struct {

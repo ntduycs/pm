@@ -16,7 +16,7 @@ type Member struct {
 // Fields of the Member.
 func (Member) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int32("id"),
+		field.Int("id"),
 		field.String("name"),
 		field.Enum("level").Values(constants.MemberLevels...),
 		field.String("positions").Comment("comma separated values of positions"),

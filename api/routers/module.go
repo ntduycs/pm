@@ -81,10 +81,6 @@ func NewServer(props ServerProps) *fiber.App {
 		})
 	})
 
-	app.Get("/panic", func(c *fiber.Ctx) error {
-		panic("Oops!")
-	})
-
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	for _, router := range routers {

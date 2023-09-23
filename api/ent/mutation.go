@@ -32,7 +32,7 @@ type MemberMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *int32
+	id              *int
 	name            *string
 	level           *member.Level
 	positions       *string
@@ -70,7 +70,7 @@ func newMemberMutation(c config, op Op, opts ...memberOption) *MemberMutation {
 }
 
 // withMemberID sets the ID field of the mutation.
-func withMemberID(id int32) memberOption {
+func withMemberID(id int) memberOption {
 	return func(m *MemberMutation) {
 		var (
 			err   error
@@ -122,13 +122,13 @@ func (m MemberMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Member entities.
-func (m *MemberMutation) SetID(id int32) {
+func (m *MemberMutation) SetID(id int) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *MemberMutation) ID() (id int32, exists bool) {
+func (m *MemberMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -139,12 +139,12 @@ func (m *MemberMutation) ID() (id int32, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *MemberMutation) IDs(ctx context.Context) ([]int32, error) {
+func (m *MemberMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int32{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):

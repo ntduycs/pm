@@ -38,7 +38,7 @@ func (c *MemberController) GetMember(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	resp, err := c.memberService.GetMember(ctx.Context(), int32(id))
+	resp, err := c.memberService.GetMember(ctx.Context(), id)
 
 	if err != nil {
 		return err

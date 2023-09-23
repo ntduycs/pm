@@ -28,7 +28,7 @@ func NewMemberService(
 	}
 }
 
-func (s *MemberService) GetMember(ctx context.Context, id int32) (*models.GetMemberResponse, error) {
+func (s *MemberService) GetMember(ctx context.Context, id int) (*models.GetMemberResponse, error) {
 	entity, err := s.memberRepository.FindById(ctx, id)
 
 	if err != nil {
