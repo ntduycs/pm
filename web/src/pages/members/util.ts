@@ -1,4 +1,4 @@
-import { Member } from '@pm/pages/members/meta.ts';
+import { Member } from '@pm/pages/members/model.ts';
 import dayjs from 'dayjs';
 
 export const adapt = (member: Member) => ({
