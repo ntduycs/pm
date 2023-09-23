@@ -1,0 +1,100 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "Project Management API Document",
+        "title": "Project Management API Document",
+        "contact": {
+            "name": "Duy Nguyen",
+            "email": "duy.nguyen-thanh@banvien.com.vn"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost",
+    "paths": {
+        "/members/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Get member",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Member ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetMemberResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.GetMemberResponse": {
+            "type": "object",
+            "properties": {
+                "item": {
+                    "$ref": "#/definitions/models.Member"
+                }
+            }
+        },
+        "models.Member": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "kpi": {
+                    "type": "number"
+                },
+                "level": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "positions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_effort": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

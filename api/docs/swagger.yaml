@@ -1,0 +1,66 @@
+definitions:
+  models.GetMemberResponse:
+    properties:
+      item:
+        $ref: '#/definitions/models.Member'
+    type: object
+  models.Member:
+    properties:
+      category:
+        type: string
+      end_date:
+        format: date
+        type: string
+      id:
+        type: integer
+      kpi:
+        type: number
+      level:
+        type: string
+      name:
+        type: string
+      positions:
+        items:
+          type: string
+        type: array
+      start_date:
+        format: date
+        type: string
+      status:
+        type: string
+      total_effort:
+        type: number
+    type: object
+host: localhost
+info:
+  contact:
+    email: duy.nguyen-thanh@banvien.com.vn
+    name: Duy Nguyen
+  description: Project Management API Document
+  title: Project Management API Document
+  version: "1.0"
+paths:
+  /members/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Member ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetMemberResponse'
+      summary: Get member
+      tags:
+      - Member
+schemes:
+- http
+- https
+swagger: "2.0"
