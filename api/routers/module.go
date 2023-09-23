@@ -23,8 +23,9 @@ func NewServer(lifecycle fx.Lifecycle, logger *zap.Logger) *fiber.App {
 	})
 
 	app.Use(fiberlogger.New(fiberlogger.Config{
-		Format:   "[${time}] ${status} - ${latency} ${method} ${path}\n",
-		TimeZone: "Asia/Saigon",
+		Format:     "[${time}] ${status} - ${latency} ${method} ${path}\n",
+		TimeFormat: "2006-01-02 15:04:05",
+		TimeZone:   "Asia/Saigon",
 	}))
 
 	app.Get("/health", func(c *fiber.Ctx) error {

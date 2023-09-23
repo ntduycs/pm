@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -34,7 +35,7 @@ func main() {
 		panic(err)
 	}
 
-	settings, _ := json.MarshalIndent(viper.AllSettings(), "", " \t")
+	settings, _ := json.MarshalIndent(viper.AllSettings(), "", "   ")
 	fmt.Println(strings.Repeat("=", 10))
 	fmt.Println(string(settings))
 	fmt.Println(strings.Repeat("=", 10))
@@ -46,7 +47,13 @@ func main() {
 			}
 		}),
 		fx.Provide(func() *zap.Logger {
-			logger, _ := zap.NewDevelopment()
+			config := zap.NewDevelopmentConfig()
+			config.EncoderConfig.ConsoleSeparator = "  |  "
+			config.EncoderConfig.EncodeTime = func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
+				encoder.AppendString(t.Format("2006-01-02 15:04:05"))
+			}
+
+			logger, _ := config.Build()
 			return logger
 		}),
 		repositories.Module,
