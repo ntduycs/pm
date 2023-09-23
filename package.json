@@ -1,0 +1,15 @@
+{
+  "name": "project-management",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "duy.nguyen-thanh <duy.nguyen-thanh@banvien.com.vn>",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.1"
+  },
+  "scripts": {
+    "start:web": "cd web && yarn dev",
+    "start:api": "cd api && yarn start:dev",
+    "start": "concurrently \"yarn start:web\" \"yarn start:api\""
+  }
+}
