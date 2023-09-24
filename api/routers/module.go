@@ -7,6 +7,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	fibercors "github.com/gofiber/fiber/v2/middleware/cors"
 	fiberlogger "github.com/gofiber/fiber/v2/middleware/logger"
 	fiberrecover "github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/pkg/errors"
@@ -46,6 +47,7 @@ func NewServer(props ServerProps) *fiber.App {
 			fiber.MethodPut,
 			fiber.MethodPatch,
 			fiber.MethodDelete,
+			fiber.MethodOptions,
 		},
 		EnablePrintRoutes: true,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
@@ -79,6 +81,19 @@ func NewServer(props ServerProps) *fiber.App {
 		},
 	})
 
+	app.Use(fibercors.New(fibercors.Config{
+		AllowOrigins: "*",
+		AllowMethods: strings.Join([]string{
+			fiber.MethodGet,
+			fiber.MethodPost,
+			fiber.MethodHead,
+			fiber.MethodPut,
+			fiber.MethodDelete,
+			fiber.MethodPatch,
+			fiber.MethodOptions,
+		}, ","),
+		MaxAge: 3600,
+	}))
 	app.Use(fiberlogger.New(fiberlogger.Config{
 		Format:     "[${time}] ${status} - ${latency} ${method} ${path}\n",
 		TimeFormat: "2006-01-02 15:04:05",
@@ -95,10 +110,7 @@ func NewServer(props ServerProps) *fiber.App {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	for _, router := range routers {
-		router.Register(&RouterProps{
-			App:    app,
-			Prefix: router.GetPrefix(),
-		})
+		router.Register(app)
 	}
 
 	swagger.New(swagger.ConfigDefault)

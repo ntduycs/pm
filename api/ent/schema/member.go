@@ -21,7 +21,7 @@ func (Member) Fields() []ent.Field {
 		field.String("name"),
 		field.Enum("level").Values(constants.MemberLevels...),
 		field.String("positions").Comment("comma separated values of positions"),
-		field.Float32("kpi").Min(0).Max(1).Comment("key performance indicator"),
+		field.Float32("kpi").Min(0).Max(2).Comment("key performance indicator"),
 		field.Enum("category").Values(constants.MemberCategories...),
 		field.Float32("total_effort").Min(0).Max(100).Comment("total effort in percentage"),
 		field.Time("start_date").Optional().Nillable().Comment("start date of member"),

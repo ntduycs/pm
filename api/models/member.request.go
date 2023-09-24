@@ -3,6 +3,7 @@ package models
 type Member struct {
 	ID          int      `json:"id"`
 	Name        string   `json:"name"`
+	Email       string   `json:"email"`
 	Level       string   `json:"level"`
 	Positions   []string `json:"positions"`
 	KPI         float32  `json:"kpi"`

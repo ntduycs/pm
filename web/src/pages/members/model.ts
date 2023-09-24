@@ -1,15 +1,17 @@
 import { TCategory, TLevel, TPosition, TStatus } from '@pm/common/constants';
+import { capitalize } from 'lodash';
 
 export interface Member {
-  id: string;
+  id?: string;
   name: string;
+  email: string;
   level: TLevel;
   positions: TPosition[];
   kpi: number;
   category: TCategory;
-  totalEffort: number;
-  startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
+  total_effort: number;
+  start_date?: string; // YYYY-MM-DD
+  end_date?: string; // YYYY-MM-DD
   status: TStatus;
 }
 
@@ -18,6 +20,11 @@ export const columns = [
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
+  },
+  {
+    title: 'Email',
+    dataIndex: 'email',
+    key: 'email',
   },
   {
     title: 'Level',
@@ -33,6 +40,7 @@ export const columns = [
     title: 'KPI (%)',
     dataIndex: 'kpi',
     key: 'kpi',
+    render: (kpi: number) => `${kpi * 100}%`,
   },
   {
     title: 'Category',
@@ -41,17 +49,24 @@ export const columns = [
   },
   {
     title: 'Total Effort (%)',
-    dataIndex: 'totalEffort',
-    key: 'totalEffort',
+    dataIndex: 'total_effort',
+    key: 'total_effort',
+    render: (total_effort: number) => `${total_effort}%`,
   },
   {
-    title: 'Joined Date',
-    dataIndex: 'joinedDate',
-    key: 'joinedDate',
+    title: 'Start Date',
+    dataIndex: 'start_date',
+    key: 'start_date',
+  },
+  {
+    title: 'End Date',
+    dataIndex: 'end_date',
+    key: 'end_date',
   },
   {
     title: 'Status',
     dataIndex: 'status',
     key: 'status',
+    render: (status: TStatus) => capitalize(status),
   },
 ];

@@ -16,10 +16,34 @@ import {
 import { Member } from '@pm/pages/members/model.ts';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import JSONPretty from 'react-json-pretty';
+import { JsonRenderer } from '@pm/components';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { listMembersAPI, upsertMemberAPI } from '@pm/services';
+import { UpsertMemberRequest } from '@pm/models';
+import { useQueryClient } from '@pm/hooks';
 
 export const AddMember = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [api, contextHolder] = notification.useNotification();
+  const queryClient = useQueryClient();
+
+  const listMembersQuery = useQuery({
+    queryKey: ['members', 'list'],
+    queryFn: listMembersAPI,
+    enabled: false,
+  });
+
+  // eslint-disable-next-line @tanstack/query/prefer-query-object-syntax
+  const { mutateAsync: upsertMember, isLoading } = useMutation(
+    ['members', 'upsert'],
+    upsertMemberAPI,
+    {
+      onSuccess: async (data) => {
+        await queryClient.invalidateQueries(['members', 'list']);
+        await listMembersQuery.refetch();
+      },
+    },
+  );
 
   const [form] = Form.useForm();
   const formValues = Form.useWatch([], form);
@@ -32,26 +56,30 @@ export const AddMember = () => {
     setIsOpen(false);
   };
 
-  const onFormSubmit = (values: Member) => {
-    setIsOpen(false);
-    api.info({
-      message: 'Done!',
-      description: (
-        <JSONPretty
-          data={values}
-          theme={{
-            main: 'line-height:1.3;color:#444444;background:inherit;overflow:auto;',
-            error: 'line-height:1.3;color:#444444;background:#272822;overflow:auto;',
-            key: 'color:#f92672;',
-            string: 'color:#444444;',
-            value: 'color:#1677ff;',
-            boolean: 'color:#1677ff;',
-          }}
-        />
-      ),
-      placement: 'top',
-      duration: 3,
-    });
+  const onFormSubmit = async (values: UpsertMemberRequest) => {
+    try {
+      console.log(values.end_date);
+      values = {
+        ...values,
+        start_date: values.start_date ? dayjs(values.start_date).format('YYYY-MM-DD') : '',
+        end_date: values.end_date ? dayjs(values.end_date).format('YYYY-MM-DD') : '',
+      };
+      const { message } = await upsertMember(values);
+      api.success({
+        message,
+        description: <JsonRenderer json={values} />,
+        placement: 'topRight',
+        duration: 2,
+      });
+      setIsOpen(false);
+    } catch (error: unknown) {
+      api.error({
+        message: 'Error!',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        placement: 'topRight',
+        duration: 3,
+      });
+    }
   };
 
   const onFormCancel = () => {
@@ -78,11 +106,10 @@ export const AddMember = () => {
               name: '',
               level: EMember.Level.LV1,
               positions: [],
-              kpi: 0,
+              kpi: 0.5,
               category: EMember.Category.OFFICIAL,
               total_effort: 100,
-              start_date: dayjs(),
-              status: EMember.Status.ACTIVE,
+              status: EMember.Status.ACTIVE.toLowerCase(),
             }}
             labelCol={{ span: 6 }}
             labelAlign='left'
@@ -99,6 +126,20 @@ export const AddMember = () => {
                 {
                   required: true,
                   message: 'Please input name',
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name='email'
+              label='Email'
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  type: 'email',
+                  message: 'Please input valid email',
                 },
               ]}
             >
@@ -207,28 +248,61 @@ export const AddMember = () => {
                 min={0}
                 max={100}
                 style={{ width: '100%' }}
+                addonAfter={<span>%</span>}
               />
             </Form.Item>
             <Form.Item
               name='start_date'
               label='Start Date'
+              rules={[
+                {
+                  required: false,
+                  transform: (value) => value?.format('YYYY-MM-DD'),
+                },
+              ]}
+            >
+              <DatePicker style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item
+              name='end_date'
+              label='End Date'
+              rules={[
+                {
+                  required: false,
+                  transform: (value) => value?.format('YYYY-MM-DD'),
+                },
+              ]}
+            >
+              <DatePicker style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item
+              name='status'
+              label='Status'
               hasFeedback
               rules={[
                 {
                   required: true,
-                  message: 'Please input start date',
+                  message: 'Please select status',
                 },
               ]}
+              normalize={(value) => value?.toLowerCase()}
             >
-              <DatePicker />
+              <Select
+                options={Object.values(EMember.Status).map((status) => ({
+                  label: status,
+                  value: status,
+                }))}
+                allowClear={false}
+              />
             </Form.Item>
             <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
               <Space>
                 <Button
                   type='primary'
                   htmlType='submit'
+                  disabled={isLoading}
                 >
-                  Submit
+                  {isLoading ? 'Loading...' : 'Submit'}
                 </Button>
                 <Button
                   htmlType='reset'

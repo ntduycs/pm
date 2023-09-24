@@ -1,18 +1,32 @@
 import { StyledMembers } from '@pm/pages/members/styles.ts';
 import { columns } from '@pm/pages/members/model.ts';
-import { seedMembers } from '@pm/pages/members/seed.ts';
 import { AddMember } from '@pm/pages/members/components';
-import { adapt } from '@pm/pages/members/util.ts';
-import { Table } from 'antd';
+import { Spin, Table } from 'antd';
+import { useQuery } from '@tanstack/react-query';
+import { listMembersAPI } from '@pm/services';
 
 export const Members = () => {
+  const { isFetching, isError, data, error } = useQuery({
+    queryKey: ['members', 'list'],
+    queryFn: listMembersAPI,
+    meta: {
+      page: 1,
+      size: 10,
+    },
+  });
+
   return (
     <StyledMembers>
       <AddMember />
-      <Table
-        columns={columns}
-        dataSource={seedMembers.map(adapt)}
-      />
+      <Spin spinning={isFetching}>
+        <Table
+          columns={columns}
+          dataSource={data?.items.map((item) => ({
+            ...item,
+            key: item.id,
+          }))}
+        />
+      </Spin>
     </StyledMembers>
   );
 };

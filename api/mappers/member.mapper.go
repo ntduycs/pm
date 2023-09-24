@@ -18,6 +18,7 @@ func (m *MemberMapper) ToModel(member *ent.Member) *models.Member {
 	model := &models.Member{
 		ID:          member.ID,
 		Name:        member.Name,
+		Email:       member.Email,
 		Level:       string(member.Level),
 		Positions:   strings.Split(member.Positions, ","),
 		KPI:         member.Kpi,

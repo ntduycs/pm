@@ -5,13 +5,8 @@ import (
 	"go.uber.org/fx"
 )
 
-type RouterProps struct {
-	App    *fiber.App
-	Prefix string
-}
-
 type Router interface {
-	Register(props *RouterProps)
+	Register(app *fiber.App)
 	GetPrefix() string
 }
 

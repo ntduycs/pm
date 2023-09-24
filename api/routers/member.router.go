@@ -1,6 +1,10 @@
 package routers
 
-import "project-management/controllers"
+import (
+	"github.com/gofiber/fiber/v2"
+
+	"project-management/controllers"
+)
 
 type MemberRouter struct {
 	controller *controllers.MemberController
@@ -12,8 +16,8 @@ func NewMemberRouter(controller *controllers.MemberController) *MemberRouter {
 	}
 }
 
-func (r *MemberRouter) Register(props *RouterProps) {
-	router := props.App.Group(props.Prefix)
+func (r *MemberRouter) Register(app *fiber.App) {
+	router := app.Group(r.GetPrefix())
 
 	router.Get("/:id", r.controller.GetMember)
 	router.Get("/", r.controller.ListMembers)
