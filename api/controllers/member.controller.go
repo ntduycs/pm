@@ -75,3 +75,55 @@ func (c *MemberController) ListMembers(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(resp)
 }
+
+// UpsertMember
+// @Summary Upsert member
+// @Tags    Member
+// @Accept  json
+// @Produce json
+// @Param   body body     models.UpsertMemberRequest true "Upsert Member body"
+// @Success 200  {object} models.EmptyResponse
+// @Router  /members [post]
+func (c *MemberController) UpsertMember(ctx *fiber.Ctx) error {
+	req := &models.UpsertMemberRequest{}
+
+	if err := ctx.BodyParser(req); err != nil {
+		c.logger.Error("UpsertMember", zap.Error(err))
+		return err
+	}
+
+	resp, err := c.memberService.UpsertMember(ctx.Context(), req)
+
+	if err != nil {
+		c.logger.Error("UpsertMember", zap.Error(err))
+		return err
+	}
+
+	return ctx.JSON(resp)
+}
+
+// DeleteMember
+// @Summary Delete member
+// @Tags    Member
+// @Accept  json
+// @Produce json
+// @Param   id  path     int true "Member ID"
+// @Success 200 {object} models.EmptyResponse
+// @Router  /members/{id} [delete]
+func (c *MemberController) DeleteMember(ctx *fiber.Ctx) error {
+	req := &models.IDRequest{}
+
+	if err := ctx.ParamsParser(req); err != nil {
+		c.logger.Error("DeleteMember", zap.Error(err))
+		return err
+	}
+
+	resp, err := c.memberService.DeleteMember(ctx.Context(), req)
+
+	if err != nil {
+		c.logger.Error("DeleteMember", zap.Error(err))
+		return err
+	}
+
+	return ctx.JSON(resp)
+}

@@ -23,7 +23,7 @@ func NewMemberRepository(props RepositoryProps) *MemberRepository {
 	}
 }
 
-func (r *MemberRepository) FindById(ctx context.Context, id int, txClient ...*ent.Client) (*ent.Member, error) {
+func (r *MemberRepository) FindByID(ctx context.Context, id int, txClient ...*ent.Client) (*ent.Member, error) {
 	client := useClient(r.ent, txClient...)
 
 	return client.Member.Query().
@@ -82,4 +82,10 @@ func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberReq
 	}
 
 	return cmd.ID(ctx)
+}
+
+func (r *MemberRepository) DeleteByID(ctx context.Context, id int, txClient ...*ent.Client) error {
+	client := useClient(r.ent, txClient...)
+
+	return client.Member.DeleteOneID(id).Exec(ctx)
 }

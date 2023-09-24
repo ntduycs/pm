@@ -55,6 +55,37 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Upsert member",
+                "parameters": [
+                    {
+                        "description": "Upsert Member body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpsertMemberRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EmptyResponse"
+                        }
+                    }
+                }
             }
         },
         "/members/{id}": {
@@ -86,10 +117,47 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Delete member",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Member ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EmptyResponse"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "models.EmptyResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "models.GetMemberResponse": {
             "type": "object",
             "properties": {
@@ -145,6 +213,60 @@ const docTemplate = `{
                 },
                 "positions": {
                     "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "start_date": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_effort": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.UpsertMemberRequest": {
+            "type": "object",
+            "required": [
+                "category",
+                "email",
+                "kpi",
+                "level",
+                "name",
+                "positions",
+                "status",
+                "total_effort"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "kpi": {
+                    "type": "number"
+                },
+                "level": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "positions": {
+                    "type": "array",
+                    "minItems": 1,
                     "items": {
                         "type": "string"
                     }

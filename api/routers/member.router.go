@@ -17,6 +17,8 @@ func (r *MemberRouter) Register(props *RouterProps) {
 
 	router.Get("/:id", r.controller.GetMember)
 	router.Get("/", r.controller.ListMembers)
+	router.Post("/", r.controller.UpsertMember)
+	router.Delete("/:id", r.controller.DeleteMember)
 }
 
 func (r *MemberRouter) GetPrefix() string {

@@ -33,7 +33,7 @@ func NewMemberService(
 }
 
 func (s *MemberService) GetMember(ctx context.Context, req *models.IDRequest) (*models.GetMemberResponse, error) {
-	entity, err := s.memberRepository.FindById(ctx, req.ID)
+	entity, err := s.memberRepository.FindByID(ctx, req.ID)
 
 	if err != nil {
 		s.logger.Error("GetMember", zap.Error(err))
@@ -69,20 +69,38 @@ func (s *MemberService) ListMembers(ctx context.Context, req *models.ListMembers
 	}, nil
 }
 
-func (s *MemberService) CreateMember(ctx context.Context, req *models.UpsertMemberRequest) (*models.EmptyResponse, error) {
+func (s *MemberService) UpsertMember(ctx context.Context, req *models.UpsertMemberRequest) (*models.EmptyResponse, error) {
 	if err := s.requestValidator.Validate(req); err != nil {
-		s.logger.Error("CreateMember", err.ToZapFields()...)
+		s.logger.Error("UpsertMember", err.ToZapFields()...)
 		return nil, err
 	}
 
 	_, err := s.memberRepository.Save(ctx, req)
 
 	if err != nil {
-		s.logger.Error("CreateMember", zap.Error(err))
+		s.logger.Error("UpsertMember", zap.Error(err))
 		return nil, err
 	}
 
 	return &models.EmptyResponse{
 		Message: "Create member successfully",
+	}, nil
+}
+
+func (s *MemberService) DeleteMember(ctx context.Context, req *models.IDRequest) (*models.EmptyResponse, error) {
+	if err := s.requestValidator.Validate(req); err != nil {
+		s.logger.Error("DeleteMember", err.ToZapFields()...)
+		return nil, err
+	}
+
+	err := s.memberRepository.DeleteByID(ctx, req.ID)
+
+	if err != nil {
+		s.logger.Error("DeleteMember", zap.Error(err))
+		return nil, err
+	}
+
+	return &models.EmptyResponse{
+		Message: "Delete member successfully",
 	}, nil
 }
