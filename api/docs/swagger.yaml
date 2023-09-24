@@ -4,6 +4,21 @@ definitions:
       item:
         $ref: '#/definitions/models.Member'
     type: object
+  models.ListMembersResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.Member'
+        type: array
+      page:
+        type: integer
+      pages:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   models.Member:
     properties:
       category:
@@ -40,6 +55,29 @@ info:
   title: Project Management API Document
   version: "1.0"
 paths:
+  /members:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ListMembersResponse'
+      summary: List members
+      tags:
+      - Member
   /members/{id}:
     get:
       consumes:

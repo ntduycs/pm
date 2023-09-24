@@ -37,6 +37,6 @@ func (Member) Edges() []ent.Edge {
 // Annotations of the Member.
 func (Member) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		table("members"),
+		table("member"),
 	}
 }

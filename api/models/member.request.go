@@ -17,6 +17,18 @@ type ListMembersRequest struct {
 	PageRequest
 }
 
+func (r *ListMembersRequest) Norm() *ListMembersRequest {
+	if r.Page < 1 {
+		r.Page = 1
+	}
+
+	if r.Size < 1 {
+		r.Size = 20
+	}
+
+	return r
+}
+
 type ListMembersResponse struct {
 	PageResponse
 	Items []*Member `json:"items"`

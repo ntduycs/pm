@@ -19,6 +19,7 @@ import (
 	"project-management/repositories"
 	"project-management/routers"
 	"project-management/services"
+	"project-management/validators"
 )
 
 // @title       Project Management API Document
@@ -68,6 +69,7 @@ func main() {
 		}),
 		repositories.Module,
 		mappers.Module,
+		validators.Module,
 		services.Module,
 		controllers.Module,
 		routers.Module,

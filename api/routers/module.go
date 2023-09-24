@@ -3,6 +3,7 @@ package routers
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -14,6 +15,7 @@ import (
 	"go.uber.org/zap"
 
 	"project-management/ent"
+	pmerror "project-management/errors"
 	"project-management/models"
 
 	"github.com/gofiber/swagger"
@@ -51,15 +53,24 @@ func NewServer(props ServerProps) *fiber.App {
 			code := fiber.StatusInternalServerError
 
 			// Retrieve the custom status code if it's a *fiber.Error
-			var e *fiber.Error
-			if errors.As(err, &e) {
-				code = e.Code
+			var fe *fiber.Error
+			var ve *pmerror.ValidatorError
+			if errors.As(err, &ve) {
+				return ctx.Status(fiber.StatusBadRequest).JSON(ve.ToErrorResponse())
+			} else if errors.As(err, &fe) {
+				code = fe.Code
 			} else if ent.IsNotFound(err) {
-				code = fiber.StatusNotFound
+				return ctx.Status(fiber.StatusNotFound).JSON(models.ErrorResponse{
+					Message: strings.TrimPrefix(err.Error(), "ent: "),
+				})
 			} else if ent.IsConstraintError(err) {
-				code = fiber.StatusBadRequest
+				return ctx.Status(fiber.StatusBadRequest).JSON(models.ErrorResponse{
+					Message: strings.TrimPrefix(err.Error(), "ent: "),
+				})
 			} else if ent.IsValidationError(err) {
-				code = fiber.StatusBadRequest
+				return ctx.Status(fiber.StatusBadRequest).JSON(models.ErrorResponse{
+					Message: strings.TrimPrefix(err.Error(), "ent: "),
+				})
 			}
 
 			return ctx.Status(code).JSON(models.ErrorResponse{

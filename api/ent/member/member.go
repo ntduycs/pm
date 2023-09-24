@@ -32,7 +32,7 @@ const (
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// Table holds the table name of the member in the database.
-	Table = "members"
+	Table = "member"
 )
 
 // Columns holds all SQL columns for member fields.

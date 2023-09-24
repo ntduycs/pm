@@ -1,10 +1,25 @@
 package models
 
+type Pageable interface {
+	GetPage() int
+	SetPage(page int)
+	GetSize() int
+	SetSize(size int)
+	GetSort() string
+	SetSort(sort string)
+	GetDirection() string
+	SetDirection(direction string)
+}
+
 type PageRequest struct {
-	Page      int    `json:"page"`
-	Size      int    `json:"size"`
-	Sort      string `json:"sort"`
-	Direction string `json:"direction"`
+	Page      int    `json:"page" validate:"required,min=1" default:"1"`
+	Size      int    `json:"size" validate:"required,min=1,max=100" default:"20"`
+	Sort      string `json:"sort" default:"name"`
+	Direction string `json:"direction" default:"asc"`
+}
+
+type IDRequest struct {
+	ID int `json:"id" validate:"required,min=1"`
 }
 
 type PageResponse struct {
@@ -15,5 +30,12 @@ type PageResponse struct {
 }
 
 type ErrorResponse struct {
+	Message string       `json:"message"`
+	Details []Validation `json:"details,omitempty"`
+}
+
+type Validation struct {
+	Field   string `json:"field"`
 	Message string `json:"message"`
+	Value   any    `json:"value,omitempty"`
 }

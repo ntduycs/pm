@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// MembersColumns holds the columns for the "members" table.
-	MembersColumns = []*schema.Column{
+	// MemberColumns holds the columns for the "member" table.
+	MemberColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "level", Type: field.TypeEnum, Enums: []string{"LV1", "LV2", "LV3", "LV4", "LV5", "LV6", "LV7", "LV8", "LV9", "LV10"}},
@@ -22,20 +22,20 @@ var (
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"active", "inactive", "pending"}},
 	}
-	// MembersTable holds the schema information for the "members" table.
-	MembersTable = &schema.Table{
-		Name:       "members",
-		Columns:    MembersColumns,
-		PrimaryKey: []*schema.Column{MembersColumns[0]},
+	// MemberTable holds the schema information for the "member" table.
+	MemberTable = &schema.Table{
+		Name:       "member",
+		Columns:    MemberColumns,
+		PrimaryKey: []*schema.Column{MemberColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		MembersTable,
+		MemberTable,
 	}
 )
 
 func init() {
-	MembersTable.Annotation = &entsql.Annotation{
-		Table: "members",
+	MemberTable.Annotation = &entsql.Annotation{
+		Table: "member",
 	}
 }

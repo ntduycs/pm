@@ -51,7 +51,7 @@ func NewEntClient(lifecycle fx.Lifecycle, logger *zap.Logger) *ent.Client {
 		return []ent.Option{
 			ent.Debug(),
 			ent.Log(func(a ...any) {
-				logger.Debug("ent", zap.Any("ent", a))
+				logger.Debug("ent", zap.Any("query", a))
 			}),
 		}
 	}
