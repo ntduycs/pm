@@ -28,6 +28,12 @@ func (mu *MemberUpdate) Where(ps ...predicate.Member) *MemberUpdate {
 	return mu
 }
 
+// SetEmail sets the "email" field.
+func (mu *MemberUpdate) SetEmail(s string) *MemberUpdate {
+	mu.mutation.SetEmail(s)
+	return mu
+}
+
 // SetName sets the "name" field.
 func (mu *MemberUpdate) SetName(s string) *MemberUpdate {
 	mu.mutation.SetName(s)
@@ -158,6 +164,11 @@ func (mu *MemberUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (mu *MemberUpdate) check() error {
+	if v, ok := mu.mutation.Email(); ok {
+		if err := member.EmailValidator(v); err != nil {
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "Member.email": %w`, err)}
+		}
+	}
 	if v, ok := mu.mutation.Level(); ok {
 		if err := member.LevelValidator(v); err != nil {
 			return &ValidationError{Name: "level", err: fmt.Errorf(`ent: validator failed for field "Member.level": %w`, err)}
@@ -197,6 +208,9 @@ func (mu *MemberUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := mu.mutation.Email(); ok {
+		_spec.SetField(member.FieldEmail, field.TypeString, value)
 	}
 	if value, ok := mu.mutation.Name(); ok {
 		_spec.SetField(member.FieldName, field.TypeString, value)
@@ -255,6 +269,12 @@ type MemberUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *MemberMutation
+}
+
+// SetEmail sets the "email" field.
+func (muo *MemberUpdateOne) SetEmail(s string) *MemberUpdateOne {
+	muo.mutation.SetEmail(s)
+	return muo
 }
 
 // SetName sets the "name" field.
@@ -400,6 +420,11 @@ func (muo *MemberUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (muo *MemberUpdateOne) check() error {
+	if v, ok := muo.mutation.Email(); ok {
+		if err := member.EmailValidator(v); err != nil {
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "Member.email": %w`, err)}
+		}
+	}
 	if v, ok := muo.mutation.Level(); ok {
 		if err := member.LevelValidator(v); err != nil {
 			return &ValidationError{Name: "level", err: fmt.Errorf(`ent: validator failed for field "Member.level": %w`, err)}
@@ -456,6 +481,9 @@ func (muo *MemberUpdateOne) sqlSave(ctx context.Context) (_node *Member, err err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := muo.mutation.Email(); ok {
+		_spec.SetField(member.FieldEmail, field.TypeString, value)
 	}
 	if value, ok := muo.mutation.Name(); ok {
 		_spec.SetField(member.FieldName, field.TypeString, value)

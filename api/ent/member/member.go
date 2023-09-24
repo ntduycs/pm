@@ -13,6 +13,8 @@ const (
 	Label = "member"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldEmail holds the string denoting the email field in the database.
+	FieldEmail = "email"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldLevel holds the string denoting the level field in the database.
@@ -38,6 +40,7 @@ const (
 // Columns holds all SQL columns for member fields.
 var Columns = []string{
 	FieldID,
+	FieldEmail,
 	FieldName,
 	FieldLevel,
 	FieldPositions,
@@ -60,6 +63,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	EmailValidator func(string) error
 	// KpiValidator is a validator for the "kpi" field. It is called by the builders before save.
 	KpiValidator func(float32) error
 	// TotalEffortValidator is a validator for the "total_effort" field. It is called by the builders before save.
@@ -150,6 +155,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByEmail orders the results by the email field.
+func ByEmail(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmail, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

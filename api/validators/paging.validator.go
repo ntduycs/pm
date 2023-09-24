@@ -1,12 +1,24 @@
 package validators
 
-type PagingValidator struct {
+import (
+	"github.com/go-playground/validator/v10"
+
+	pmerror "project-management/errors"
+)
+
+type RequestValidator struct {
 }
 
-func NewPagingValidator() *PagingValidator {
-	return &PagingValidator{}
+func NewRequestValidator() *RequestValidator {
+	return &RequestValidator{}
 }
 
-func (v *PagingValidator) Validate(req any) error {
-	return validate.Struct(req)
+func (v *RequestValidator) Validate(req any) *pmerror.ValidatorError {
+	errs := validate.Struct(req)
+
+	if errs == nil {
+		return nil
+	}
+
+	return pmerror.NewValidatorError(errs.(validator.ValidationErrors))
 }

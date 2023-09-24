@@ -1,6 +1,7 @@
 create table member
 (
     id           serial primary key,
+    email        varchar(127)     not null constraint unique_member_email unique,
     name         varchar(127)     not null,
     level        varchar(15)      not null,
     positions    varchar(256)     not null,

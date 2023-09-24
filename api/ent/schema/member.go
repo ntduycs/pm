@@ -17,6 +17,7 @@ type Member struct {
 func (Member) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("id"),
+		field.String("email").Unique().NotEmpty().Comment("email address of member"),
 		field.String("name"),
 		field.Enum("level").Values(constants.MemberLevels...),
 		field.String("positions").Comment("comma separated values of positions"),

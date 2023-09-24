@@ -1,16 +1,5 @@
 package models
 
-type Pageable interface {
-	GetPage() int
-	SetPage(page int)
-	GetSize() int
-	SetSize(size int)
-	GetSort() string
-	SetSort(sort string)
-	GetDirection() string
-	SetDirection(direction string)
-}
-
 type PageRequest struct {
 	Page      int    `json:"page" validate:"required,min=1" default:"1"`
 	Size      int    `json:"size" validate:"required,min=1,max=100" default:"20"`
@@ -27,6 +16,10 @@ type PageResponse struct {
 	Size  int `json:"size"`
 	Pages int `json:"pages"`
 	Total int `json:"total"`
+}
+
+type EmptyResponse struct {
+	Message string `json:"message"`
 }
 
 type ErrorResponse struct {

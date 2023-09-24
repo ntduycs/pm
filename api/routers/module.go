@@ -101,7 +101,7 @@ func NewServer(props ServerProps) *fiber.App {
 		})
 	}
 
-	swagger.New(swagger.Config{})
+	swagger.New(swagger.ConfigDefault)
 
 	lifecycle.Append(fx.Hook{
 		OnStart: func(context.Context) error {

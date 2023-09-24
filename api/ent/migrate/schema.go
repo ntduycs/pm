@@ -12,6 +12,7 @@ var (
 	// MemberColumns holds the columns for the "member" table.
 	MemberColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "level", Type: field.TypeEnum, Enums: []string{"LV1", "LV2", "LV3", "LV4", "LV5", "LV6", "LV7", "LV8", "LV9", "LV10"}},
 		{Name: "positions", Type: field.TypeString},

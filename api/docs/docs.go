@@ -12,7 +12,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "Duy Nguyen",
-            "email": "duy.nguyen-thanh@banvien.com.vn"
+            "email": "ntduy.cs@gmail.com"
         },
         "version": "{{.Version}}"
     },
@@ -34,12 +34,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "default": 1,
                         "description": "Page",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "default": 20,
                         "description": "Size",
                         "name": "size",
                         "in": "query"
@@ -165,7 +167,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost",
+	Host:             "localhost:4000",
 	BasePath:         "",
 	Schemes:          []string{"http", "https"},
 	Title:            "Project Management API Document",

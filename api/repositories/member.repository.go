@@ -3,6 +3,8 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"strings"
+	"time"
 
 	"project-management/ent"
 	"project-management/ent/member"
@@ -52,4 +54,32 @@ func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersR
 	}
 
 	return memberLst, memberCount, nil
+}
+
+func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberRequest, txClient ...*ent.Client) (int, error) {
+	client := useClient(r.ent, txClient...)
+
+	cmd := client.Member.Create().
+		SetName(req.Name).
+		SetEmail(req.Email).
+		SetLevel(member.Level(req.Level)).
+		SetPositions(strings.Join(req.Positions, ",")).
+		SetKpi(req.KPI).
+		SetCategory(member.Category(req.Category)).
+		SetStatus(member.Status(req.Status)).
+		SetTotalEffort(req.TotalEffort).
+		OnConflictColumns(member.FieldEmail).
+		UpdateNewValues()
+
+	if req.StartDate != nil {
+		startDate, _ := time.Parse("2006-01-02", *req.StartDate)
+		cmd.SetStartDate(startDate)
+	}
+
+	if req.EndDate != nil {
+		endDate, _ := time.Parse("2006-01-02", *req.EndDate)
+		cmd.SetEndDate(endDate)
+	}
+
+	return cmd.ID(ctx)
 }

@@ -8,6 +8,5 @@ import (
 var validate = validator.New(validator.WithRequiredStructEnabled())
 
 var Module = fx.Provide(
-	NewPagingValidator,
-	NewMemberValidator,
+	NewRequestValidator,
 )

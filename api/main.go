@@ -27,9 +27,9 @@ import (
 // @description Project Management API Document
 
 // @contact.name  Duy Nguyen
-// @contact.email duy.nguyen-thanh@banvien.com.vn
+// @contact.email ntduy.cs@gmail.com
 
-// @host    localhost
+// @host    localhost:4000
 // @schemes http https
 func main() {
 	if err := os.Setenv("TZ", "Asia/Saigon"); err != nil {

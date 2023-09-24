@@ -13,8 +13,12 @@ import (
 func init() {
 	memberFields := schema.Member{}.Fields()
 	_ = memberFields
+	// memberDescEmail is the schema descriptor for email field.
+	memberDescEmail := memberFields[1].Descriptor()
+	// member.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	member.EmailValidator = memberDescEmail.Validators[0].(func(string) error)
 	// memberDescKpi is the schema descriptor for kpi field.
-	memberDescKpi := memberFields[4].Descriptor()
+	memberDescKpi := memberFields[5].Descriptor()
 	// member.KpiValidator is a validator for the "kpi" field. It is called by the builders before save.
 	member.KpiValidator = func() func(float32) error {
 		validators := memberDescKpi.Validators
@@ -32,7 +36,7 @@ func init() {
 		}
 	}()
 	// memberDescTotalEffort is the schema descriptor for total_effort field.
-	memberDescTotalEffort := memberFields[6].Descriptor()
+	memberDescTotalEffort := memberFields[7].Descriptor()
 	// member.TotalEffortValidator is a validator for the "total_effort" field. It is called by the builders before save.
 	member.TotalEffortValidator = func() func(float32) error {
 		validators := memberDescTotalEffort.Validators

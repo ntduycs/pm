@@ -15,20 +15,20 @@ type MemberService struct {
 	logger           *zap.Logger
 	memberRepository *repositories.MemberRepository
 	memberMapper     *mappers.MemberMapper
-	memberValidator  *validators.MemberValidator
+	requestValidator *validators.RequestValidator
 }
 
 func NewMemberService(
 	logger *zap.Logger,
 	memberRepository *repositories.MemberRepository,
 	memberMapper *mappers.MemberMapper,
-	memberValidator *validators.MemberValidator,
+	requestValidator *validators.RequestValidator,
 ) *MemberService {
 	return &MemberService{
 		logger:           logger,
 		memberRepository: memberRepository,
 		memberMapper:     memberMapper,
-		memberValidator:  memberValidator,
+		requestValidator: requestValidator,
 	}
 }
 
@@ -46,7 +46,7 @@ func (s *MemberService) GetMember(ctx context.Context, req *models.IDRequest) (*
 }
 
 func (s *MemberService) ListMembers(ctx context.Context, req *models.ListMembersRequest) (*models.ListMembersResponse, error) {
-	if err := s.memberValidator.Validate(req); err != nil {
+	if err := s.requestValidator.Validate(req); err != nil {
 		s.logger.Error("ListMembers", err.ToZapFields()...)
 		return nil, err
 	}
@@ -66,5 +66,23 @@ func (s *MemberService) ListMembers(ctx context.Context, req *models.ListMembers
 			Total: entityCount,
 			Pages: entityCount / req.Size,
 		},
+	}, nil
+}
+
+func (s *MemberService) CreateMember(ctx context.Context, req *models.UpsertMemberRequest) (*models.EmptyResponse, error) {
+	if err := s.requestValidator.Validate(req); err != nil {
+		s.logger.Error("CreateMember", err.ToZapFields()...)
+		return nil, err
+	}
+
+	_, err := s.memberRepository.Save(ctx, req)
+
+	if err != nil {
+		s.logger.Error("CreateMember", zap.Error(err))
+		return nil, err
+	}
+
+	return &models.EmptyResponse{
+		Message: "Create member successfully",
 	}, nil
 }

@@ -22,6 +22,12 @@ type MemberCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetEmail sets the "email" field.
+func (mc *MemberCreate) SetEmail(s string) *MemberCreate {
+	mc.mutation.SetEmail(s)
+	return mc
+}
+
 // SetName sets the "name" field.
 func (mc *MemberCreate) SetName(s string) *MemberCreate {
 	mc.mutation.SetName(s)
@@ -132,6 +138,14 @@ func (mc *MemberCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (mc *MemberCreate) check() error {
+	if _, ok := mc.mutation.Email(); !ok {
+		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "Member.email"`)}
+	}
+	if v, ok := mc.mutation.Email(); ok {
+		if err := member.EmailValidator(v); err != nil {
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "Member.email": %w`, err)}
+		}
+	}
 	if _, ok := mc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Member.name"`)}
 	}
@@ -211,6 +225,10 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := mc.mutation.Email(); ok {
+		_spec.SetField(member.FieldEmail, field.TypeString, value)
+		_node.Email = value
+	}
 	if value, ok := mc.mutation.Name(); ok {
 		_spec.SetField(member.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -254,7 +272,7 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Member.Create().
-//		SetName(v).
+//		SetEmail(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -263,7 +281,7 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.MemberUpsert) {
-//			SetName(v+v).
+//			SetEmail(v+v).
 //		}).
 //		Exec(ctx)
 func (mc *MemberCreate) OnConflict(opts ...sql.ConflictOption) *MemberUpsertOne {
@@ -298,6 +316,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetEmail sets the "email" field.
+func (u *MemberUpsert) SetEmail(v string) *MemberUpsert {
+	u.Set(member.FieldEmail, v)
+	return u
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *MemberUpsert) UpdateEmail() *MemberUpsert {
+	u.SetExcluded(member.FieldEmail)
+	return u
+}
 
 // SetName sets the "name" field.
 func (u *MemberUpsert) SetName(v string) *MemberUpsert {
@@ -477,6 +507,20 @@ func (u *MemberUpsertOne) Update(set func(*MemberUpsert)) *MemberUpsertOne {
 		set(&MemberUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetEmail sets the "email" field.
+func (u *MemberUpsertOne) SetEmail(v string) *MemberUpsertOne {
+	return u.Update(func(s *MemberUpsert) {
+		s.SetEmail(v)
+	})
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *MemberUpsertOne) UpdateEmail() *MemberUpsertOne {
+	return u.Update(func(s *MemberUpsert) {
+		s.UpdateEmail()
+	})
 }
 
 // SetName sets the "name" field.
@@ -767,7 +811,7 @@ func (mcb *MemberCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.MemberUpsert) {
-//			SetName(v+v).
+//			SetEmail(v+v).
 //		}).
 //		Exec(ctx)
 func (mcb *MemberCreateBulk) OnConflict(opts ...sql.ConflictOption) *MemberUpsertBulk {
@@ -844,6 +888,20 @@ func (u *MemberUpsertBulk) Update(set func(*MemberUpsert)) *MemberUpsertBulk {
 		set(&MemberUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetEmail sets the "email" field.
+func (u *MemberUpsertBulk) SetEmail(v string) *MemberUpsertBulk {
+	return u.Update(func(s *MemberUpsert) {
+		s.SetEmail(v)
+	})
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *MemberUpsertBulk) UpdateEmail() *MemberUpsertBulk {
+	return u.Update(func(s *MemberUpsert) {
+		s.UpdateEmail()
+	})
 }
 
 // SetName sets the "name" field.

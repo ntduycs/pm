@@ -46,10 +46,10 @@ definitions:
       total_effort:
         type: number
     type: object
-host: localhost
+host: localhost:4000
 info:
   contact:
-    email: duy.nguyen-thanh@banvien.com.vn
+    email: ntduy.cs@gmail.com
     name: Duy Nguyen
   description: Project Management API Document
   title: Project Management API Document
@@ -60,11 +60,13 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Page
+      - default: 1
+        description: Page
         in: query
         name: page
         type: integer
-      - description: Size
+      - default: 20
+        description: Size
         in: query
         name: size
         type: integer
