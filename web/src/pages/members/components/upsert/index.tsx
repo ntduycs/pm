@@ -1,5 +1,5 @@
-import { StyledAddMember } from '@pm/pages/members/components/add/styles.ts';
-import React, { useState } from 'react';
+import { StyledAddMember } from '@pm/pages/members/components/upsert/styles.ts';
+import React from 'react';
 import { EMember } from '@pm/common/constants';
 import dayjs from 'dayjs';
 import {
@@ -13,17 +13,24 @@ import {
   Select,
   Space,
 } from 'antd';
-import { Member } from '@pm/pages/members/model.ts';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import JSONPretty from 'react-json-pretty';
-import { JsonRenderer } from '@pm/components';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { listMembersAPI, upsertMemberAPI } from '@pm/services';
-import { UpsertMemberRequest } from '@pm/models';
+import { Member, UpsertMemberRequest } from '@pm/models';
 import { useQueryClient } from '@pm/hooks';
+import { Status } from '@pm/pages/members/components';
 
-export const AddMember = () => {
-  const [isOpen, setIsOpen] = useState(false);
+type UpsertMemberProps = {
+  member?: Member;
+  isOpen: boolean;
+  setOpen: (isOpen: boolean) => void;
+};
+
+export const UpsertMemberModal = ({
+  member,
+  isOpen: isModalOpened,
+  setOpen: showHideModal,
+}: UpsertMemberProps) => {
   const [api, contextHolder] = notification.useNotification();
   const queryClient = useQueryClient();
 
@@ -38,40 +45,37 @@ export const AddMember = () => {
     ['members', 'upsert'],
     upsertMemberAPI,
     {
-      onSuccess: async (data) => {
+      onSuccess: async () => {
         await queryClient.invalidateQueries(['members', 'list']);
         await listMembersQuery.refetch();
+        closeModal();
       },
     },
   );
 
   const [form] = Form.useForm();
-  const formValues = Form.useWatch([], form);
-
-  const openModal = () => {
-    setIsOpen(true);
-  };
 
   const closeModal = () => {
-    setIsOpen(false);
+    showHideModal(false);
+    form.resetFields();
   };
 
   const onFormSubmit = async (values: UpsertMemberRequest) => {
     try {
-      console.log(values.end_date);
       values = {
         ...values,
+        kpi: values.kpi / 100,
+        status: values.status?.toLowerCase(),
         start_date: values.start_date ? dayjs(values.start_date).format('YYYY-MM-DD') : '',
         end_date: values.end_date ? dayjs(values.end_date).format('YYYY-MM-DD') : '',
       };
       const { message } = await upsertMember(values);
       api.success({
         message,
-        description: <JsonRenderer json={values} />,
         placement: 'topRight',
         duration: 2,
       });
-      setIsOpen(false);
+      closeModal();
     } catch (error: unknown) {
       api.error({
         message: 'Error!',
@@ -82,18 +86,12 @@ export const AddMember = () => {
     }
   };
 
-  const onFormCancel = () => {
-    form.resetFields();
-    setIsOpen(false);
-  };
-
   return (
     <>
       {contextHolder}
       <StyledAddMember>
-        <Button onClick={openModal}>New Member</Button>
         <Modal
-          open={isOpen}
+          open={isModalOpened}
           title='New Member'
           destroyOnClose
           keyboard
@@ -103,13 +101,13 @@ export const AddMember = () => {
           <Form
             form={form}
             initialValues={{
-              name: '',
-              level: EMember.Level.LV1,
-              positions: [],
-              kpi: 0.5,
-              category: EMember.Category.OFFICIAL,
-              total_effort: 100,
-              status: EMember.Status.ACTIVE.toLowerCase(),
+              name: member?.name,
+              level: member?.level,
+              positions: member?.position,
+              kpi: member?.kpi,
+              category: member ? member.category : EMember.Category.OFFICIAL,
+              total_effort: member ? member.total_effort : 100,
+              status: member ? member.status : EMember.Status.ACTIVE,
             }}
             labelCol={{ span: 6 }}
             labelAlign='left'
@@ -207,6 +205,7 @@ export const AddMember = () => {
               <InputNumber
                 min={0}
                 max={100}
+                addonAfter={<span>%</span>}
                 style={{ width: '100%' }}
               />
             </Form.Item>
@@ -233,6 +232,7 @@ export const AddMember = () => {
               name='total_effort'
               label='Total Effort'
               hasFeedback
+              validateDebounce={300}
               rules={[
                 {
                   required: true,
@@ -285,11 +285,10 @@ export const AddMember = () => {
                   message: 'Please select status',
                 },
               ]}
-              normalize={(value) => value?.toLowerCase()}
             >
               <Select
                 options={Object.values(EMember.Status).map((status) => ({
-                  label: status,
+                  label: <Status status={status} />,
                   value: status,
                 }))}
                 allowClear={false}
@@ -306,7 +305,7 @@ export const AddMember = () => {
                 </Button>
                 <Button
                   htmlType='reset'
-                  onClick={onFormCancel}
+                  onClick={closeModal}
                 >
                   Cancel
                 </Button>
