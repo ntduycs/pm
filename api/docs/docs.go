@@ -195,6 +195,9 @@ const docTemplate = `{
                 "category": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "end_date": {
                     "type": "string",
                     "format": "date"

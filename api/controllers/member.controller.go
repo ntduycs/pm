@@ -23,7 +23,7 @@ func NewMemberController(
 	}
 }
 
-// GetMember
+// GetMember ...
 // @Summary Get member
 // @Tags    Member
 // @Accept  json
@@ -49,7 +49,7 @@ func (c *MemberController) GetMember(ctx *fiber.Ctx) error {
 	return ctx.JSON(resp)
 }
 
-// ListMembers
+// ListMembers ...
 // @Summary List members
 // @Tags    Member
 // @Accept  json
@@ -76,7 +76,7 @@ func (c *MemberController) ListMembers(ctx *fiber.Ctx) error {
 	return ctx.JSON(resp)
 }
 
-// UpsertMember
+// UpsertMember ...
 // @Summary Upsert member
 // @Tags    Member
 // @Accept  json
@@ -102,7 +102,7 @@ func (c *MemberController) UpsertMember(ctx *fiber.Ctx) error {
 	return ctx.JSON(resp)
 }
 
-// DeleteMember
+// DeleteMember ...
 // @Summary Delete member
 // @Tags    Member
 // @Accept  json

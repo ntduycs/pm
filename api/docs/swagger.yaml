@@ -28,6 +28,8 @@ definitions:
     properties:
       category:
         type: string
+      email:
+        type: string
       end_date:
         format: date
         type: string
