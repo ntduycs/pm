@@ -92,6 +92,7 @@ export const ListMembersTable = ({ toggleUpsertModal }: ListMembersProps) => {
             <Tag
               className='action'
               color={ETheme.Color.ORANGE}
+              onClick={() => console.log('delete')}
             >
               <DeleteOutlined />
             </Tag>

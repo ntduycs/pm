@@ -1,5 +1,5 @@
 import { StyledAddMember } from '@pm/pages/members/components/upsert/styles.ts';
-import React from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { EMember } from '@pm/common/constants';
 import dayjs from 'dayjs';
 import {
@@ -19,6 +19,7 @@ import { listMembersAPI, upsertMemberAPI } from '@pm/services';
 import { Member, UpsertMemberRequest } from '@pm/models';
 import { useQueryClient } from '@pm/hooks';
 import { Status } from '@pm/pages/members/components';
+import { capitalize } from 'lodash';
 
 type UpsertMemberProps = {
   member?: Member;
@@ -86,6 +87,25 @@ export const UpsertMemberModal = ({
     }
   };
 
+  useEffect(() => {
+    if (member) {
+      form.setFieldsValue({
+        name: member.name,
+        email: member.email,
+        level: member.level,
+        positions: member.positions,
+        kpi: member.kpi,
+        category: member.category,
+        total_effort: member.total_effort,
+        status: capitalize(member.status),
+        start_date: member.start_date ? dayjs(member.start_date) : undefined,
+        end_date: member.end_date ? dayjs(member.end_date) : undefined,
+      });
+    }
+  }, [form, member]);
+
+  console.log('render upsert member modal');
+
   return (
     <>
       {contextHolder}
@@ -100,15 +120,6 @@ export const UpsertMemberModal = ({
         >
           <Form
             form={form}
-            initialValues={{
-              name: member?.name,
-              level: member?.level,
-              positions: member?.position,
-              kpi: member?.kpi,
-              category: member ? member.category : EMember.Category.OFFICIAL,
-              total_effort: member ? member.total_effort : 100,
-              status: member ? member.status : EMember.Status.ACTIVE,
-            }}
             labelCol={{ span: 6 }}
             labelAlign='left'
             wrapperCol={{ span: 18 }}

@@ -6,7 +6,7 @@ export interface Member {
   name: string;
   email: string;
   level: TLevel;
-  position: TPosition[];
+  positions: TPosition[];
   category: TCategory;
   start_date?: string;
   end_date?: string;

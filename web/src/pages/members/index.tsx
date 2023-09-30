@@ -1,7 +1,7 @@
 import { StyledMembers } from '@pm/pages/members/styles.ts';
 import { UpsertMemberModal, ListMembersTable } from '@pm/pages/members/components';
 import { useModal } from '@pm/hooks';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Member } from '@pm/models';
 
 export const Members = () => {
@@ -10,8 +10,8 @@ export const Members = () => {
 
   const toggleUpsertModal = useCallback(
     (member?: Member) => {
-      showHideUpsertModal(true);
       setSelectedMember(member);
+      showHideUpsertModal(true);
     },
     [showHideUpsertModal],
   );
@@ -21,6 +21,7 @@ export const Members = () => {
       <UpsertMemberModal
         isOpen={isUpsertModalOpened}
         setOpen={showHideUpsertModal}
+        member={selectedMember}
       />
       <ListMembersTable toggleUpsertModal={toggleUpsertModal} />
     </StyledMembers>
