@@ -19,6 +19,7 @@ import { ColumnProps } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { StyledListMembers } from '@pm/pages/members/components/list/styles.ts';
 import { color } from '@pm/styles';
+import { TableFooter } from '@pm/components';
 
 type ListMembersProps = {
   toggleUpsertModal: (rc?: Member) => void;
@@ -30,14 +31,6 @@ interface TableParams {
   sorter?: SorterResult<Member>;
   filters?: Record<string, FilterValue>;
 }
-
-const TableFooter = (pageItems: number, total: number) => {
-  return (
-    <span className='total'>
-      Showing {pageItems} of {total} items
-    </span>
-  );
-};
 
 export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListMembersProps) => {
   const [tableParams, setTableParams] = useState<TableParams>({
@@ -227,7 +220,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
           handleTableChange(pagination, filters, sorter as SorterResult<Member>)
         }
         dataSource={members?.items || []}
-        footer={() => TableFooter(members?.count || 0, members?.total || 0)}
+        footer={() => <TableFooter data={members} />}
       />
     </StyledListMembers>
   );
