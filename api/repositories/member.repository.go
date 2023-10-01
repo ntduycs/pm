@@ -44,6 +44,10 @@ func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersR
 		base = base.Where(member.CategoryEQ(member.Category(req.Category)))
 	}
 
+	if req.Status != "" {
+		base = base.Where(member.StatusEQ(member.Status(req.Status)))
+	}
+
 	if len(req.Positions) > 0 {
 		predicates := make([]predicate.Member, len(req.Positions))
 

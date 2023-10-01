@@ -18,6 +18,7 @@ export interface Member {
 export interface ListMembersRequest extends PageRequest {
   category?: TCategory;
   positions?: TPosition[];
+  status?: TStatus;
 }
 
 export interface UpsertMemberRequest {

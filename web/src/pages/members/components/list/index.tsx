@@ -1,13 +1,13 @@
-import { Button, Space, Table, TablePaginationConfig, Tag } from 'antd';
+import { Button, Table, TablePaginationConfig, Tag } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { listMembersAPI } from '@pm/services';
 import {
   MemberConstant,
-  ThemeConstant,
   TCategory,
   TPosition,
   TStatus,
   ApiConstant,
+  UiConstant,
 } from '@pm/common/constants';
 import { Status } from '@pm/pages/members/components';
 import { Member } from '@pm/models';
@@ -16,6 +16,9 @@ import { useState } from 'react';
 import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { capitalize, toString } from 'lodash';
 import { ColumnProps } from 'antd/es/table';
+import dayjs from 'dayjs';
+import { StyledListMembers } from '@pm/pages/members/components/list/styles.ts';
+import { color } from '@pm/styles';
 
 type ListMembersProps = {
   toggleUpsertModal: (rc?: Member) => void;
@@ -58,6 +61,9 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
           : undefined,
         positions: tableParams.filters?.positions
           ? (tableParams.filters?.positions as unknown as TPosition[])
+          : undefined,
+        status: tableParams.filters?.status
+          ? (tableParams.filters?.status as unknown as TStatus)
           : undefined,
       });
       setTableParams({
@@ -130,17 +136,30 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       title: 'Start Date',
       dataIndex: 'start_date',
       key: 'start_date',
+      render: (start_date: string) =>
+        start_date
+          ? dayjs(start_date).format(UiConstant.DefaultDateFormat)
+          : UiConstant.DefaultEmptyValue,
     },
     {
       title: 'End Date',
       dataIndex: 'end_date',
       key: 'end_date',
+      render: (end_date: string) =>
+        end_date
+          ? dayjs(end_date).format(UiConstant.DefaultDateFormat)
+          : UiConstant.DefaultEmptyValue,
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
       render: (status: TStatus) => <Status status={status} />,
+      filters: Object.entries(MemberConstant.Status).map(([, value]) => ({
+        text: capitalize(value),
+        value: value,
+      })),
+      filterMultiple: false,
     },
     {
       title: 'Action(s)',
@@ -151,14 +170,14 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
           <div className='actions'>
             <Tag
               className='action'
-              color={ThemeConstant.Color.BLUE}
+              color={color.blue}
               onClick={() => toggleUpsertModal(rc)}
             >
               <EditOutlined />
             </Tag>
             <Tag
               className='action'
-              color={ThemeConstant.Color.ORANGE}
+              color={color.red}
               onClick={() => toggleDeleteModal(rc)}
             >
               <DeleteOutlined />
@@ -190,8 +209,9 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
   };
 
   return (
-    <Space direction='vertical'>
+    <StyledListMembers>
       <Button
+        className='new-member-btn'
         type='primary'
         onClick={() => toggleUpsertModal()}
       >
@@ -200,6 +220,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       <Table
         columns={columns}
         rowKey={(record: Member) => record.id}
+        rowClassName={(record: Member) => `${record.status}-row`}
         pagination={tableParams.pagination}
         loading={isFetching}
         onChange={(pagination, filters, sorter) =>
@@ -208,6 +229,6 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
         dataSource={members?.items || []}
         footer={() => TableFooter(members?.count || 0, members?.total || 0)}
       />
-    </Space>
+    </StyledListMembers>
   );
 };

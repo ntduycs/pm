@@ -44,8 +44,8 @@
                     },
                     {
                         "enum": [
-                            "Official",
-                            "Buffer"
+                            "official",
+                            "buffer"
                         ],
                         "type": "string",
                         "description": "Category",
@@ -56,6 +56,17 @@
                         "type": "string",
                         "description": "Positions",
                         "name": "positions",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "active",
+                            "inactive",
+                            "pending"
+                        ],
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -267,8 +278,7 @@
                     "type": "string"
                 },
                 "end_date": {
-                    "type": "string",
-                    "format": "date"
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -290,8 +300,7 @@
                     }
                 },
                 "start_date": {
-                    "type": "string",
-                    "format": "date"
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"

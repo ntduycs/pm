@@ -62,7 +62,6 @@ definitions:
       email:
         type: string
       end_date:
-        format: date
         type: string
       id:
         type: integer
@@ -78,7 +77,6 @@ definitions:
         minItems: 1
         type: array
       start_date:
-        format: date
         type: string
       status:
         type: string
@@ -120,14 +118,22 @@ paths:
         type: integer
       - description: Category
         enum:
-        - Official
-        - Buffer
+        - official
+        - buffer
         in: query
         name: category
         type: string
       - description: Positions
         in: query
         name: positions
+        type: string
+      - description: Status
+        enum:
+        - active
+        - inactive
+        - pending
+        in: query
+        name: status
         type: string
       produces:
       - application/json

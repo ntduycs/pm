@@ -24,6 +24,7 @@ type ListMembersRequest struct {
 	PageRequest
 	Category  string   `query:"category"`
 	Positions []string `query:"positions"`
+	Status    string   `query:"status"`
 }
 
 func (r *ListMembersRequest) Norm() *ListMembersRequest {
@@ -37,6 +38,10 @@ func (r *ListMembersRequest) Norm() *ListMembersRequest {
 
 	if !lo.Contains(constants.MemberCategories, r.Category) {
 		r.Category = ""
+	}
+
+	if !lo.Contains(constants.CommonStatuses, r.Status) {
+		r.Status = ""
 	}
 
 	if len(r.Positions) > 0 {

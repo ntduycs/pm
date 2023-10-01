@@ -48,8 +48,8 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "Official",
-                            "Buffer"
+                            "official",
+                            "buffer"
                         ],
                         "type": "string",
                         "description": "Category",
@@ -60,6 +60,17 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Positions",
                         "name": "positions",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "active",
+                            "inactive",
+                            "pending"
+                        ],
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -271,8 +282,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "end_date": {
-                    "type": "string",
-                    "format": "date"
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -294,8 +304,7 @@ const docTemplate = `{
                     }
                 },
                 "start_date": {
-                    "type": "string",
-                    "format": "date"
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"
