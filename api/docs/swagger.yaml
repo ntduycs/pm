@@ -11,6 +11,8 @@ definitions:
     type: object
   models.ListMembersResponse:
     properties:
+      count:
+        type: integer
       items:
         items:
           $ref: '#/definitions/models.Member'
@@ -116,6 +118,17 @@ paths:
         in: query
         name: size
         type: integer
+      - description: Category
+        enum:
+        - Official
+        - Buffer
+        in: query
+        name: category
+        type: string
+      - description: Positions
+        in: query
+        name: positions
+        type: string
       produces:
       - application/json
       responses:

@@ -6,7 +6,6 @@ export type TPosition = string;
 const Category = {
   OFFICIAL: 'Official' as TCategory,
   BUFFER: 'Buffer' as TCategory,
-  OJD: 'OJD' as TCategory,
 };
 
 const Level = {

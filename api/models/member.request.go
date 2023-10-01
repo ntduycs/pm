@@ -1,5 +1,11 @@
 package models
 
+import (
+	"github.com/samber/lo"
+
+	"project-management/constants"
+)
+
 type Member struct {
 	ID          int      `json:"id"`
 	Name        string   `json:"name"`
@@ -16,6 +22,8 @@ type Member struct {
 
 type ListMembersRequest struct {
 	PageRequest
+	Category  string   `query:"category"`
+	Positions []string `query:"positions"`
 }
 
 func (r *ListMembersRequest) Norm() *ListMembersRequest {
@@ -25,6 +33,16 @@ func (r *ListMembersRequest) Norm() *ListMembersRequest {
 
 	if r.Size < 1 {
 		r.Size = 20
+	}
+
+	if !lo.Contains(constants.MemberCategories, r.Category) {
+		r.Category = ""
+	}
+
+	if len(r.Positions) > 0 {
+		r.Positions = lo.Filter(r.Positions, func(item string, _ int) bool {
+			return lo.Contains(constants.MemberPositions, item)
+		})
 	}
 
 	return r

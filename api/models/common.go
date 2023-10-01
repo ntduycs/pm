@@ -16,6 +16,7 @@ type PageResponse struct {
 	Size  int `json:"size"`
 	Pages int `json:"pages"`
 	Total int `json:"total"`
+	Count int `json:"count"`
 }
 
 type EmptyResponse struct {

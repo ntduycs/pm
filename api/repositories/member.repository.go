@@ -8,6 +8,7 @@ import (
 
 	"project-management/ent"
 	"project-management/ent/member"
+	"project-management/ent/predicate"
 	"project-management/models"
 )
 
@@ -36,6 +37,20 @@ func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersR
 
 	base := client.Member.Query()
 
+	if req.Category != "" {
+		base = base.Where(member.CategoryEQ(member.Category(req.Category)))
+	}
+
+	if len(req.Positions) > 0 {
+		predicates := make([]predicate.Member, len(req.Positions))
+
+		for i, position := range req.Positions {
+			predicates[i] = member.PositionsContains(position)
+		}
+
+		base = base.Where(member.Or(predicates...))
+	}
+
 	memberCount, err := base.Clone().Count(ctx)
 
 	if err != nil {
@@ -45,7 +60,7 @@ func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersR
 	selectQuery := base.Clone().
 		Offset((req.Page - 1) * req.Size).
 		Limit(req.Size).
-		Order(ent.Asc(member.FieldName))
+		Order(r.sort(req.Sort, req.Direction)...)
 
 	memberLst, err := selectQuery.All(ctx)
 
@@ -54,6 +69,18 @@ func (r *MemberRepository) FindAll(ctx context.Context, req *models.ListMembersR
 	}
 
 	return memberLst, memberCount, nil
+}
+
+func (r *MemberRepository) sort(field string, direction string) []member.OrderOption {
+	if strings.ToLower(direction) == "descend" {
+		return []member.OrderOption{
+			ent.Desc(field),
+		}
+	} else {
+		return []member.OrderOption{
+			ent.Asc(field),
+		}
+	}
 }
 
 func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberRequest, txClient ...*ent.Client) (int, error) {
@@ -71,14 +98,18 @@ func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberReq
 		OnConflictColumns(member.FieldEmail).
 		UpdateNewValues()
 
-	if req.StartDate != nil {
+	if req.StartDate != nil && *req.StartDate != "" {
 		startDate, _ := time.Parse("2006-01-02", *req.StartDate)
 		cmd.SetStartDate(startDate)
+	} else {
+		cmd.ClearStartDate()
 	}
 
-	if req.EndDate != nil {
+	if req.EndDate != nil && *req.EndDate != "" {
 		endDate, _ := time.Parse("2006-01-02", *req.EndDate)
 		cmd.SetEndDate(endDate)
+	} else {
+		cmd.ClearEndDate()
 	}
 
 	return cmd.ID(ctx)

@@ -1,5 +1,5 @@
 import { StyledAddMember } from '@pm/pages/members/components/upsert/styles.ts';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { EMember } from '@pm/common/constants';
 import dayjs from 'dayjs';
 import {
@@ -14,10 +14,9 @@ import {
   Space,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { listMembersAPI, upsertMemberAPI } from '@pm/services';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { upsertMemberAPI } from '@pm/services';
 import { Member, UpsertMemberRequest } from '@pm/models';
-import { useQueryClient } from '@pm/hooks';
 import { Status } from '@pm/pages/members/components';
 import { capitalize } from 'lodash';
 
@@ -35,24 +34,14 @@ export const UpsertMemberModal = ({
   const [api, contextHolder] = notification.useNotification();
   const queryClient = useQueryClient();
 
-  const listMembersQuery = useQuery({
-    queryKey: ['members', 'list'],
-    queryFn: listMembersAPI,
-    enabled: false,
-  });
-
-  // eslint-disable-next-line @tanstack/query/prefer-query-object-syntax
-  const { mutateAsync: upsertMember, isLoading } = useMutation(
-    ['members', 'upsert'],
-    upsertMemberAPI,
-    {
-      onSuccess: async () => {
-        await queryClient.invalidateQueries(['members', 'list']);
-        await listMembersQuery.refetch();
-        closeModal();
-      },
+  const { mutateAsync: upsertMember, isLoading } = useMutation({
+    mutationKey: ['members', 'upsert'],
+    mutationFn: upsertMemberAPI,
+    onSuccess: async () => {
+      await queryClient.refetchQueries(['members']);
+      closeModal();
     },
-  );
+  });
 
   const [form] = Form.useForm();
 
@@ -76,7 +65,6 @@ export const UpsertMemberModal = ({
         placement: 'topRight',
         duration: 2,
       });
-      closeModal();
     } catch (error: unknown) {
       api.error({
         message: 'Error!',
@@ -90,11 +78,12 @@ export const UpsertMemberModal = ({
   useEffect(() => {
     if (member) {
       form.setFieldsValue({
+        id: member.id,
         name: member.name,
         email: member.email,
         level: member.level,
         positions: member.positions,
-        kpi: member.kpi,
+        kpi: member.kpi * 100,
         category: member.category,
         total_effort: member.total_effort,
         status: capitalize(member.status),
@@ -103,8 +92,6 @@ export const UpsertMemberModal = ({
       });
     }
   }, [form, member]);
-
-  console.log('render upsert member modal');
 
   return (
     <>
@@ -127,6 +114,12 @@ export const UpsertMemberModal = ({
             onFinish={onFormSubmit}
             scrollToFirstError
           >
+            <Form.Item
+              name='id'
+              label='ID'
+            >
+              <Input hidden />
+            </Form.Item>
             <Form.Item
               name='name'
               label='Name'

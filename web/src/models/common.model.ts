@@ -3,6 +3,7 @@ export interface PageResponse<T> {
   size: number;
   total: number;
   pages: number;
+  count: number;
   items: T[];
 }
 

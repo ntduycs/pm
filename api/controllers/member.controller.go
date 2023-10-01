@@ -54,9 +54,11 @@ func (c *MemberController) GetMember(ctx *fiber.Ctx) error {
 // @Tags    Member
 // @Accept  json
 // @Produce json
-// @Param   page query    int false "Page" default(1)
-// @Param   size query    int false "Size" default(20)
-// @Success 200  {object} models.ListMembersResponse
+// @Param   page      query    int    false "Page"     default(1)
+// @Param   size      query    int    false "Size"     default(20)
+// @Param   category  query    string false "Category" Enums(Official,Buffer)
+// @Param   positions query    string false "Positions"
+// @Success 200       {object} models.ListMembersResponse
 // @Router  /members [get]
 func (c *MemberController) ListMembers(ctx *fiber.Ctx) error {
 	req := &models.ListMembersRequest{}

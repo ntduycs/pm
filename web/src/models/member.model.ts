@@ -1,4 +1,4 @@
-import { PageResponse, SingularResponse } from '@pm/models/common.model.ts';
+import { PageRequest, PageResponse, SingularResponse } from '@pm/models/common.model.ts';
 import { TCategory, TLevel, TPosition, TStatus } from '@pm/common/constants';
 
 export interface Member {
@@ -13,6 +13,11 @@ export interface Member {
   status: TStatus;
   total_effort: number;
   kpi: number;
+}
+
+export interface ListMembersRequest extends PageRequest {
+  category?: TCategory;
+  positions?: TPosition[];
 }
 
 export interface UpsertMemberRequest {

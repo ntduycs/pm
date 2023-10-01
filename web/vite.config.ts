@@ -5,7 +5,7 @@ import * as path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const buildOptions: BuildOptions = {
-    chunkSizeWarningLimit: 2000,
+    chunkSizeWarningLimit: 1000,
     reportCompressedSize: mode === 'development',
   }
 

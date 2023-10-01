@@ -8,3 +8,10 @@ var Module = fx.Provide(
 
 	NewMemberRepository,
 )
+
+const (
+	SortMemberName     = "name"
+	SortMemberLevel    = "level"
+	SortMemberKpi      = "kpi"
+	SortMemberCategory = "category"
+)

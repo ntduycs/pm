@@ -45,6 +45,22 @@ const docTemplate = `{
                         "description": "Size",
                         "name": "size",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Official",
+                            "Buffer"
+                        ],
+                        "type": "string",
+                        "description": "Category",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Positions",
+                        "name": "positions",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -169,6 +185,9 @@ const docTemplate = `{
         "models.ListMembersResponse": {
             "type": "object",
             "properties": {
+                "count": {
+                    "type": "integer"
+                },
                 "items": {
                     "type": "array",
                     "items": {

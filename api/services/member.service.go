@@ -65,6 +65,7 @@ func (s *MemberService) ListMembers(ctx context.Context, req *models.ListMembers
 			Size:  req.Size,
 			Total: entityCount,
 			Pages: entityCount / req.Size,
+			Count: len(entityLst),
 		},
 	}, nil
 }
@@ -83,7 +84,7 @@ func (s *MemberService) UpsertMember(ctx context.Context, req *models.UpsertMemb
 	}
 
 	return &models.EmptyResponse{
-		Message: "Create member successfully",
+		Message: "Project member updated successfully!",
 	}, nil
 }
 
@@ -101,6 +102,6 @@ func (s *MemberService) DeleteMember(ctx context.Context, req *models.IDRequest)
 	}
 
 	return &models.EmptyResponse{
-		Message: "Delete member successfully",
+		Message: "Project member deleted successfully",
 	}, nil
 }

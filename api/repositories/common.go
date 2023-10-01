@@ -45,8 +45,6 @@ func useClient(defaultClient *ent.Client, txClient ...*ent.Client) *ent.Client {
 }
 
 func NewEntClient(lifecycle fx.Lifecycle, logger *zap.Logger) *ent.Client {
-	// entLogger := logger.WithOptions(zap.AddCallerSkip(10))
-
 	options := func() []ent.Option {
 		return []ent.Option{
 			ent.Debug(),
