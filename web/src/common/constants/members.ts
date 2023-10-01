@@ -37,7 +37,7 @@ const Position = {
   MOBILE: 'Mobile Developer' as TPosition,
 };
 
-export const EMember = {
+export const MemberConstant = {
   Category,
   Level,
   Status,

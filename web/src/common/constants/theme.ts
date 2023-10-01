@@ -5,6 +5,6 @@ const Color = {
   GREEN: '#03A91D',
 };
 
-export const ETheme = {
+export const ThemeConstant = {
   Color,
 };

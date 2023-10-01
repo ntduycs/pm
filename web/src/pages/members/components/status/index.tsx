@@ -1,4 +1,4 @@
-import { EMember, ETheme, TStatus } from '@pm/common/constants';
+import { MemberConstant, ThemeConstant, TStatus } from '@pm/common/constants';
 import { Tag } from 'antd';
 import { capitalize } from 'lodash';
 import { StyledStatus } from '@pm/pages/members/components/status/styles.ts';
@@ -8,24 +8,24 @@ export const Status = ({ status }: { status: TStatus }) => {
 
   return (
     <StyledStatus>
-      {status === EMember.Status.ACTIVE.toLowerCase() ? (
+      {status === MemberConstant.Status.ACTIVE.toLowerCase() ? (
         <Tag
           className='status'
-          color={ETheme.Color.GREEN}
+          color={ThemeConstant.Color.GREEN}
         >
           {capitalize(status)}
         </Tag>
-      ) : status === EMember.Status.INACTIVE.toLowerCase() ? (
+      ) : status === MemberConstant.Status.INACTIVE.toLowerCase() ? (
         <Tag
           className='status'
-          color={ETheme.Color.ORANGE}
+          color={ThemeConstant.Color.ORANGE}
         >
           {capitalize(status)}
         </Tag>
       ) : (
         <Tag
           className='status'
-          color={ETheme.Color.YELLOW}
+          color={ThemeConstant.Color.YELLOW}
         >
           {capitalize(status)}
         </Tag>

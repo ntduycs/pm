@@ -1,6 +1,6 @@
 import { StyledAddMember } from '@pm/pages/members/components/upsert/styles.ts';
 import React, { useEffect } from 'react';
-import { EMember } from '@pm/common/constants';
+import { MemberConstant } from '@pm/common/constants';
 import dayjs from 'dayjs';
 import {
   Button,
@@ -159,7 +159,7 @@ export const UpsertMemberModal = ({
               ]}
             >
               <Select
-                options={Object.values(EMember.Level).map((level) => ({
+                options={Object.values(MemberConstant.Level).map((level) => ({
                   label: level,
                   value: level,
                 }))}
@@ -183,7 +183,7 @@ export const UpsertMemberModal = ({
             >
               <Select
                 mode='multiple'
-                options={Object.values(EMember.Position).map((position) => ({
+                options={Object.values(MemberConstant.Position).map((position) => ({
                   label: position,
                   value: position,
                 }))}
@@ -225,7 +225,7 @@ export const UpsertMemberModal = ({
               ]}
             >
               <Select
-                options={Object.values(EMember.Category).map((category) => ({
+                options={Object.values(MemberConstant.Category).map((category) => ({
                   label: category,
                   value: category,
                 }))}
@@ -291,7 +291,7 @@ export const UpsertMemberModal = ({
               ]}
             >
               <Select
-                options={Object.values(EMember.Status).map((status) => ({
+                options={Object.values(MemberConstant.Status).map((status) => ({
                   label: <Status status={status} />,
                   value: status,
                 }))}

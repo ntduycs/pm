@@ -1,7 +1,7 @@
 import { Button, Space, Table, TablePaginationConfig, Tag } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { listMembersAPI } from '@pm/services';
-import { EMember, ETheme, TCategory, TPosition, TStatus } from '@pm/common/constants';
+import { MemberConstant, ThemeConstant, TCategory, TPosition, TStatus } from '@pm/common/constants';
 import { Status } from '@pm/pages/members/components';
 import { Member } from '@pm/models';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
@@ -90,7 +90,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       dataIndex: 'positions',
       key: 'positions',
       render: (positions: TPosition[]) => positions.join(', '),
-      filters: Object.entries(EMember.Position).map(([key, value]) => ({
+      filters: Object.entries(MemberConstant.Position).map(([key, value]) => ({
         text: value,
         value: value,
       })),
@@ -105,7 +105,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
-      filters: Object.entries(EMember.Category).map(([key, value]) => ({
+      filters: Object.entries(MemberConstant.Category).map(([key, value]) => ({
         text: value,
         value: value,
       })),
@@ -142,14 +142,14 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
           <div className='actions'>
             <Tag
               className='action'
-              color={ETheme.Color.BLUE}
+              color={ThemeConstant.Color.BLUE}
               onClick={() => toggleUpsertModal(rc)}
             >
               <EditOutlined />
             </Tag>
             <Tag
               className='action'
-              color={ETheme.Color.ORANGE}
+              color={ThemeConstant.Color.ORANGE}
               onClick={() => toggleDeleteModal(rc)}
             >
               <DeleteOutlined />
