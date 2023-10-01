@@ -64,13 +64,18 @@ func Name(v string) predicate.Member {
 	return predicate.Member(sql.FieldEQ(FieldName, v))
 }
 
+// Level applies equality check predicate on the "level" field. It's identical to LevelEQ.
+func Level(v int) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldLevel, v))
+}
+
 // Positions applies equality check predicate on the "positions" field. It's identical to PositionsEQ.
 func Positions(v string) predicate.Member {
 	return predicate.Member(sql.FieldEQ(FieldPositions, v))
 }
 
 // Kpi applies equality check predicate on the "kpi" field. It's identical to KpiEQ.
-func Kpi(v float32) predicate.Member {
+func Kpi(v int) predicate.Member {
 	return predicate.Member(sql.FieldEQ(FieldKpi, v))
 }
 
@@ -220,23 +225,43 @@ func NameContainsFold(v string) predicate.Member {
 }
 
 // LevelEQ applies the EQ predicate on the "level" field.
-func LevelEQ(v Level) predicate.Member {
+func LevelEQ(v int) predicate.Member {
 	return predicate.Member(sql.FieldEQ(FieldLevel, v))
 }
 
 // LevelNEQ applies the NEQ predicate on the "level" field.
-func LevelNEQ(v Level) predicate.Member {
+func LevelNEQ(v int) predicate.Member {
 	return predicate.Member(sql.FieldNEQ(FieldLevel, v))
 }
 
 // LevelIn applies the In predicate on the "level" field.
-func LevelIn(vs ...Level) predicate.Member {
+func LevelIn(vs ...int) predicate.Member {
 	return predicate.Member(sql.FieldIn(FieldLevel, vs...))
 }
 
 // LevelNotIn applies the NotIn predicate on the "level" field.
-func LevelNotIn(vs ...Level) predicate.Member {
+func LevelNotIn(vs ...int) predicate.Member {
 	return predicate.Member(sql.FieldNotIn(FieldLevel, vs...))
+}
+
+// LevelGT applies the GT predicate on the "level" field.
+func LevelGT(v int) predicate.Member {
+	return predicate.Member(sql.FieldGT(FieldLevel, v))
+}
+
+// LevelGTE applies the GTE predicate on the "level" field.
+func LevelGTE(v int) predicate.Member {
+	return predicate.Member(sql.FieldGTE(FieldLevel, v))
+}
+
+// LevelLT applies the LT predicate on the "level" field.
+func LevelLT(v int) predicate.Member {
+	return predicate.Member(sql.FieldLT(FieldLevel, v))
+}
+
+// LevelLTE applies the LTE predicate on the "level" field.
+func LevelLTE(v int) predicate.Member {
+	return predicate.Member(sql.FieldLTE(FieldLevel, v))
 }
 
 // PositionsEQ applies the EQ predicate on the "positions" field.
@@ -305,42 +330,42 @@ func PositionsContainsFold(v string) predicate.Member {
 }
 
 // KpiEQ applies the EQ predicate on the "kpi" field.
-func KpiEQ(v float32) predicate.Member {
+func KpiEQ(v int) predicate.Member {
 	return predicate.Member(sql.FieldEQ(FieldKpi, v))
 }
 
 // KpiNEQ applies the NEQ predicate on the "kpi" field.
-func KpiNEQ(v float32) predicate.Member {
+func KpiNEQ(v int) predicate.Member {
 	return predicate.Member(sql.FieldNEQ(FieldKpi, v))
 }
 
 // KpiIn applies the In predicate on the "kpi" field.
-func KpiIn(vs ...float32) predicate.Member {
+func KpiIn(vs ...int) predicate.Member {
 	return predicate.Member(sql.FieldIn(FieldKpi, vs...))
 }
 
 // KpiNotIn applies the NotIn predicate on the "kpi" field.
-func KpiNotIn(vs ...float32) predicate.Member {
+func KpiNotIn(vs ...int) predicate.Member {
 	return predicate.Member(sql.FieldNotIn(FieldKpi, vs...))
 }
 
 // KpiGT applies the GT predicate on the "kpi" field.
-func KpiGT(v float32) predicate.Member {
+func KpiGT(v int) predicate.Member {
 	return predicate.Member(sql.FieldGT(FieldKpi, v))
 }
 
 // KpiGTE applies the GTE predicate on the "kpi" field.
-func KpiGTE(v float32) predicate.Member {
+func KpiGTE(v int) predicate.Member {
 	return predicate.Member(sql.FieldGTE(FieldKpi, v))
 }
 
 // KpiLT applies the LT predicate on the "kpi" field.
-func KpiLT(v float32) predicate.Member {
+func KpiLT(v int) predicate.Member {
 	return predicate.Member(sql.FieldLT(FieldKpi, v))
 }
 
 // KpiLTE applies the LTE predicate on the "kpi" field.
-func KpiLTE(v float32) predicate.Member {
+func KpiLTE(v int) predicate.Member {
 	return predicate.Member(sql.FieldLTE(FieldKpi, v))
 }
 

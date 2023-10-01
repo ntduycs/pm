@@ -76,6 +76,8 @@ func (s *MemberService) UpsertMember(ctx context.Context, req *models.UpsertMemb
 		return nil, err
 	}
 
+	s.logger.Info("UpsertMember", zap.String("start_date", *req.StartDate), zap.String("end_date", *req.EndDate))
+
 	_, err := s.memberRepository.Save(ctx, req)
 
 	if err != nil {

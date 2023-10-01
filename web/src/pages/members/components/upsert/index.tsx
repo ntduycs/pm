@@ -1,6 +1,6 @@
 import { StyledAddMember } from '@pm/pages/members/components/upsert/styles.ts';
 import React, { useEffect } from 'react';
-import { MemberConstant } from '@pm/common/constants';
+import { ApiConstant, MemberConstant } from '@pm/common/constants';
 import dayjs from 'dayjs';
 import {
   Button,
@@ -26,6 +26,28 @@ type UpsertMemberProps = {
   setOpen: (isOpen: boolean) => void;
 };
 
+const calcStatus = (start_date?: string, end_date?: string) => {
+  const now = dayjs();
+
+  if (!start_date && !end_date) {
+    return MemberConstant.Status.ACTIVE;
+  } else if (start_date && !end_date) {
+    return now.isBefore(dayjs(start_date))
+      ? MemberConstant.Status.PENDING
+      : MemberConstant.Status.ACTIVE;
+  } else if (!start_date && end_date) {
+    return now.isAfter(dayjs(end_date))
+      ? MemberConstant.Status.INACTIVE
+      : MemberConstant.Status.ACTIVE;
+  } else {
+    return now.isBefore(dayjs(start_date))
+      ? MemberConstant.Status.PENDING
+      : now.isAfter(dayjs(end_date))
+      ? MemberConstant.Status.INACTIVE
+      : MemberConstant.Status.ACTIVE;
+  }
+};
+
 export const UpsertMemberModal = ({
   member,
   isOpen: isModalOpened,
@@ -39,6 +61,7 @@ export const UpsertMemberModal = ({
     mutationFn: upsertMemberAPI,
     onSuccess: async () => {
       await queryClient.refetchQueries(['members']);
+      form.resetFields();
       closeModal();
     },
   });
@@ -47,17 +70,22 @@ export const UpsertMemberModal = ({
 
   const closeModal = () => {
     showHideModal(false);
-    form.resetFields();
   };
 
   const onFormSubmit = async (values: UpsertMemberRequest) => {
     try {
       values = {
         ...values,
-        kpi: values.kpi / 100,
-        status: values.status?.toLowerCase(),
-        start_date: values.start_date ? dayjs(values.start_date).format('YYYY-MM-DD') : '',
-        end_date: values.end_date ? dayjs(values.end_date).format('YYYY-MM-DD') : '',
+        email: `${values.email}${ApiConstant.DefaultEmailSuffix}`,
+        kpi: Number(values.kpi),
+        total_effort: Number(values.total_effort),
+        status: calcStatus(values.start_date, values.end_date),
+        start_date: values.start_date
+          ? dayjs(values.start_date).format(ApiConstant.DefaultDateFormat)
+          : '',
+        end_date: values.end_date
+          ? dayjs(values.end_date).format(ApiConstant.DefaultDateFormat)
+          : '',
       };
       const { message } = await upsertMember(values);
       api.success({
@@ -80,15 +108,23 @@ export const UpsertMemberModal = ({
       form.setFieldsValue({
         id: member.id,
         name: member.name,
-        email: member.email,
+        email: member.email.substring(0, member.email.indexOf('@')),
         level: member.level,
         positions: member.positions,
-        kpi: member.kpi * 100,
+        kpi: member.kpi,
         category: member.category,
         total_effort: member.total_effort,
-        status: capitalize(member.status),
+        status: member.status,
         start_date: member.start_date ? dayjs(member.start_date) : undefined,
         end_date: member.end_date ? dayjs(member.end_date) : undefined,
+      });
+    } else {
+      form.resetFields();
+      form.setFieldsValue({
+        level: MemberConstant.Level.LV1,
+        category: MemberConstant.Category.BUFFER,
+        total_effort: 100,
+        status: MemberConstant.Status.ACTIVE,
       });
     }
   }, [form, member]);
@@ -99,7 +135,7 @@ export const UpsertMemberModal = ({
       <StyledAddMember>
         <Modal
           open={isModalOpened}
-          title='New Member'
+          title={member ? 'Edit Member' : 'Add Member'}
           destroyOnClose
           keyboard
           closable={false}
@@ -117,8 +153,9 @@ export const UpsertMemberModal = ({
             <Form.Item
               name='id'
               label='ID'
+              hidden
             >
-              <Input hidden />
+              <Input />
             </Form.Item>
             <Form.Item
               name='name'
@@ -140,12 +177,12 @@ export const UpsertMemberModal = ({
               rules={[
                 {
                   required: true,
-                  type: 'email',
+                  whitespace: false,
                   message: 'Please input valid email',
                 },
               ]}
             >
-              <Input />
+              <Input addonAfter={<span>@banvien.com.vn</span>} />
             </Form.Item>
             <Form.Item
               name='level'
@@ -160,7 +197,7 @@ export const UpsertMemberModal = ({
             >
               <Select
                 options={Object.values(MemberConstant.Level).map((level) => ({
-                  label: level,
+                  label: `Level ${level}`,
                   value: level,
                 }))}
                 allowClear={false}
@@ -200,15 +237,17 @@ export const UpsertMemberModal = ({
                   required: true,
                   message: 'Please input KPI',
                 },
+                {
+                  pattern: /^([0-9]|[1-9][0-9]|100)$/,
+                  message: 'Please input number from 0 to 100',
+                },
               ]}
               tooltip={{
                 title: 'Please input KPI (0 - 100)',
                 icon: <InfoCircleOutlined />,
               }}
             >
-              <InputNumber
-                min={0}
-                max={100}
+              <Input
                 addonAfter={<span>%</span>}
                 style={{ width: '100%' }}
               />
@@ -226,7 +265,7 @@ export const UpsertMemberModal = ({
             >
               <Select
                 options={Object.values(MemberConstant.Category).map((category) => ({
-                  label: category,
+                  label: capitalize(category),
                   value: category,
                 }))}
                 allowClear={false}
@@ -242,15 +281,17 @@ export const UpsertMemberModal = ({
                   required: true,
                   message: 'Please input total effort',
                 },
+                {
+                  pattern: /^([0-9]|[1-9][0-9]|100)$/,
+                  message: 'Please input number from 0 to 100',
+                },
               ]}
               tooltip={{
                 title: 'Please input total effort (0 - 100)',
                 icon: <InfoCircleOutlined />,
               }}
             >
-              <InputNumber
-                min={0}
-                max={100}
+              <Input
                 style={{ width: '100%' }}
                 addonAfter={<span>%</span>}
               />
@@ -261,11 +302,14 @@ export const UpsertMemberModal = ({
               rules={[
                 {
                   required: false,
-                  transform: (value) => value?.format('YYYY-MM-DD'),
+                  transform: (value) => value?.format(ApiConstant.DefaultDateFormat),
                 },
               ]}
             >
-              <DatePicker style={{ width: '100%' }} />
+              <DatePicker
+                style={{ width: '100%' }}
+                disabled={!member}
+              />
             </Form.Item>
             <Form.Item
               name='end_date'
@@ -273,29 +317,13 @@ export const UpsertMemberModal = ({
               rules={[
                 {
                   required: false,
-                  transform: (value) => value?.format('YYYY-MM-DD'),
+                  transform: (value) => value?.format(ApiConstant.DefaultDateFormat),
                 },
               ]}
             >
-              <DatePicker style={{ width: '100%' }} />
-            </Form.Item>
-            <Form.Item
-              name='status'
-              label='Status'
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select status',
-                },
-              ]}
-            >
-              <Select
-                options={Object.values(MemberConstant.Status).map((status) => ({
-                  label: <Status status={status} />,
-                  value: status,
-                }))}
-                allowClear={false}
+              <DatePicker
+                style={{ width: '100%' }}
+                disabled={!member}
               />
             </Form.Item>
             <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
@@ -308,7 +336,7 @@ export const UpsertMemberModal = ({
                   {isLoading ? 'Loading...' : 'Submit'}
                 </Button>
                 <Button
-                  htmlType='reset'
+                  htmlType='button'
                   onClick={closeModal}
                 >
                   Cancel

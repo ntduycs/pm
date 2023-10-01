@@ -1,13 +1,20 @@
 import { Button, Space, Table, TablePaginationConfig, Tag } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { listMembersAPI } from '@pm/services';
-import { MemberConstant, ThemeConstant, TCategory, TPosition, TStatus } from '@pm/common/constants';
+import {
+  MemberConstant,
+  ThemeConstant,
+  TCategory,
+  TPosition,
+  TStatus,
+  ApiConstant,
+} from '@pm/common/constants';
 import { Status } from '@pm/pages/members/components';
 import { Member } from '@pm/models';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { FilterValue, SorterResult } from 'antd/es/table/interface';
-import { toString } from 'lodash';
+import { capitalize, toString } from 'lodash';
 import { ColumnProps } from 'antd/es/table';
 
 type ListMembersProps = {
@@ -42,10 +49,10 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
     queryKey: ['members', tableParams],
     queryFn: async () => {
       const response = await listMembersAPI({
-        page: tableParams.pagination?.current || 1,
-        size: tableParams.pagination?.pageSize || 10,
+        page: tableParams.pagination?.current || ApiConstant.DefaultPage,
+        size: tableParams.pagination?.pageSize || ApiConstant.DefaultPageSize,
         sort: toString(tableParams.sorter?.field) || 'name',
-        direction: tableParams.sorter?.order || 'asc',
+        direction: tableParams.sorter?.order || ApiConstant.DefaultSortDirection,
         category: tableParams.filters?.category
           ? (tableParams.filters?.category as unknown as TCategory)
           : undefined,
@@ -84,13 +91,14 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       title: 'Level',
       dataIndex: 'level',
       key: 'level',
+      render: (level: number) => `Level ${level}`,
     },
     {
       title: 'Positions',
       dataIndex: 'positions',
       key: 'positions',
       render: (positions: TPosition[]) => positions.join(', '),
-      filters: Object.entries(MemberConstant.Position).map(([key, value]) => ({
+      filters: Object.entries(MemberConstant.Position).map(([, value]) => ({
         text: value,
         value: value,
       })),
@@ -99,17 +107,18 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       title: 'KPI (%)',
       dataIndex: 'kpi',
       key: 'kpi',
-      render: (kpi: number) => `${kpi * 100}%`,
+      render: (kpi: number) => `${kpi}%`,
     },
     {
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
-      filters: Object.entries(MemberConstant.Category).map(([key, value]) => ({
+      filters: Object.entries(MemberConstant.Category).map(([, value]) => ({
         text: value,
         value: value,
       })),
       filterMultiple: false,
+      render: (category: TCategory) => capitalize(category),
     },
     {
       title: 'Total Effort (%)',

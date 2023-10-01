@@ -21,12 +21,12 @@ type Member struct {
 	Email string `json:"email,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// Level holds the value of the "level" field.
-	Level member.Level `json:"level,omitempty"`
-	// comma separated values of positions
+	// level of member
+	Level int `json:"level,omitempty"`
+	// comma-separated sorted values of positions
 	Positions string `json:"positions,omitempty"`
 	// key performance indicator
-	Kpi float32 `json:"kpi,omitempty"`
+	Kpi int `json:"kpi,omitempty"`
 	// Category holds the value of the "category" field.
 	Category member.Category `json:"category,omitempty"`
 	// total effort in percentage
@@ -45,11 +45,11 @@ func (*Member) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case member.FieldKpi, member.FieldTotalEffort:
+		case member.FieldTotalEffort:
 			values[i] = new(sql.NullFloat64)
-		case member.FieldID:
+		case member.FieldID, member.FieldLevel, member.FieldKpi:
 			values[i] = new(sql.NullInt64)
-		case member.FieldEmail, member.FieldName, member.FieldLevel, member.FieldPositions, member.FieldCategory, member.FieldStatus:
+		case member.FieldEmail, member.FieldName, member.FieldPositions, member.FieldCategory, member.FieldStatus:
 			values[i] = new(sql.NullString)
 		case member.FieldStartDate, member.FieldEndDate:
 			values[i] = new(sql.NullTime)
@@ -87,10 +87,10 @@ func (m *Member) assignValues(columns []string, values []any) error {
 				m.Name = value.String
 			}
 		case member.FieldLevel:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field level", values[i])
 			} else if value.Valid {
-				m.Level = member.Level(value.String)
+				m.Level = int(value.Int64)
 			}
 		case member.FieldPositions:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -99,10 +99,10 @@ func (m *Member) assignValues(columns []string, values []any) error {
 				m.Positions = value.String
 			}
 		case member.FieldKpi:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field kpi", values[i])
 			} else if value.Valid {
-				m.Kpi = float32(value.Float64)
+				m.Kpi = int(value.Int64)
 			}
 		case member.FieldCategory:
 			if value, ok := values[i].(*sql.NullString); !ok {

@@ -221,10 +221,10 @@
                     "type": "integer"
                 },
                 "kpi": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "level": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -274,10 +274,10 @@
                     "type": "integer"
                 },
                 "kpi": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "level": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

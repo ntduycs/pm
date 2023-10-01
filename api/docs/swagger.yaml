@@ -38,9 +38,9 @@ definitions:
       id:
         type: integer
       kpi:
-        type: number
+        type: integer
       level:
-        type: string
+        type: integer
       name:
         type: string
       positions:
@@ -67,9 +67,9 @@ definitions:
       id:
         type: integer
       kpi:
-        type: number
+        type: integer
       level:
-        type: string
+        type: integer
       name:
         type: string
       positions:

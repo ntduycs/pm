@@ -225,10 +225,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "kpi": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "level": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -278,10 +278,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "kpi": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "level": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

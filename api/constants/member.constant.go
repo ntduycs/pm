@@ -1,55 +1,53 @@
 package constants
 
+type MemberLevel int
+
 const (
-	MemberLevel1  = "LV1"
-	MemberLevel2  = "LV2"
-	MemberLevel3  = "LV3"
-	MemberLevel4  = "LV4"
-	MemberLevel5  = "LV5"
-	MemberLevel6  = "LV6"
-	MemberLevel7  = "LV7"
-	MemberLevel8  = "LV8"
-	MemberLevel9  = "LV9"
-	MemberLevel10 = "LV10"
+	MemberLevel0 MemberLevel = iota
+	MemberLevel1
+	MemberLevel2
+	MemberLevel3
+	MemberLevel4
+	MemberLevel5
+	MemberLevel6
+	MemberLevel7
+	MemberLevel8
+	MemberLevel9
+	MemberLevel10
+	MemberLevel11
+	MemberLevel12
+)
 
-	MemberPositionPM       = "Project Manager"
-	MemberPositionBE       = "Backend Engineer"
-	MemberPositionFE       = "Frontend Engineer"
-	MemberPositionQA       = "QA Engineer"
-	MemberPositionDesigner = "UI/UX Designer"
-	MemberPositionBA       = "Business Analyst"
-	MemberPositionMobile   = "Mobile Developer"
+type MemberPosition string
 
-	MemberCategoryOfficial = "Official"
-	MemberCategoryBuffer   = "Buffer"
+type MemberCategory string
+
+const (
+	MemberPositionPM       MemberPosition = "Project Manager"
+	MemberPositionBE       MemberPosition = "Backend Engineer"
+	MemberPositionFE       MemberPosition = "Frontend Engineer"
+	MemberPositionQA       MemberPosition = "QA Engineer"
+	MemberPositionDesigner MemberPosition = "UI/UX Designer"
+	MemberPositionBA       MemberPosition = "Business Analyst"
+	MemberPositionMobile   MemberPosition = "Mobile Developer"
+
+	MemberCategoryOfficial MemberCategory = "official"
+	MemberCategoryBuffer   MemberCategory = "buffer"
 )
 
 var (
-	MemberLevels = []string{
-		MemberLevel1,
-		MemberLevel2,
-		MemberLevel3,
-		MemberLevel4,
-		MemberLevel5,
-		MemberLevel6,
-		MemberLevel7,
-		MemberLevel8,
-		MemberLevel9,
-		MemberLevel10,
-	}
-
 	MemberPositions = []string{
-		MemberPositionPM,
-		MemberPositionBE,
-		MemberPositionFE,
-		MemberPositionQA,
-		MemberPositionDesigner,
-		MemberPositionBA,
-		MemberPositionMobile,
+		string(MemberPositionPM),
+		string(MemberPositionBE),
+		string(MemberPositionFE),
+		string(MemberPositionQA),
+		string(MemberPositionDesigner),
+		string(MemberPositionBA),
+		string(MemberPositionMobile),
 	}
 
 	MemberCategories = []string{
-		MemberCategoryOfficial,
-		MemberCategoryBuffer,
+		string(MemberCategoryOfficial),
+		string(MemberCategoryBuffer),
 	}
 )

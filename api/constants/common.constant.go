@@ -1,5 +1,7 @@
 package constants
 
+import "time"
+
 const (
 	StatusActive   = "active"
 	StatusInactive = "inactive"
@@ -12,4 +14,6 @@ var (
 		StatusInactive,
 		StatusPending,
 	}
+
+	TimeZone, _ = time.LoadLocation("Asia/Saigon")
 )

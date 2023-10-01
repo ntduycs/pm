@@ -3,6 +3,7 @@ package mappers
 import (
 	"strings"
 
+	"project-management/constants"
 	"project-management/ent"
 	"project-management/models"
 )
@@ -19,7 +20,7 @@ func (m *MemberMapper) ToModel(member *ent.Member) *models.Member {
 		ID:          member.ID,
 		Name:        member.Name,
 		Email:       member.Email,
-		Level:       string(member.Level),
+		Level:       constants.MemberLevel(member.Level),
 		Positions:   strings.Split(member.Positions, ","),
 		KPI:         member.Kpi,
 		Category:    string(member.Category),

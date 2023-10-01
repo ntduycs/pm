@@ -41,8 +41,15 @@ func (mu *MemberUpdate) SetName(s string) *MemberUpdate {
 }
 
 // SetLevel sets the "level" field.
-func (mu *MemberUpdate) SetLevel(m member.Level) *MemberUpdate {
-	mu.mutation.SetLevel(m)
+func (mu *MemberUpdate) SetLevel(i int) *MemberUpdate {
+	mu.mutation.ResetLevel()
+	mu.mutation.SetLevel(i)
+	return mu
+}
+
+// AddLevel adds i to the "level" field.
+func (mu *MemberUpdate) AddLevel(i int) *MemberUpdate {
+	mu.mutation.AddLevel(i)
 	return mu
 }
 
@@ -53,15 +60,15 @@ func (mu *MemberUpdate) SetPositions(s string) *MemberUpdate {
 }
 
 // SetKpi sets the "kpi" field.
-func (mu *MemberUpdate) SetKpi(f float32) *MemberUpdate {
+func (mu *MemberUpdate) SetKpi(i int) *MemberUpdate {
 	mu.mutation.ResetKpi()
-	mu.mutation.SetKpi(f)
+	mu.mutation.SetKpi(i)
 	return mu
 }
 
-// AddKpi adds f to the "kpi" field.
-func (mu *MemberUpdate) AddKpi(f float32) *MemberUpdate {
-	mu.mutation.AddKpi(f)
+// AddKpi adds i to the "kpi" field.
+func (mu *MemberUpdate) AddKpi(i int) *MemberUpdate {
+	mu.mutation.AddKpi(i)
 	return mu
 }
 
@@ -216,16 +223,19 @@ func (mu *MemberUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(member.FieldName, field.TypeString, value)
 	}
 	if value, ok := mu.mutation.Level(); ok {
-		_spec.SetField(member.FieldLevel, field.TypeEnum, value)
+		_spec.SetField(member.FieldLevel, field.TypeInt, value)
+	}
+	if value, ok := mu.mutation.AddedLevel(); ok {
+		_spec.AddField(member.FieldLevel, field.TypeInt, value)
 	}
 	if value, ok := mu.mutation.Positions(); ok {
 		_spec.SetField(member.FieldPositions, field.TypeString, value)
 	}
 	if value, ok := mu.mutation.Kpi(); ok {
-		_spec.SetField(member.FieldKpi, field.TypeFloat32, value)
+		_spec.SetField(member.FieldKpi, field.TypeInt, value)
 	}
 	if value, ok := mu.mutation.AddedKpi(); ok {
-		_spec.AddField(member.FieldKpi, field.TypeFloat32, value)
+		_spec.AddField(member.FieldKpi, field.TypeInt, value)
 	}
 	if value, ok := mu.mutation.Category(); ok {
 		_spec.SetField(member.FieldCategory, field.TypeEnum, value)
@@ -284,8 +294,15 @@ func (muo *MemberUpdateOne) SetName(s string) *MemberUpdateOne {
 }
 
 // SetLevel sets the "level" field.
-func (muo *MemberUpdateOne) SetLevel(m member.Level) *MemberUpdateOne {
-	muo.mutation.SetLevel(m)
+func (muo *MemberUpdateOne) SetLevel(i int) *MemberUpdateOne {
+	muo.mutation.ResetLevel()
+	muo.mutation.SetLevel(i)
+	return muo
+}
+
+// AddLevel adds i to the "level" field.
+func (muo *MemberUpdateOne) AddLevel(i int) *MemberUpdateOne {
+	muo.mutation.AddLevel(i)
 	return muo
 }
 
@@ -296,15 +313,15 @@ func (muo *MemberUpdateOne) SetPositions(s string) *MemberUpdateOne {
 }
 
 // SetKpi sets the "kpi" field.
-func (muo *MemberUpdateOne) SetKpi(f float32) *MemberUpdateOne {
+func (muo *MemberUpdateOne) SetKpi(i int) *MemberUpdateOne {
 	muo.mutation.ResetKpi()
-	muo.mutation.SetKpi(f)
+	muo.mutation.SetKpi(i)
 	return muo
 }
 
-// AddKpi adds f to the "kpi" field.
-func (muo *MemberUpdateOne) AddKpi(f float32) *MemberUpdateOne {
-	muo.mutation.AddKpi(f)
+// AddKpi adds i to the "kpi" field.
+func (muo *MemberUpdateOne) AddKpi(i int) *MemberUpdateOne {
+	muo.mutation.AddKpi(i)
 	return muo
 }
 
@@ -489,16 +506,19 @@ func (muo *MemberUpdateOne) sqlSave(ctx context.Context) (_node *Member, err err
 		_spec.SetField(member.FieldName, field.TypeString, value)
 	}
 	if value, ok := muo.mutation.Level(); ok {
-		_spec.SetField(member.FieldLevel, field.TypeEnum, value)
+		_spec.SetField(member.FieldLevel, field.TypeInt, value)
+	}
+	if value, ok := muo.mutation.AddedLevel(); ok {
+		_spec.AddField(member.FieldLevel, field.TypeInt, value)
 	}
 	if value, ok := muo.mutation.Positions(); ok {
 		_spec.SetField(member.FieldPositions, field.TypeString, value)
 	}
 	if value, ok := muo.mutation.Kpi(); ok {
-		_spec.SetField(member.FieldKpi, field.TypeFloat32, value)
+		_spec.SetField(member.FieldKpi, field.TypeInt, value)
 	}
 	if value, ok := muo.mutation.AddedKpi(); ok {
-		_spec.AddField(member.FieldKpi, field.TypeFloat32, value)
+		_spec.AddField(member.FieldKpi, field.TypeInt, value)
 	}
 	if value, ok := muo.mutation.Category(); ok {
 		_spec.SetField(member.FieldCategory, field.TypeEnum, value)

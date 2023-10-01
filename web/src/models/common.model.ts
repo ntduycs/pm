@@ -1,3 +1,5 @@
+import { TSortDirection } from '@pm/common/constants';
+
 export interface PageResponse<T> {
   page: number;
   size: number;
@@ -23,5 +25,5 @@ export interface PageRequest {
   page: number;
   size: number;
   sort: string;
-  direction: string;
+  direction: TSortDirection;
 }

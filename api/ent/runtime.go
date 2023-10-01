@@ -17,16 +17,34 @@ func init() {
 	memberDescEmail := memberFields[1].Descriptor()
 	// member.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	member.EmailValidator = memberDescEmail.Validators[0].(func(string) error)
+	// memberDescLevel is the schema descriptor for level field.
+	memberDescLevel := memberFields[3].Descriptor()
+	// member.LevelValidator is a validator for the "level" field. It is called by the builders before save.
+	member.LevelValidator = func() func(int) error {
+		validators := memberDescLevel.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(level int) error {
+			for _, fn := range fns {
+				if err := fn(level); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// memberDescKpi is the schema descriptor for kpi field.
 	memberDescKpi := memberFields[5].Descriptor()
 	// member.KpiValidator is a validator for the "kpi" field. It is called by the builders before save.
-	member.KpiValidator = func() func(float32) error {
+	member.KpiValidator = func() func(int) error {
 		validators := memberDescKpi.Validators
-		fns := [...]func(float32) error{
-			validators[0].(func(float32) error),
-			validators[1].(func(float32) error),
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
 		}
-		return func(kpi float32) error {
+		return func(kpi int) error {
 			for _, fn := range fns {
 				if err := fn(kpi); err != nil {
 					return err

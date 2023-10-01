@@ -35,10 +35,11 @@ type MemberMutation struct {
 	id              *int
 	email           *string
 	name            *string
-	level           *member.Level
+	level           *int
+	addlevel        *int
 	positions       *string
-	kpi             *float32
-	addkpi          *float32
+	kpi             *int
+	addkpi          *int
 	category        *member.Category
 	total_effort    *float32
 	addtotal_effort *float32
@@ -228,12 +229,13 @@ func (m *MemberMutation) ResetName() {
 }
 
 // SetLevel sets the "level" field.
-func (m *MemberMutation) SetLevel(value member.Level) {
-	m.level = &value
+func (m *MemberMutation) SetLevel(i int) {
+	m.level = &i
+	m.addlevel = nil
 }
 
 // Level returns the value of the "level" field in the mutation.
-func (m *MemberMutation) Level() (r member.Level, exists bool) {
+func (m *MemberMutation) Level() (r int, exists bool) {
 	v := m.level
 	if v == nil {
 		return
@@ -244,7 +246,7 @@ func (m *MemberMutation) Level() (r member.Level, exists bool) {
 // OldLevel returns the old "level" field's value of the Member entity.
 // If the Member object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MemberMutation) OldLevel(ctx context.Context) (v member.Level, err error) {
+func (m *MemberMutation) OldLevel(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLevel is only allowed on UpdateOne operations")
 	}
@@ -258,9 +260,28 @@ func (m *MemberMutation) OldLevel(ctx context.Context) (v member.Level, err erro
 	return oldValue.Level, nil
 }
 
+// AddLevel adds i to the "level" field.
+func (m *MemberMutation) AddLevel(i int) {
+	if m.addlevel != nil {
+		*m.addlevel += i
+	} else {
+		m.addlevel = &i
+	}
+}
+
+// AddedLevel returns the value that was added to the "level" field in this mutation.
+func (m *MemberMutation) AddedLevel() (r int, exists bool) {
+	v := m.addlevel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetLevel resets all changes to the "level" field.
 func (m *MemberMutation) ResetLevel() {
 	m.level = nil
+	m.addlevel = nil
 }
 
 // SetPositions sets the "positions" field.
@@ -300,13 +321,13 @@ func (m *MemberMutation) ResetPositions() {
 }
 
 // SetKpi sets the "kpi" field.
-func (m *MemberMutation) SetKpi(f float32) {
-	m.kpi = &f
+func (m *MemberMutation) SetKpi(i int) {
+	m.kpi = &i
 	m.addkpi = nil
 }
 
 // Kpi returns the value of the "kpi" field in the mutation.
-func (m *MemberMutation) Kpi() (r float32, exists bool) {
+func (m *MemberMutation) Kpi() (r int, exists bool) {
 	v := m.kpi
 	if v == nil {
 		return
@@ -317,7 +338,7 @@ func (m *MemberMutation) Kpi() (r float32, exists bool) {
 // OldKpi returns the old "kpi" field's value of the Member entity.
 // If the Member object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MemberMutation) OldKpi(ctx context.Context) (v float32, err error) {
+func (m *MemberMutation) OldKpi(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldKpi is only allowed on UpdateOne operations")
 	}
@@ -331,17 +352,17 @@ func (m *MemberMutation) OldKpi(ctx context.Context) (v float32, err error) {
 	return oldValue.Kpi, nil
 }
 
-// AddKpi adds f to the "kpi" field.
-func (m *MemberMutation) AddKpi(f float32) {
+// AddKpi adds i to the "kpi" field.
+func (m *MemberMutation) AddKpi(i int) {
 	if m.addkpi != nil {
-		*m.addkpi += f
+		*m.addkpi += i
 	} else {
-		m.addkpi = &f
+		m.addkpi = &i
 	}
 }
 
 // AddedKpi returns the value that was added to the "kpi" field in this mutation.
-func (m *MemberMutation) AddedKpi() (r float32, exists bool) {
+func (m *MemberMutation) AddedKpi() (r int, exists bool) {
 	v := m.addkpi
 	if v == nil {
 		return
@@ -727,7 +748,7 @@ func (m *MemberMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case member.FieldLevel:
-		v, ok := value.(member.Level)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -741,7 +762,7 @@ func (m *MemberMutation) SetField(name string, value ent.Value) error {
 		m.SetPositions(v)
 		return nil
 	case member.FieldKpi:
-		v, ok := value.(float32)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -790,6 +811,9 @@ func (m *MemberMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *MemberMutation) AddedFields() []string {
 	var fields []string
+	if m.addlevel != nil {
+		fields = append(fields, member.FieldLevel)
+	}
 	if m.addkpi != nil {
 		fields = append(fields, member.FieldKpi)
 	}
@@ -804,6 +828,8 @@ func (m *MemberMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *MemberMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case member.FieldLevel:
+		return m.AddedLevel()
 	case member.FieldKpi:
 		return m.AddedKpi()
 	case member.FieldTotalEffort:
@@ -817,8 +843,15 @@ func (m *MemberMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *MemberMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case member.FieldLevel:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLevel(v)
+		return nil
 	case member.FieldKpi:
-		v, ok := value.(float32)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

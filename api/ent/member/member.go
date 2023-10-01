@@ -65,50 +65,21 @@ func ValidColumn(column string) bool {
 var (
 	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	EmailValidator func(string) error
+	// LevelValidator is a validator for the "level" field. It is called by the builders before save.
+	LevelValidator func(int) error
 	// KpiValidator is a validator for the "kpi" field. It is called by the builders before save.
-	KpiValidator func(float32) error
+	KpiValidator func(int) error
 	// TotalEffortValidator is a validator for the "total_effort" field. It is called by the builders before save.
 	TotalEffortValidator func(float32) error
 )
-
-// Level defines the type for the "level" enum field.
-type Level string
-
-// Level values.
-const (
-	LevelLV1  Level = "LV1"
-	LevelLV2  Level = "LV2"
-	LevelLV3  Level = "LV3"
-	LevelLV4  Level = "LV4"
-	LevelLV5  Level = "LV5"
-	LevelLV6  Level = "LV6"
-	LevelLV7  Level = "LV7"
-	LevelLV8  Level = "LV8"
-	LevelLV9  Level = "LV9"
-	LevelLV10 Level = "LV10"
-)
-
-func (l Level) String() string {
-	return string(l)
-}
-
-// LevelValidator is a validator for the "level" field enum values. It is called by the builders before save.
-func LevelValidator(l Level) error {
-	switch l {
-	case LevelLV1, LevelLV2, LevelLV3, LevelLV4, LevelLV5, LevelLV6, LevelLV7, LevelLV8, LevelLV9, LevelLV10:
-		return nil
-	default:
-		return fmt.Errorf("member: invalid enum value for level field: %q", l)
-	}
-}
 
 // Category defines the type for the "category" enum field.
 type Category string
 
 // Category values.
 const (
-	CategoryOfficial Category = "Official"
-	CategoryBuffer   Category = "Buffer"
+	CategoryOfficial Category = "official"
+	CategoryBuffer   Category = "buffer"
 )
 
 func (c Category) String() string {

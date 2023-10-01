@@ -35,8 +35,8 @@ func (mc *MemberCreate) SetName(s string) *MemberCreate {
 }
 
 // SetLevel sets the "level" field.
-func (mc *MemberCreate) SetLevel(m member.Level) *MemberCreate {
-	mc.mutation.SetLevel(m)
+func (mc *MemberCreate) SetLevel(i int) *MemberCreate {
+	mc.mutation.SetLevel(i)
 	return mc
 }
 
@@ -47,8 +47,8 @@ func (mc *MemberCreate) SetPositions(s string) *MemberCreate {
 }
 
 // SetKpi sets the "kpi" field.
-func (mc *MemberCreate) SetKpi(f float32) *MemberCreate {
-	mc.mutation.SetKpi(f)
+func (mc *MemberCreate) SetKpi(i int) *MemberCreate {
+	mc.mutation.SetKpi(i)
 	return mc
 }
 
@@ -234,7 +234,7 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 		_node.Name = value
 	}
 	if value, ok := mc.mutation.Level(); ok {
-		_spec.SetField(member.FieldLevel, field.TypeEnum, value)
+		_spec.SetField(member.FieldLevel, field.TypeInt, value)
 		_node.Level = value
 	}
 	if value, ok := mc.mutation.Positions(); ok {
@@ -242,7 +242,7 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 		_node.Positions = value
 	}
 	if value, ok := mc.mutation.Kpi(); ok {
-		_spec.SetField(member.FieldKpi, field.TypeFloat32, value)
+		_spec.SetField(member.FieldKpi, field.TypeInt, value)
 		_node.Kpi = value
 	}
 	if value, ok := mc.mutation.Category(); ok {
@@ -342,7 +342,7 @@ func (u *MemberUpsert) UpdateName() *MemberUpsert {
 }
 
 // SetLevel sets the "level" field.
-func (u *MemberUpsert) SetLevel(v member.Level) *MemberUpsert {
+func (u *MemberUpsert) SetLevel(v int) *MemberUpsert {
 	u.Set(member.FieldLevel, v)
 	return u
 }
@@ -350,6 +350,12 @@ func (u *MemberUpsert) SetLevel(v member.Level) *MemberUpsert {
 // UpdateLevel sets the "level" field to the value that was provided on create.
 func (u *MemberUpsert) UpdateLevel() *MemberUpsert {
 	u.SetExcluded(member.FieldLevel)
+	return u
+}
+
+// AddLevel adds v to the "level" field.
+func (u *MemberUpsert) AddLevel(v int) *MemberUpsert {
+	u.Add(member.FieldLevel, v)
 	return u
 }
 
@@ -366,7 +372,7 @@ func (u *MemberUpsert) UpdatePositions() *MemberUpsert {
 }
 
 // SetKpi sets the "kpi" field.
-func (u *MemberUpsert) SetKpi(v float32) *MemberUpsert {
+func (u *MemberUpsert) SetKpi(v int) *MemberUpsert {
 	u.Set(member.FieldKpi, v)
 	return u
 }
@@ -378,7 +384,7 @@ func (u *MemberUpsert) UpdateKpi() *MemberUpsert {
 }
 
 // AddKpi adds v to the "kpi" field.
-func (u *MemberUpsert) AddKpi(v float32) *MemberUpsert {
+func (u *MemberUpsert) AddKpi(v int) *MemberUpsert {
 	u.Add(member.FieldKpi, v)
 	return u
 }
@@ -538,9 +544,16 @@ func (u *MemberUpsertOne) UpdateName() *MemberUpsertOne {
 }
 
 // SetLevel sets the "level" field.
-func (u *MemberUpsertOne) SetLevel(v member.Level) *MemberUpsertOne {
+func (u *MemberUpsertOne) SetLevel(v int) *MemberUpsertOne {
 	return u.Update(func(s *MemberUpsert) {
 		s.SetLevel(v)
+	})
+}
+
+// AddLevel adds v to the "level" field.
+func (u *MemberUpsertOne) AddLevel(v int) *MemberUpsertOne {
+	return u.Update(func(s *MemberUpsert) {
+		s.AddLevel(v)
 	})
 }
 
@@ -566,14 +579,14 @@ func (u *MemberUpsertOne) UpdatePositions() *MemberUpsertOne {
 }
 
 // SetKpi sets the "kpi" field.
-func (u *MemberUpsertOne) SetKpi(v float32) *MemberUpsertOne {
+func (u *MemberUpsertOne) SetKpi(v int) *MemberUpsertOne {
 	return u.Update(func(s *MemberUpsert) {
 		s.SetKpi(v)
 	})
 }
 
 // AddKpi adds v to the "kpi" field.
-func (u *MemberUpsertOne) AddKpi(v float32) *MemberUpsertOne {
+func (u *MemberUpsertOne) AddKpi(v int) *MemberUpsertOne {
 	return u.Update(func(s *MemberUpsert) {
 		s.AddKpi(v)
 	})
@@ -919,9 +932,16 @@ func (u *MemberUpsertBulk) UpdateName() *MemberUpsertBulk {
 }
 
 // SetLevel sets the "level" field.
-func (u *MemberUpsertBulk) SetLevel(v member.Level) *MemberUpsertBulk {
+func (u *MemberUpsertBulk) SetLevel(v int) *MemberUpsertBulk {
 	return u.Update(func(s *MemberUpsert) {
 		s.SetLevel(v)
+	})
+}
+
+// AddLevel adds v to the "level" field.
+func (u *MemberUpsertBulk) AddLevel(v int) *MemberUpsertBulk {
+	return u.Update(func(s *MemberUpsert) {
+		s.AddLevel(v)
 	})
 }
 
@@ -947,14 +967,14 @@ func (u *MemberUpsertBulk) UpdatePositions() *MemberUpsertBulk {
 }
 
 // SetKpi sets the "kpi" field.
-func (u *MemberUpsertBulk) SetKpi(v float32) *MemberUpsertBulk {
+func (u *MemberUpsertBulk) SetKpi(v int) *MemberUpsertBulk {
 	return u.Update(func(s *MemberUpsert) {
 		s.SetKpi(v)
 	})
 }
 
 // AddKpi adds v to the "kpi" field.
-func (u *MemberUpsertBulk) AddKpi(v float32) *MemberUpsertBulk {
+func (u *MemberUpsertBulk) AddKpi(v int) *MemberUpsertBulk {
 	return u.Update(func(s *MemberUpsert) {
 		s.AddKpi(v)
 	})

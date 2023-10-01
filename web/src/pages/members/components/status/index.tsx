@@ -4,18 +4,16 @@ import { capitalize } from 'lodash';
 import { StyledStatus } from '@pm/pages/members/components/status/styles.ts';
 
 export const Status = ({ status }: { status: TStatus }) => {
-  status = status.toLowerCase();
-
   return (
     <StyledStatus>
-      {status === MemberConstant.Status.ACTIVE.toLowerCase() ? (
+      {status === MemberConstant.Status.ACTIVE ? (
         <Tag
           className='status'
           color={ThemeConstant.Color.GREEN}
         >
           {capitalize(status)}
         </Tag>
-      ) : status === MemberConstant.Status.INACTIVE.toLowerCase() ? (
+      ) : status === MemberConstant.Status.INACTIVE ? (
         <Tag
           className='status'
           color={ThemeConstant.Color.ORANGE}

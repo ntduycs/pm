@@ -3,9 +3,12 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"sort"
 	"strings"
 	"time"
 
+	"project-management/constants"
 	"project-management/ent"
 	"project-management/ent/member"
 	"project-management/ent/predicate"
@@ -86,10 +89,14 @@ func (r *MemberRepository) sort(field string, direction string) []member.OrderOp
 func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberRequest, txClient ...*ent.Client) (int, error) {
 	client := useClient(r.ent, txClient...)
 
+	sort.SliceStable(req.Positions, func(i, j int) bool {
+		return strings.Compare(req.Positions[i], req.Positions[j]) < 0
+	})
+
 	cmd := client.Member.Create().
 		SetName(req.Name).
 		SetEmail(req.Email).
-		SetLevel(member.Level(req.Level)).
+		SetLevel(int(req.Level)).
 		SetPositions(strings.Join(req.Positions, ",")).
 		SetKpi(req.KPI).
 		SetCategory(member.Category(req.Category)).
@@ -98,18 +105,17 @@ func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberReq
 		OnConflictColumns(member.FieldEmail).
 		UpdateNewValues()
 
+	fmt.Println("Start date: ", *req.StartDate)
+	fmt.Println("End date: ", *req.EndDate)
+
 	if req.StartDate != nil && *req.StartDate != "" {
-		startDate, _ := time.Parse("2006-01-02", *req.StartDate)
+		startDate, _ := time.ParseInLocation("2006-01-02", *req.StartDate, constants.TimeZone)
 		cmd.SetStartDate(startDate)
-	} else {
-		cmd.ClearStartDate()
 	}
 
 	if req.EndDate != nil && *req.EndDate != "" {
-		endDate, _ := time.Parse("2006-01-02", *req.EndDate)
+		endDate, _ := time.ParseInLocation("2006-01-02", *req.EndDate, constants.TimeZone)
 		cmd.SetEndDate(endDate)
-	} else {
-		cmd.ClearEndDate()
 	}
 
 	return cmd.ID(ctx)
