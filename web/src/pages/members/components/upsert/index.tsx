@@ -2,22 +2,11 @@ import { StyledAddMember } from '@pm/pages/members/components/upsert/styles.ts';
 import React, { useEffect } from 'react';
 import { ApiConstant, MemberConstant } from '@pm/common/constants';
 import dayjs from 'dayjs';
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  notification,
-  Select,
-  Space,
-} from 'antd';
+import { Button, DatePicker, Form, Input, Modal, notification, Select, Space } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { upsertMemberAPI } from '@pm/services';
 import { Member, UpsertMemberRequest } from '@pm/models';
-import { Status } from '@pm/pages/members/components';
 import { capitalize } from 'lodash';
 
 type UpsertMemberProps = {
@@ -89,7 +78,8 @@ export const UpsertMemberModal = ({
       };
       const { message } = await upsertMember(values);
       api.success({
-        message,
+        message: 'Success!',
+        description: message,
         placement: 'topRight',
         duration: 2,
       });

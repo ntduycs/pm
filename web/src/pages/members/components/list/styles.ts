@@ -12,4 +12,10 @@ export const StyledListMembers = styled.div`
   .inactive-row {
     background-color: ${color.grayBg};
   }
+
+  .action {
+    &:hover {
+      cursor: pointer;
+    }
+  }
 `;

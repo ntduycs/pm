@@ -25,3 +25,23 @@ body {
   background: none !important;
   position: absolute;
 }
+
+.ant-notification-notice.ant-notification-notice-success {
+  background-color: #d9f7be;
+}
+
+.ant-notification-notice.ant-notification-notice-error {
+  background-color: #ffccc7;
+}
+
+.ant-notification-notice.ant-notification-notice-info {
+  background-color: #bae7ff;
+}
+
+.ant-notification-notice.ant-notification-notice-warning {
+  background-color: #ffffb8;
+}
+
+.ant-notification-notice .ant-notification-notice-message {
+  font-weight: 600;
+}

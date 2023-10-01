@@ -1,13 +1,13 @@
 import { BuildOptions, defineConfig } from 'vite';
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react';
 import * as path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const buildOptions: BuildOptions = {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     reportCompressedSize: mode === 'development',
-  }
+  };
 
   return {
     plugins: [react()],

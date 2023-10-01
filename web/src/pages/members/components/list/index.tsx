@@ -113,7 +113,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       dataIndex: 'category',
       key: 'category',
       filters: Object.entries(MemberConstant.Category).map(([, value]) => ({
-        text: value,
+        text: capitalize(value),
         value: value,
       })),
       filterMultiple: false,
