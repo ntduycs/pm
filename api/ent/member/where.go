@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -547,6 +548,29 @@ func StatusIn(vs ...Status) predicate.Member {
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...Status) predicate.Member {
 	return predicate.Member(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// HasPaPcResults applies the HasEdge predicate on the "pa_pc_results" edge.
+func HasPaPcResults() predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PaPcResultsTable, PaPcResultsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPaPcResultsWith applies the HasEdge predicate on the "pa_pc_results" edge with a given conditions (other predicates).
+func HasPaPcResultsWith(preds ...predicate.PaPc) predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := newPaPcResultsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

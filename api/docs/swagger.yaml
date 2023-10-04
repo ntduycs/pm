@@ -26,6 +26,23 @@ definitions:
       total:
         type: integer
     type: object
+  models.ListPaPcResultsResponse:
+    properties:
+      count:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/models.PaPc'
+        type: array
+      page:
+        type: integer
+      pages:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   models.Member:
     properties:
       category:
@@ -53,6 +70,23 @@ definitions:
       status:
         type: string
       total_effort:
+        type: number
+    type: object
+  models.PaPc:
+    properties:
+      collaboration_score:
+        type: number
+      development_score:
+        type: number
+      id:
+        type: integer
+      member:
+        $ref: '#/definitions/models.Member'
+      period:
+        type: string
+      productivity_score:
+        type: number
+      technical_score:
         type: number
     type: object
   models.UpsertMemberRequest:
@@ -91,6 +125,34 @@ definitions:
     - positions
     - status
     - total_effort
+    type: object
+  models.UpsertPaPcResultRequest:
+    properties:
+      collaboration_score:
+        minimum: 1
+        type: number
+      development_score:
+        minimum: 1
+        type: number
+      id:
+        type: integer
+      member_id:
+        type: integer
+      period:
+        type: string
+      productivity_score:
+        minimum: 1
+        type: number
+      technical_score:
+        minimum: 1
+        type: number
+    required:
+    - collaboration_score
+    - development_score
+    - member_id
+    - period
+    - productivity_score
+    - technical_score
     type: object
 host: localhost:4000
 info:
@@ -204,6 +266,59 @@ paths:
       summary: Get member
       tags:
       - Member
+  /pa-pc-results:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 1
+        description: Page
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Size
+        in: query
+        name: size
+        type: integer
+      - description: Member ID
+        in: query
+        name: member_id
+        type: integer
+      - description: Period
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ListPaPcResultsResponse'
+      summary: List PA/PC Results
+      tags:
+      - PA/PC
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpsertPaPcResultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EmptyResponse'
+      summary: Upsert PA/PC Result
+      tags:
+      - PA/PC
 schemes:
 - http
 - https

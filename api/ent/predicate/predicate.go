@@ -8,3 +8,9 @@ import (
 
 // Member is the predicate function for member builders.
 type Member func(*sql.Selector)
+
+// PaPc is the predicate function for papc builders.
+type PaPc func(*sql.Selector)
+
+// PaPcTechnicalScore is the predicate function for papctechnicalscore builders.
+type PaPcTechnicalScore func(*sql.Selector)

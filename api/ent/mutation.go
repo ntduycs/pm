@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"project-management/ent/member"
+	"project-management/ent/papc"
+	"project-management/ent/papctechnicalscore"
 	"project-management/ent/predicate"
 	"sync"
 	"time"
@@ -24,32 +26,37 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeMember = "Member"
+	TypeMember             = "Member"
+	TypePaPc               = "PaPc"
+	TypePaPcTechnicalScore = "PaPcTechnicalScore"
 )
 
 // MemberMutation represents an operation that mutates the Member nodes in the graph.
 type MemberMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	email           *string
-	name            *string
-	level           *int
-	addlevel        *int
-	positions       *string
-	kpi             *int
-	addkpi          *int
-	category        *member.Category
-	total_effort    *float32
-	addtotal_effort *float32
-	start_date      *time.Time
-	end_date        *time.Time
-	status          *member.Status
-	clearedFields   map[string]struct{}
-	done            bool
-	oldValue        func(context.Context) (*Member, error)
-	predicates      []predicate.Member
+	op                   Op
+	typ                  string
+	id                   *int
+	email                *string
+	name                 *string
+	level                *int
+	addlevel             *int
+	positions            *string
+	kpi                  *int
+	addkpi               *int
+	category             *member.Category
+	total_effort         *float32
+	addtotal_effort      *float32
+	start_date           *time.Time
+	end_date             *time.Time
+	status               *member.Status
+	clearedFields        map[string]struct{}
+	pa_pc_results        map[int]struct{}
+	removedpa_pc_results map[int]struct{}
+	clearedpa_pc_results bool
+	done                 bool
+	oldValue             func(context.Context) (*Member, error)
+	predicates           []predicate.Member
 }
 
 var _ ent.Mutation = (*MemberMutation)(nil)
@@ -602,6 +609,60 @@ func (m *MemberMutation) ResetStatus() {
 	m.status = nil
 }
 
+// AddPaPcResultIDs adds the "pa_pc_results" edge to the PaPc entity by ids.
+func (m *MemberMutation) AddPaPcResultIDs(ids ...int) {
+	if m.pa_pc_results == nil {
+		m.pa_pc_results = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.pa_pc_results[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPaPcResults clears the "pa_pc_results" edge to the PaPc entity.
+func (m *MemberMutation) ClearPaPcResults() {
+	m.clearedpa_pc_results = true
+}
+
+// PaPcResultsCleared reports if the "pa_pc_results" edge to the PaPc entity was cleared.
+func (m *MemberMutation) PaPcResultsCleared() bool {
+	return m.clearedpa_pc_results
+}
+
+// RemovePaPcResultIDs removes the "pa_pc_results" edge to the PaPc entity by IDs.
+func (m *MemberMutation) RemovePaPcResultIDs(ids ...int) {
+	if m.removedpa_pc_results == nil {
+		m.removedpa_pc_results = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.pa_pc_results, ids[i])
+		m.removedpa_pc_results[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPaPcResults returns the removed IDs of the "pa_pc_results" edge to the PaPc entity.
+func (m *MemberMutation) RemovedPaPcResultsIDs() (ids []int) {
+	for id := range m.removedpa_pc_results {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PaPcResultsIDs returns the "pa_pc_results" edge IDs in the mutation.
+func (m *MemberMutation) PaPcResultsIDs() (ids []int) {
+	for id := range m.pa_pc_results {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPaPcResults resets all changes to the "pa_pc_results" edge.
+func (m *MemberMutation) ResetPaPcResults() {
+	m.pa_pc_results = nil
+	m.clearedpa_pc_results = false
+	m.removedpa_pc_results = nil
+}
+
 // Where appends a list predicates to the MemberMutation builder.
 func (m *MemberMutation) Where(ps ...predicate.Member) {
 	m.predicates = append(m.predicates, ps...)
@@ -942,48 +1003,1741 @@ func (m *MemberMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *MemberMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.pa_pc_results != nil {
+		edges = append(edges, member.EdgePaPcResults)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *MemberMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case member.EdgePaPcResults:
+		ids := make([]ent.Value, 0, len(m.pa_pc_results))
+		for id := range m.pa_pc_results {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MemberMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedpa_pc_results != nil {
+		edges = append(edges, member.EdgePaPcResults)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *MemberMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case member.EdgePaPcResults:
+		ids := make([]ent.Value, 0, len(m.removedpa_pc_results))
+		for id := range m.removedpa_pc_results {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *MemberMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedpa_pc_results {
+		edges = append(edges, member.EdgePaPcResults)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *MemberMutation) EdgeCleared(name string) bool {
+	switch name {
+	case member.EdgePaPcResults:
+		return m.clearedpa_pc_results
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *MemberMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown Member unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *MemberMutation) ResetEdge(name string) error {
+	switch name {
+	case member.EdgePaPcResults:
+		m.ResetPaPcResults()
+		return nil
+	}
 	return fmt.Errorf("unknown Member edge %s", name)
+}
+
+// PaPcMutation represents an operation that mutates the PaPc nodes in the graph.
+type PaPcMutation struct {
+	config
+	op                             Op
+	typ                            string
+	id                             *int
+	technical_score                *float32
+	addtechnical_score             *float32
+	productivity_score             *float32
+	addproductivity_score          *float32
+	collaboration_score            *float32
+	addcollaboration_score         *float32
+	development_score              *float32
+	adddevelopment_score           *float32
+	period                         *string
+	clearedFields                  map[string]struct{}
+	member                         *int
+	clearedmember                  bool
+	technical_score_details        map[int]struct{}
+	removedtechnical_score_details map[int]struct{}
+	clearedtechnical_score_details bool
+	done                           bool
+	oldValue                       func(context.Context) (*PaPc, error)
+	predicates                     []predicate.PaPc
+}
+
+var _ ent.Mutation = (*PaPcMutation)(nil)
+
+// papcOption allows management of the mutation configuration using functional options.
+type papcOption func(*PaPcMutation)
+
+// newPaPcMutation creates new mutation for the PaPc entity.
+func newPaPcMutation(c config, op Op, opts ...papcOption) *PaPcMutation {
+	m := &PaPcMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePaPc,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPaPcID sets the ID field of the mutation.
+func withPaPcID(id int) papcOption {
+	return func(m *PaPcMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PaPc
+		)
+		m.oldValue = func(ctx context.Context) (*PaPc, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PaPc.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPaPc sets the old PaPc of the mutation.
+func withPaPc(node *PaPc) papcOption {
+	return func(m *PaPcMutation) {
+		m.oldValue = func(context.Context) (*PaPc, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PaPcMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PaPcMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PaPc entities.
+func (m *PaPcMutation) SetID(id int) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PaPcMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PaPcMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PaPc.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetMemberID sets the "member_id" field.
+func (m *PaPcMutation) SetMemberID(i int) {
+	m.member = &i
+}
+
+// MemberID returns the value of the "member_id" field in the mutation.
+func (m *PaPcMutation) MemberID() (r int, exists bool) {
+	v := m.member
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMemberID returns the old "member_id" field's value of the PaPc entity.
+// If the PaPc object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcMutation) OldMemberID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMemberID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMemberID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMemberID: %w", err)
+	}
+	return oldValue.MemberID, nil
+}
+
+// ResetMemberID resets all changes to the "member_id" field.
+func (m *PaPcMutation) ResetMemberID() {
+	m.member = nil
+}
+
+// SetTechnicalScore sets the "technical_score" field.
+func (m *PaPcMutation) SetTechnicalScore(f float32) {
+	m.technical_score = &f
+	m.addtechnical_score = nil
+}
+
+// TechnicalScore returns the value of the "technical_score" field in the mutation.
+func (m *PaPcMutation) TechnicalScore() (r float32, exists bool) {
+	v := m.technical_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTechnicalScore returns the old "technical_score" field's value of the PaPc entity.
+// If the PaPc object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcMutation) OldTechnicalScore(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTechnicalScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTechnicalScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTechnicalScore: %w", err)
+	}
+	return oldValue.TechnicalScore, nil
+}
+
+// AddTechnicalScore adds f to the "technical_score" field.
+func (m *PaPcMutation) AddTechnicalScore(f float32) {
+	if m.addtechnical_score != nil {
+		*m.addtechnical_score += f
+	} else {
+		m.addtechnical_score = &f
+	}
+}
+
+// AddedTechnicalScore returns the value that was added to the "technical_score" field in this mutation.
+func (m *PaPcMutation) AddedTechnicalScore() (r float32, exists bool) {
+	v := m.addtechnical_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTechnicalScore resets all changes to the "technical_score" field.
+func (m *PaPcMutation) ResetTechnicalScore() {
+	m.technical_score = nil
+	m.addtechnical_score = nil
+}
+
+// SetProductivityScore sets the "productivity_score" field.
+func (m *PaPcMutation) SetProductivityScore(f float32) {
+	m.productivity_score = &f
+	m.addproductivity_score = nil
+}
+
+// ProductivityScore returns the value of the "productivity_score" field in the mutation.
+func (m *PaPcMutation) ProductivityScore() (r float32, exists bool) {
+	v := m.productivity_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProductivityScore returns the old "productivity_score" field's value of the PaPc entity.
+// If the PaPc object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcMutation) OldProductivityScore(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProductivityScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProductivityScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProductivityScore: %w", err)
+	}
+	return oldValue.ProductivityScore, nil
+}
+
+// AddProductivityScore adds f to the "productivity_score" field.
+func (m *PaPcMutation) AddProductivityScore(f float32) {
+	if m.addproductivity_score != nil {
+		*m.addproductivity_score += f
+	} else {
+		m.addproductivity_score = &f
+	}
+}
+
+// AddedProductivityScore returns the value that was added to the "productivity_score" field in this mutation.
+func (m *PaPcMutation) AddedProductivityScore() (r float32, exists bool) {
+	v := m.addproductivity_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetProductivityScore resets all changes to the "productivity_score" field.
+func (m *PaPcMutation) ResetProductivityScore() {
+	m.productivity_score = nil
+	m.addproductivity_score = nil
+}
+
+// SetCollaborationScore sets the "collaboration_score" field.
+func (m *PaPcMutation) SetCollaborationScore(f float32) {
+	m.collaboration_score = &f
+	m.addcollaboration_score = nil
+}
+
+// CollaborationScore returns the value of the "collaboration_score" field in the mutation.
+func (m *PaPcMutation) CollaborationScore() (r float32, exists bool) {
+	v := m.collaboration_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCollaborationScore returns the old "collaboration_score" field's value of the PaPc entity.
+// If the PaPc object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcMutation) OldCollaborationScore(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCollaborationScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCollaborationScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCollaborationScore: %w", err)
+	}
+	return oldValue.CollaborationScore, nil
+}
+
+// AddCollaborationScore adds f to the "collaboration_score" field.
+func (m *PaPcMutation) AddCollaborationScore(f float32) {
+	if m.addcollaboration_score != nil {
+		*m.addcollaboration_score += f
+	} else {
+		m.addcollaboration_score = &f
+	}
+}
+
+// AddedCollaborationScore returns the value that was added to the "collaboration_score" field in this mutation.
+func (m *PaPcMutation) AddedCollaborationScore() (r float32, exists bool) {
+	v := m.addcollaboration_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCollaborationScore resets all changes to the "collaboration_score" field.
+func (m *PaPcMutation) ResetCollaborationScore() {
+	m.collaboration_score = nil
+	m.addcollaboration_score = nil
+}
+
+// SetDevelopmentScore sets the "development_score" field.
+func (m *PaPcMutation) SetDevelopmentScore(f float32) {
+	m.development_score = &f
+	m.adddevelopment_score = nil
+}
+
+// DevelopmentScore returns the value of the "development_score" field in the mutation.
+func (m *PaPcMutation) DevelopmentScore() (r float32, exists bool) {
+	v := m.development_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDevelopmentScore returns the old "development_score" field's value of the PaPc entity.
+// If the PaPc object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcMutation) OldDevelopmentScore(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDevelopmentScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDevelopmentScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDevelopmentScore: %w", err)
+	}
+	return oldValue.DevelopmentScore, nil
+}
+
+// AddDevelopmentScore adds f to the "development_score" field.
+func (m *PaPcMutation) AddDevelopmentScore(f float32) {
+	if m.adddevelopment_score != nil {
+		*m.adddevelopment_score += f
+	} else {
+		m.adddevelopment_score = &f
+	}
+}
+
+// AddedDevelopmentScore returns the value that was added to the "development_score" field in this mutation.
+func (m *PaPcMutation) AddedDevelopmentScore() (r float32, exists bool) {
+	v := m.adddevelopment_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDevelopmentScore resets all changes to the "development_score" field.
+func (m *PaPcMutation) ResetDevelopmentScore() {
+	m.development_score = nil
+	m.adddevelopment_score = nil
+}
+
+// SetPeriod sets the "period" field.
+func (m *PaPcMutation) SetPeriod(s string) {
+	m.period = &s
+}
+
+// Period returns the value of the "period" field in the mutation.
+func (m *PaPcMutation) Period() (r string, exists bool) {
+	v := m.period
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPeriod returns the old "period" field's value of the PaPc entity.
+// If the PaPc object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcMutation) OldPeriod(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPeriod is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPeriod requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPeriod: %w", err)
+	}
+	return oldValue.Period, nil
+}
+
+// ResetPeriod resets all changes to the "period" field.
+func (m *PaPcMutation) ResetPeriod() {
+	m.period = nil
+}
+
+// ClearMember clears the "member" edge to the Member entity.
+func (m *PaPcMutation) ClearMember() {
+	m.clearedmember = true
+	m.clearedFields[papc.FieldMemberID] = struct{}{}
+}
+
+// MemberCleared reports if the "member" edge to the Member entity was cleared.
+func (m *PaPcMutation) MemberCleared() bool {
+	return m.clearedmember
+}
+
+// MemberIDs returns the "member" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MemberID instead. It exists only for internal usage by the builders.
+func (m *PaPcMutation) MemberIDs() (ids []int) {
+	if id := m.member; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetMember resets all changes to the "member" edge.
+func (m *PaPcMutation) ResetMember() {
+	m.member = nil
+	m.clearedmember = false
+}
+
+// AddTechnicalScoreDetailIDs adds the "technical_score_details" edge to the PaPcTechnicalScore entity by ids.
+func (m *PaPcMutation) AddTechnicalScoreDetailIDs(ids ...int) {
+	if m.technical_score_details == nil {
+		m.technical_score_details = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.technical_score_details[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTechnicalScoreDetails clears the "technical_score_details" edge to the PaPcTechnicalScore entity.
+func (m *PaPcMutation) ClearTechnicalScoreDetails() {
+	m.clearedtechnical_score_details = true
+}
+
+// TechnicalScoreDetailsCleared reports if the "technical_score_details" edge to the PaPcTechnicalScore entity was cleared.
+func (m *PaPcMutation) TechnicalScoreDetailsCleared() bool {
+	return m.clearedtechnical_score_details
+}
+
+// RemoveTechnicalScoreDetailIDs removes the "technical_score_details" edge to the PaPcTechnicalScore entity by IDs.
+func (m *PaPcMutation) RemoveTechnicalScoreDetailIDs(ids ...int) {
+	if m.removedtechnical_score_details == nil {
+		m.removedtechnical_score_details = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.technical_score_details, ids[i])
+		m.removedtechnical_score_details[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTechnicalScoreDetails returns the removed IDs of the "technical_score_details" edge to the PaPcTechnicalScore entity.
+func (m *PaPcMutation) RemovedTechnicalScoreDetailsIDs() (ids []int) {
+	for id := range m.removedtechnical_score_details {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TechnicalScoreDetailsIDs returns the "technical_score_details" edge IDs in the mutation.
+func (m *PaPcMutation) TechnicalScoreDetailsIDs() (ids []int) {
+	for id := range m.technical_score_details {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTechnicalScoreDetails resets all changes to the "technical_score_details" edge.
+func (m *PaPcMutation) ResetTechnicalScoreDetails() {
+	m.technical_score_details = nil
+	m.clearedtechnical_score_details = false
+	m.removedtechnical_score_details = nil
+}
+
+// Where appends a list predicates to the PaPcMutation builder.
+func (m *PaPcMutation) Where(ps ...predicate.PaPc) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PaPcMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PaPcMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PaPc, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PaPcMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PaPcMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PaPc).
+func (m *PaPcMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PaPcMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.member != nil {
+		fields = append(fields, papc.FieldMemberID)
+	}
+	if m.technical_score != nil {
+		fields = append(fields, papc.FieldTechnicalScore)
+	}
+	if m.productivity_score != nil {
+		fields = append(fields, papc.FieldProductivityScore)
+	}
+	if m.collaboration_score != nil {
+		fields = append(fields, papc.FieldCollaborationScore)
+	}
+	if m.development_score != nil {
+		fields = append(fields, papc.FieldDevelopmentScore)
+	}
+	if m.period != nil {
+		fields = append(fields, papc.FieldPeriod)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PaPcMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case papc.FieldMemberID:
+		return m.MemberID()
+	case papc.FieldTechnicalScore:
+		return m.TechnicalScore()
+	case papc.FieldProductivityScore:
+		return m.ProductivityScore()
+	case papc.FieldCollaborationScore:
+		return m.CollaborationScore()
+	case papc.FieldDevelopmentScore:
+		return m.DevelopmentScore()
+	case papc.FieldPeriod:
+		return m.Period()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PaPcMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case papc.FieldMemberID:
+		return m.OldMemberID(ctx)
+	case papc.FieldTechnicalScore:
+		return m.OldTechnicalScore(ctx)
+	case papc.FieldProductivityScore:
+		return m.OldProductivityScore(ctx)
+	case papc.FieldCollaborationScore:
+		return m.OldCollaborationScore(ctx)
+	case papc.FieldDevelopmentScore:
+		return m.OldDevelopmentScore(ctx)
+	case papc.FieldPeriod:
+		return m.OldPeriod(ctx)
+	}
+	return nil, fmt.Errorf("unknown PaPc field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PaPcMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case papc.FieldMemberID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMemberID(v)
+		return nil
+	case papc.FieldTechnicalScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTechnicalScore(v)
+		return nil
+	case papc.FieldProductivityScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProductivityScore(v)
+		return nil
+	case papc.FieldCollaborationScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCollaborationScore(v)
+		return nil
+	case papc.FieldDevelopmentScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDevelopmentScore(v)
+		return nil
+	case papc.FieldPeriod:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPeriod(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PaPc field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PaPcMutation) AddedFields() []string {
+	var fields []string
+	if m.addtechnical_score != nil {
+		fields = append(fields, papc.FieldTechnicalScore)
+	}
+	if m.addproductivity_score != nil {
+		fields = append(fields, papc.FieldProductivityScore)
+	}
+	if m.addcollaboration_score != nil {
+		fields = append(fields, papc.FieldCollaborationScore)
+	}
+	if m.adddevelopment_score != nil {
+		fields = append(fields, papc.FieldDevelopmentScore)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PaPcMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case papc.FieldTechnicalScore:
+		return m.AddedTechnicalScore()
+	case papc.FieldProductivityScore:
+		return m.AddedProductivityScore()
+	case papc.FieldCollaborationScore:
+		return m.AddedCollaborationScore()
+	case papc.FieldDevelopmentScore:
+		return m.AddedDevelopmentScore()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PaPcMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case papc.FieldTechnicalScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTechnicalScore(v)
+		return nil
+	case papc.FieldProductivityScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddProductivityScore(v)
+		return nil
+	case papc.FieldCollaborationScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCollaborationScore(v)
+		return nil
+	case papc.FieldDevelopmentScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDevelopmentScore(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PaPc numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PaPcMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PaPcMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PaPcMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown PaPc nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PaPcMutation) ResetField(name string) error {
+	switch name {
+	case papc.FieldMemberID:
+		m.ResetMemberID()
+		return nil
+	case papc.FieldTechnicalScore:
+		m.ResetTechnicalScore()
+		return nil
+	case papc.FieldProductivityScore:
+		m.ResetProductivityScore()
+		return nil
+	case papc.FieldCollaborationScore:
+		m.ResetCollaborationScore()
+		return nil
+	case papc.FieldDevelopmentScore:
+		m.ResetDevelopmentScore()
+		return nil
+	case papc.FieldPeriod:
+		m.ResetPeriod()
+		return nil
+	}
+	return fmt.Errorf("unknown PaPc field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PaPcMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.member != nil {
+		edges = append(edges, papc.EdgeMember)
+	}
+	if m.technical_score_details != nil {
+		edges = append(edges, papc.EdgeTechnicalScoreDetails)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PaPcMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case papc.EdgeMember:
+		if id := m.member; id != nil {
+			return []ent.Value{*id}
+		}
+	case papc.EdgeTechnicalScoreDetails:
+		ids := make([]ent.Value, 0, len(m.technical_score_details))
+		for id := range m.technical_score_details {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PaPcMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedtechnical_score_details != nil {
+		edges = append(edges, papc.EdgeTechnicalScoreDetails)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PaPcMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case papc.EdgeTechnicalScoreDetails:
+		ids := make([]ent.Value, 0, len(m.removedtechnical_score_details))
+		for id := range m.removedtechnical_score_details {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PaPcMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedmember {
+		edges = append(edges, papc.EdgeMember)
+	}
+	if m.clearedtechnical_score_details {
+		edges = append(edges, papc.EdgeTechnicalScoreDetails)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PaPcMutation) EdgeCleared(name string) bool {
+	switch name {
+	case papc.EdgeMember:
+		return m.clearedmember
+	case papc.EdgeTechnicalScoreDetails:
+		return m.clearedtechnical_score_details
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PaPcMutation) ClearEdge(name string) error {
+	switch name {
+	case papc.EdgeMember:
+		m.ClearMember()
+		return nil
+	}
+	return fmt.Errorf("unknown PaPc unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PaPcMutation) ResetEdge(name string) error {
+	switch name {
+	case papc.EdgeMember:
+		m.ResetMember()
+		return nil
+	case papc.EdgeTechnicalScoreDetails:
+		m.ResetTechnicalScoreDetails()
+		return nil
+	}
+	return fmt.Errorf("unknown PaPc edge %s", name)
+}
+
+// PaPcTechnicalScoreMutation represents an operation that mutates the PaPcTechnicalScore nodes in the graph.
+type PaPcTechnicalScoreMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *int
+	_type            *papctechnicalscore.Type
+	skill            *string
+	self_score       *float32
+	addself_score    *float32
+	peer_score       *float32
+	addpeer_score    *float32
+	manager_score    *float32
+	addmanager_score *float32
+	clearedFields    map[string]struct{}
+	pa_pc            *int
+	clearedpa_pc     bool
+	done             bool
+	oldValue         func(context.Context) (*PaPcTechnicalScore, error)
+	predicates       []predicate.PaPcTechnicalScore
+}
+
+var _ ent.Mutation = (*PaPcTechnicalScoreMutation)(nil)
+
+// papctechnicalscoreOption allows management of the mutation configuration using functional options.
+type papctechnicalscoreOption func(*PaPcTechnicalScoreMutation)
+
+// newPaPcTechnicalScoreMutation creates new mutation for the PaPcTechnicalScore entity.
+func newPaPcTechnicalScoreMutation(c config, op Op, opts ...papctechnicalscoreOption) *PaPcTechnicalScoreMutation {
+	m := &PaPcTechnicalScoreMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePaPcTechnicalScore,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPaPcTechnicalScoreID sets the ID field of the mutation.
+func withPaPcTechnicalScoreID(id int) papctechnicalscoreOption {
+	return func(m *PaPcTechnicalScoreMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PaPcTechnicalScore
+		)
+		m.oldValue = func(ctx context.Context) (*PaPcTechnicalScore, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PaPcTechnicalScore.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPaPcTechnicalScore sets the old PaPcTechnicalScore of the mutation.
+func withPaPcTechnicalScore(node *PaPcTechnicalScore) papctechnicalscoreOption {
+	return func(m *PaPcTechnicalScoreMutation) {
+		m.oldValue = func(context.Context) (*PaPcTechnicalScore, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PaPcTechnicalScoreMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PaPcTechnicalScoreMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PaPcTechnicalScore entities.
+func (m *PaPcTechnicalScoreMutation) SetID(id int) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PaPcTechnicalScoreMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PaPcTechnicalScoreMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PaPcTechnicalScore.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetPaPcID sets the "pa_pc_id" field.
+func (m *PaPcTechnicalScoreMutation) SetPaPcID(i int) {
+	m.pa_pc = &i
+}
+
+// PaPcID returns the value of the "pa_pc_id" field in the mutation.
+func (m *PaPcTechnicalScoreMutation) PaPcID() (r int, exists bool) {
+	v := m.pa_pc
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaPcID returns the old "pa_pc_id" field's value of the PaPcTechnicalScore entity.
+// If the PaPcTechnicalScore object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcTechnicalScoreMutation) OldPaPcID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPaPcID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPaPcID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaPcID: %w", err)
+	}
+	return oldValue.PaPcID, nil
+}
+
+// ResetPaPcID resets all changes to the "pa_pc_id" field.
+func (m *PaPcTechnicalScoreMutation) ResetPaPcID() {
+	m.pa_pc = nil
+}
+
+// SetType sets the "type" field.
+func (m *PaPcTechnicalScoreMutation) SetType(pa papctechnicalscore.Type) {
+	m._type = &pa
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *PaPcTechnicalScoreMutation) GetType() (r papctechnicalscore.Type, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the PaPcTechnicalScore entity.
+// If the PaPcTechnicalScore object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcTechnicalScoreMutation) OldType(ctx context.Context) (v papctechnicalscore.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *PaPcTechnicalScoreMutation) ResetType() {
+	m._type = nil
+}
+
+// SetSkill sets the "skill" field.
+func (m *PaPcTechnicalScoreMutation) SetSkill(s string) {
+	m.skill = &s
+}
+
+// Skill returns the value of the "skill" field in the mutation.
+func (m *PaPcTechnicalScoreMutation) Skill() (r string, exists bool) {
+	v := m.skill
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSkill returns the old "skill" field's value of the PaPcTechnicalScore entity.
+// If the PaPcTechnicalScore object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcTechnicalScoreMutation) OldSkill(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSkill is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSkill requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSkill: %w", err)
+	}
+	return oldValue.Skill, nil
+}
+
+// ResetSkill resets all changes to the "skill" field.
+func (m *PaPcTechnicalScoreMutation) ResetSkill() {
+	m.skill = nil
+}
+
+// SetSelfScore sets the "self_score" field.
+func (m *PaPcTechnicalScoreMutation) SetSelfScore(f float32) {
+	m.self_score = &f
+	m.addself_score = nil
+}
+
+// SelfScore returns the value of the "self_score" field in the mutation.
+func (m *PaPcTechnicalScoreMutation) SelfScore() (r float32, exists bool) {
+	v := m.self_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSelfScore returns the old "self_score" field's value of the PaPcTechnicalScore entity.
+// If the PaPcTechnicalScore object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcTechnicalScoreMutation) OldSelfScore(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSelfScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSelfScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSelfScore: %w", err)
+	}
+	return oldValue.SelfScore, nil
+}
+
+// AddSelfScore adds f to the "self_score" field.
+func (m *PaPcTechnicalScoreMutation) AddSelfScore(f float32) {
+	if m.addself_score != nil {
+		*m.addself_score += f
+	} else {
+		m.addself_score = &f
+	}
+}
+
+// AddedSelfScore returns the value that was added to the "self_score" field in this mutation.
+func (m *PaPcTechnicalScoreMutation) AddedSelfScore() (r float32, exists bool) {
+	v := m.addself_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSelfScore resets all changes to the "self_score" field.
+func (m *PaPcTechnicalScoreMutation) ResetSelfScore() {
+	m.self_score = nil
+	m.addself_score = nil
+}
+
+// SetPeerScore sets the "peer_score" field.
+func (m *PaPcTechnicalScoreMutation) SetPeerScore(f float32) {
+	m.peer_score = &f
+	m.addpeer_score = nil
+}
+
+// PeerScore returns the value of the "peer_score" field in the mutation.
+func (m *PaPcTechnicalScoreMutation) PeerScore() (r float32, exists bool) {
+	v := m.peer_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPeerScore returns the old "peer_score" field's value of the PaPcTechnicalScore entity.
+// If the PaPcTechnicalScore object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcTechnicalScoreMutation) OldPeerScore(ctx context.Context) (v *float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPeerScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPeerScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPeerScore: %w", err)
+	}
+	return oldValue.PeerScore, nil
+}
+
+// AddPeerScore adds f to the "peer_score" field.
+func (m *PaPcTechnicalScoreMutation) AddPeerScore(f float32) {
+	if m.addpeer_score != nil {
+		*m.addpeer_score += f
+	} else {
+		m.addpeer_score = &f
+	}
+}
+
+// AddedPeerScore returns the value that was added to the "peer_score" field in this mutation.
+func (m *PaPcTechnicalScoreMutation) AddedPeerScore() (r float32, exists bool) {
+	v := m.addpeer_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPeerScore clears the value of the "peer_score" field.
+func (m *PaPcTechnicalScoreMutation) ClearPeerScore() {
+	m.peer_score = nil
+	m.addpeer_score = nil
+	m.clearedFields[papctechnicalscore.FieldPeerScore] = struct{}{}
+}
+
+// PeerScoreCleared returns if the "peer_score" field was cleared in this mutation.
+func (m *PaPcTechnicalScoreMutation) PeerScoreCleared() bool {
+	_, ok := m.clearedFields[papctechnicalscore.FieldPeerScore]
+	return ok
+}
+
+// ResetPeerScore resets all changes to the "peer_score" field.
+func (m *PaPcTechnicalScoreMutation) ResetPeerScore() {
+	m.peer_score = nil
+	m.addpeer_score = nil
+	delete(m.clearedFields, papctechnicalscore.FieldPeerScore)
+}
+
+// SetManagerScore sets the "manager_score" field.
+func (m *PaPcTechnicalScoreMutation) SetManagerScore(f float32) {
+	m.manager_score = &f
+	m.addmanager_score = nil
+}
+
+// ManagerScore returns the value of the "manager_score" field in the mutation.
+func (m *PaPcTechnicalScoreMutation) ManagerScore() (r float32, exists bool) {
+	v := m.manager_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldManagerScore returns the old "manager_score" field's value of the PaPcTechnicalScore entity.
+// If the PaPcTechnicalScore object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcTechnicalScoreMutation) OldManagerScore(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldManagerScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldManagerScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldManagerScore: %w", err)
+	}
+	return oldValue.ManagerScore, nil
+}
+
+// AddManagerScore adds f to the "manager_score" field.
+func (m *PaPcTechnicalScoreMutation) AddManagerScore(f float32) {
+	if m.addmanager_score != nil {
+		*m.addmanager_score += f
+	} else {
+		m.addmanager_score = &f
+	}
+}
+
+// AddedManagerScore returns the value that was added to the "manager_score" field in this mutation.
+func (m *PaPcTechnicalScoreMutation) AddedManagerScore() (r float32, exists bool) {
+	v := m.addmanager_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetManagerScore resets all changes to the "manager_score" field.
+func (m *PaPcTechnicalScoreMutation) ResetManagerScore() {
+	m.manager_score = nil
+	m.addmanager_score = nil
+}
+
+// ClearPaPc clears the "pa_pc" edge to the PaPc entity.
+func (m *PaPcTechnicalScoreMutation) ClearPaPc() {
+	m.clearedpa_pc = true
+	m.clearedFields[papctechnicalscore.FieldPaPcID] = struct{}{}
+}
+
+// PaPcCleared reports if the "pa_pc" edge to the PaPc entity was cleared.
+func (m *PaPcTechnicalScoreMutation) PaPcCleared() bool {
+	return m.clearedpa_pc
+}
+
+// PaPcIDs returns the "pa_pc" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PaPcID instead. It exists only for internal usage by the builders.
+func (m *PaPcTechnicalScoreMutation) PaPcIDs() (ids []int) {
+	if id := m.pa_pc; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPaPc resets all changes to the "pa_pc" edge.
+func (m *PaPcTechnicalScoreMutation) ResetPaPc() {
+	m.pa_pc = nil
+	m.clearedpa_pc = false
+}
+
+// Where appends a list predicates to the PaPcTechnicalScoreMutation builder.
+func (m *PaPcTechnicalScoreMutation) Where(ps ...predicate.PaPcTechnicalScore) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PaPcTechnicalScoreMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PaPcTechnicalScoreMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PaPcTechnicalScore, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PaPcTechnicalScoreMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PaPcTechnicalScoreMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PaPcTechnicalScore).
+func (m *PaPcTechnicalScoreMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PaPcTechnicalScoreMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.pa_pc != nil {
+		fields = append(fields, papctechnicalscore.FieldPaPcID)
+	}
+	if m._type != nil {
+		fields = append(fields, papctechnicalscore.FieldType)
+	}
+	if m.skill != nil {
+		fields = append(fields, papctechnicalscore.FieldSkill)
+	}
+	if m.self_score != nil {
+		fields = append(fields, papctechnicalscore.FieldSelfScore)
+	}
+	if m.peer_score != nil {
+		fields = append(fields, papctechnicalscore.FieldPeerScore)
+	}
+	if m.manager_score != nil {
+		fields = append(fields, papctechnicalscore.FieldManagerScore)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PaPcTechnicalScoreMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case papctechnicalscore.FieldPaPcID:
+		return m.PaPcID()
+	case papctechnicalscore.FieldType:
+		return m.GetType()
+	case papctechnicalscore.FieldSkill:
+		return m.Skill()
+	case papctechnicalscore.FieldSelfScore:
+		return m.SelfScore()
+	case papctechnicalscore.FieldPeerScore:
+		return m.PeerScore()
+	case papctechnicalscore.FieldManagerScore:
+		return m.ManagerScore()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PaPcTechnicalScoreMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case papctechnicalscore.FieldPaPcID:
+		return m.OldPaPcID(ctx)
+	case papctechnicalscore.FieldType:
+		return m.OldType(ctx)
+	case papctechnicalscore.FieldSkill:
+		return m.OldSkill(ctx)
+	case papctechnicalscore.FieldSelfScore:
+		return m.OldSelfScore(ctx)
+	case papctechnicalscore.FieldPeerScore:
+		return m.OldPeerScore(ctx)
+	case papctechnicalscore.FieldManagerScore:
+		return m.OldManagerScore(ctx)
+	}
+	return nil, fmt.Errorf("unknown PaPcTechnicalScore field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PaPcTechnicalScoreMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case papctechnicalscore.FieldPaPcID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaPcID(v)
+		return nil
+	case papctechnicalscore.FieldType:
+		v, ok := value.(papctechnicalscore.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case papctechnicalscore.FieldSkill:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSkill(v)
+		return nil
+	case papctechnicalscore.FieldSelfScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSelfScore(v)
+		return nil
+	case papctechnicalscore.FieldPeerScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPeerScore(v)
+		return nil
+	case papctechnicalscore.FieldManagerScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetManagerScore(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PaPcTechnicalScore field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PaPcTechnicalScoreMutation) AddedFields() []string {
+	var fields []string
+	if m.addself_score != nil {
+		fields = append(fields, papctechnicalscore.FieldSelfScore)
+	}
+	if m.addpeer_score != nil {
+		fields = append(fields, papctechnicalscore.FieldPeerScore)
+	}
+	if m.addmanager_score != nil {
+		fields = append(fields, papctechnicalscore.FieldManagerScore)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PaPcTechnicalScoreMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case papctechnicalscore.FieldSelfScore:
+		return m.AddedSelfScore()
+	case papctechnicalscore.FieldPeerScore:
+		return m.AddedPeerScore()
+	case papctechnicalscore.FieldManagerScore:
+		return m.AddedManagerScore()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PaPcTechnicalScoreMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case papctechnicalscore.FieldSelfScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSelfScore(v)
+		return nil
+	case papctechnicalscore.FieldPeerScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPeerScore(v)
+		return nil
+	case papctechnicalscore.FieldManagerScore:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddManagerScore(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PaPcTechnicalScore numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PaPcTechnicalScoreMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(papctechnicalscore.FieldPeerScore) {
+		fields = append(fields, papctechnicalscore.FieldPeerScore)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PaPcTechnicalScoreMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PaPcTechnicalScoreMutation) ClearField(name string) error {
+	switch name {
+	case papctechnicalscore.FieldPeerScore:
+		m.ClearPeerScore()
+		return nil
+	}
+	return fmt.Errorf("unknown PaPcTechnicalScore nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PaPcTechnicalScoreMutation) ResetField(name string) error {
+	switch name {
+	case papctechnicalscore.FieldPaPcID:
+		m.ResetPaPcID()
+		return nil
+	case papctechnicalscore.FieldType:
+		m.ResetType()
+		return nil
+	case papctechnicalscore.FieldSkill:
+		m.ResetSkill()
+		return nil
+	case papctechnicalscore.FieldSelfScore:
+		m.ResetSelfScore()
+		return nil
+	case papctechnicalscore.FieldPeerScore:
+		m.ResetPeerScore()
+		return nil
+	case papctechnicalscore.FieldManagerScore:
+		m.ResetManagerScore()
+		return nil
+	}
+	return fmt.Errorf("unknown PaPcTechnicalScore field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PaPcTechnicalScoreMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.pa_pc != nil {
+		edges = append(edges, papctechnicalscore.EdgePaPc)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PaPcTechnicalScoreMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case papctechnicalscore.EdgePaPc:
+		if id := m.pa_pc; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PaPcTechnicalScoreMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PaPcTechnicalScoreMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PaPcTechnicalScoreMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedpa_pc {
+		edges = append(edges, papctechnicalscore.EdgePaPc)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PaPcTechnicalScoreMutation) EdgeCleared(name string) bool {
+	switch name {
+	case papctechnicalscore.EdgePaPc:
+		return m.clearedpa_pc
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PaPcTechnicalScoreMutation) ClearEdge(name string) error {
+	switch name {
+	case papctechnicalscore.EdgePaPc:
+		m.ClearPaPc()
+		return nil
+	}
+	return fmt.Errorf("unknown PaPcTechnicalScore unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PaPcTechnicalScoreMutation) ResetEdge(name string) error {
+	switch name {
+	case papctechnicalscore.EdgePaPc:
+		m.ResetPaPc()
+		return nil
+	}
+	return fmt.Errorf("unknown PaPcTechnicalScore edge %s", name)
 }

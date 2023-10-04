@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -109,9 +108,6 @@ func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberReq
 		OnConflictColumns(member.FieldEmail).
 		UpdateNewValues()
 
-	fmt.Println("Start date: ", *req.StartDate)
-	fmt.Println("End date: ", *req.EndDate)
-
 	if req.StartDate != nil && *req.StartDate != "" {
 		startDate, _ := time.ParseInLocation("2006-01-02", *req.StartDate, constants.TimeZone)
 		cmd.SetStartDate(startDate)
@@ -123,6 +119,14 @@ func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberReq
 	}
 
 	return cmd.ID(ctx)
+}
+
+func (r *MemberRepository) FindAllByIDIn(ctx context.Context, ids []int, txClient ...*ent.Client) ([]*ent.Member, error) {
+	client := useClient(r.ent, txClient...)
+
+	return client.Member.Query().
+		Where(member.IDIn(ids...)).
+		All(ctx)
 }
 
 func (r *MemberRepository) DeleteByID(ctx context.Context, id int, txClient ...*ent.Client) error {

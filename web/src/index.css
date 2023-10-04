@@ -45,3 +45,11 @@ body {
 .ant-notification-notice .ant-notification-notice-message {
   font-weight: 600;
 }
+
+.ant-form-item-explain-error {
+  font-size: 0.75rem;
+}
+
+.ant-input-number, .ant-input-number-affix-wrapper {
+  width: 100%;
+}

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management/ent/member"
+	"project-management/ent/papc"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -102,6 +103,21 @@ func (mc *MemberCreate) SetStatus(m member.Status) *MemberCreate {
 func (mc *MemberCreate) SetID(i int) *MemberCreate {
 	mc.mutation.SetID(i)
 	return mc
+}
+
+// AddPaPcResultIDs adds the "pa_pc_results" edge to the PaPc entity by IDs.
+func (mc *MemberCreate) AddPaPcResultIDs(ids ...int) *MemberCreate {
+	mc.mutation.AddPaPcResultIDs(ids...)
+	return mc
+}
+
+// AddPaPcResults adds the "pa_pc_results" edges to the PaPc entity.
+func (mc *MemberCreate) AddPaPcResults(p ...*PaPc) *MemberCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mc.AddPaPcResultIDs(ids...)
 }
 
 // Mutation returns the MemberMutation object of the builder.
@@ -264,6 +280,22 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.Status(); ok {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
 		_node.Status = value
+	}
+	if nodes := mc.mutation.PaPcResultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.PaPcResultsTable,
+			Columns: []string{member.PaPcResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(papc.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

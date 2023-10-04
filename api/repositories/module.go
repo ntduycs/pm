@@ -7,6 +7,8 @@ var Module = fx.Provide(
 	NewEntClient,
 
 	NewMemberRepository,
+	NewPaPcRepository,
+	NewPaPcTechnicalScoreRepository,
 )
 
 const (

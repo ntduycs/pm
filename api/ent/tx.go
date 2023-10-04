@@ -14,6 +14,10 @@ type Tx struct {
 	config
 	// Member is the client for interacting with the Member builders.
 	Member *MemberClient
+	// PaPc is the client for interacting with the PaPc builders.
+	PaPc *PaPcClient
+	// PaPcTechnicalScore is the client for interacting with the PaPcTechnicalScore builders.
+	PaPcTechnicalScore *PaPcTechnicalScoreClient
 
 	// lazily loaded.
 	client     *Client
@@ -146,6 +150,8 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Member = NewMemberClient(tx.config)
+	tx.PaPc = NewPaPcClient(tx.config)
+	tx.PaPcTechnicalScore = NewPaPcTechnicalScoreClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

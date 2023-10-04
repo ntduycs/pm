@@ -174,6 +174,87 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/pa-pc-results": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PA/PC"
+                ],
+                "summary": "List PA/PC Results",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Member ID",
+                        "name": "member_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Period",
+                        "name": "period",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ListPaPcResultsResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PA/PC"
+                ],
+                "summary": "Upsert PA/PC Result",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpsertPaPcResultRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EmptyResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -203,6 +284,32 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Member"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pages": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ListPaPcResultsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PaPc"
                     }
                 },
                 "page": {
@@ -262,6 +369,32 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PaPc": {
+            "type": "object",
+            "properties": {
+                "collaboration_score": {
+                    "type": "number"
+                },
+                "development_score": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "member": {
+                    "$ref": "#/definitions/models.Member"
+                },
+                "period": {
+                    "type": "string"
+                },
+                "productivity_score": {
+                    "type": "number"
+                },
+                "technical_score": {
+                    "type": "number"
+                }
+            }
+        },
         "models.UpsertMemberRequest": {
             "type": "object",
             "required": [
@@ -311,6 +444,44 @@ const docTemplate = `{
                 },
                 "total_effort": {
                     "type": "number"
+                }
+            }
+        },
+        "models.UpsertPaPcResultRequest": {
+            "type": "object",
+            "required": [
+                "collaboration_score",
+                "development_score",
+                "member_id",
+                "period",
+                "productivity_score",
+                "technical_score"
+            ],
+            "properties": {
+                "collaboration_score": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "development_score": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "member_id": {
+                    "type": "integer"
+                },
+                "period": {
+                    "type": "string"
+                },
+                "productivity_score": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "technical_score": {
+                    "type": "number",
+                    "minimum": 1
                 }
             }
         }

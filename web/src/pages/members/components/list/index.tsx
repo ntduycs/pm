@@ -1,4 +1,4 @@
-import { Button, Table, TablePaginationConfig, Tag } from 'antd';
+import { Button, Table, Tag } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { listMembersAPI } from '@pm/services';
 import {
@@ -12,35 +12,22 @@ import {
 import { Status } from '@pm/pages/members/components';
 import { Member } from '@pm/models';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-import { FilterValue, SorterResult } from 'antd/es/table/interface';
+import { SorterResult } from 'antd/es/table/interface';
 import { capitalize, toString } from 'lodash';
 import { ColumnProps } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { StyledListMembers } from '@pm/pages/members/components/list/styles.ts';
 import { color } from '@pm/styles';
 import { TableFooter } from '@pm/components';
+import { useTableParams } from '@pm/hooks';
 
 type ListMembersProps = {
   toggleUpsertModal: (rc?: Member) => void;
   toggleDeleteModal: (rc?: Member) => void;
 };
 
-interface TableParams {
-  pagination?: TablePaginationConfig;
-  sorter?: SorterResult<Member>;
-  filters?: Record<string, FilterValue>;
-}
-
 export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListMembersProps) => {
-  const [tableParams, setTableParams] = useState<TableParams>({
-    pagination: {
-      defaultCurrent: 1,
-      defaultPageSize: 10,
-      showSizeChanger: true,
-      position: ['bottomRight', 'topRight'],
-    },
-  });
+  const { tableParams, setTableParams, onTableParamsChange } = useTableParams<Member>();
 
   const { isFetching, data: members } = useQuery({
     queryKey: ['members', tableParams],
@@ -182,30 +169,10 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
     },
   ];
 
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    filters: Record<string, FilterValue | null>,
-    sorter: SorterResult<Member>,
-  ) => {
-    // remove null values from filters
-    const nonNullFilters = Object.fromEntries(
-      Object.entries(filters).filter(([_, v]) => v !== null),
-    ) as Record<string, FilterValue>;
-
-    setTableParams({
-      pagination,
-      filters: nonNullFilters,
-      sorter: {
-        field: sorter.field,
-        order: sorter.order,
-      },
-    });
-  };
-
   return (
     <StyledListMembers>
       <Button
-        className='new-member-btn'
+        className='new-member-btn table-button'
         type='primary'
         onClick={() => toggleUpsertModal()}
       >
@@ -218,7 +185,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
         pagination={tableParams.pagination}
         loading={isFetching}
         onChange={(pagination, filters, sorter) =>
-          handleTableChange(pagination, filters, sorter as SorterResult<Member>)
+          onTableParamsChange(pagination, filters, sorter as SorterResult<Member>)
         }
         dataSource={members?.items || []}
         footer={() => <TableFooter data={members} />}

@@ -4,9 +4,11 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 	"project-management/ent/member"
+	"project-management/ent/papc"
 	"project-management/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -17,10 +19,11 @@ import (
 // MemberQuery is the builder for querying Member entities.
 type MemberQuery struct {
 	config
-	ctx        *QueryContext
-	order      []member.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Member
+	ctx             *QueryContext
+	order           []member.OrderOption
+	inters          []Interceptor
+	predicates      []predicate.Member
+	withPaPcResults *PaPcQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +58,28 @@ func (mq *MemberQuery) Unique(unique bool) *MemberQuery {
 func (mq *MemberQuery) Order(o ...member.OrderOption) *MemberQuery {
 	mq.order = append(mq.order, o...)
 	return mq
+}
+
+// QueryPaPcResults chains the current query on the "pa_pc_results" edge.
+func (mq *MemberQuery) QueryPaPcResults() *PaPcQuery {
+	query := (&PaPcClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(member.Table, member.FieldID, selector),
+			sqlgraph.To(papc.Table, papc.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, member.PaPcResultsTable, member.PaPcResultsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Member entity from the query.
@@ -244,15 +269,27 @@ func (mq *MemberQuery) Clone() *MemberQuery {
 		return nil
 	}
 	return &MemberQuery{
-		config:     mq.config,
-		ctx:        mq.ctx.Clone(),
-		order:      append([]member.OrderOption{}, mq.order...),
-		inters:     append([]Interceptor{}, mq.inters...),
-		predicates: append([]predicate.Member{}, mq.predicates...),
+		config:          mq.config,
+		ctx:             mq.ctx.Clone(),
+		order:           append([]member.OrderOption{}, mq.order...),
+		inters:          append([]Interceptor{}, mq.inters...),
+		predicates:      append([]predicate.Member{}, mq.predicates...),
+		withPaPcResults: mq.withPaPcResults.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
 	}
+}
+
+// WithPaPcResults tells the query-builder to eager-load the nodes that are connected to
+// the "pa_pc_results" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MemberQuery) WithPaPcResults(opts ...func(*PaPcQuery)) *MemberQuery {
+	query := (&PaPcClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withPaPcResults = query
+	return mq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -331,8 +368,11 @@ func (mq *MemberQuery) prepareQuery(ctx context.Context) error {
 
 func (mq *MemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Member, error) {
 	var (
-		nodes = []*Member{}
-		_spec = mq.querySpec()
+		nodes       = []*Member{}
+		_spec       = mq.querySpec()
+		loadedTypes = [1]bool{
+			mq.withPaPcResults != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Member).scanValues(nil, columns)
@@ -340,6 +380,7 @@ func (mq *MemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Membe
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Member{config: mq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +392,45 @@ func (mq *MemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Membe
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := mq.withPaPcResults; query != nil {
+		if err := mq.loadPaPcResults(ctx, query, nodes,
+			func(n *Member) { n.Edges.PaPcResults = []*PaPc{} },
+			func(n *Member, e *PaPc) { n.Edges.PaPcResults = append(n.Edges.PaPcResults, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (mq *MemberQuery) loadPaPcResults(ctx context.Context, query *PaPcQuery, nodes []*Member, init func(*Member), assign func(*Member, *PaPc)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Member)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(papc.FieldMemberID)
+	}
+	query.Where(predicate.PaPc(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(member.PaPcResultsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.MemberID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "member_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (mq *MemberQuery) sqlCount(ctx context.Context) (int, error) {

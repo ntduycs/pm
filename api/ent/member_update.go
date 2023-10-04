@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management/ent/member"
+	"project-management/ent/papc"
 	"project-management/ent/predicate"
 	"time"
 
@@ -137,9 +138,45 @@ func (mu *MemberUpdate) SetStatus(m member.Status) *MemberUpdate {
 	return mu
 }
 
+// AddPaPcResultIDs adds the "pa_pc_results" edge to the PaPc entity by IDs.
+func (mu *MemberUpdate) AddPaPcResultIDs(ids ...int) *MemberUpdate {
+	mu.mutation.AddPaPcResultIDs(ids...)
+	return mu
+}
+
+// AddPaPcResults adds the "pa_pc_results" edges to the PaPc entity.
+func (mu *MemberUpdate) AddPaPcResults(p ...*PaPc) *MemberUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mu.AddPaPcResultIDs(ids...)
+}
+
 // Mutation returns the MemberMutation object of the builder.
 func (mu *MemberUpdate) Mutation() *MemberMutation {
 	return mu.mutation
+}
+
+// ClearPaPcResults clears all "pa_pc_results" edges to the PaPc entity.
+func (mu *MemberUpdate) ClearPaPcResults() *MemberUpdate {
+	mu.mutation.ClearPaPcResults()
+	return mu
+}
+
+// RemovePaPcResultIDs removes the "pa_pc_results" edge to PaPc entities by IDs.
+func (mu *MemberUpdate) RemovePaPcResultIDs(ids ...int) *MemberUpdate {
+	mu.mutation.RemovePaPcResultIDs(ids...)
+	return mu
+}
+
+// RemovePaPcResults removes "pa_pc_results" edges to PaPc entities.
+func (mu *MemberUpdate) RemovePaPcResults(p ...*PaPc) *MemberUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mu.RemovePaPcResultIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -260,6 +297,51 @@ func (mu *MemberUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := mu.mutation.Status(); ok {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
+	}
+	if mu.mutation.PaPcResultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.PaPcResultsTable,
+			Columns: []string{member.PaPcResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(papc.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedPaPcResultsIDs(); len(nodes) > 0 && !mu.mutation.PaPcResultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.PaPcResultsTable,
+			Columns: []string{member.PaPcResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(papc.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.PaPcResultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.PaPcResultsTable,
+			Columns: []string{member.PaPcResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(papc.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -390,9 +472,45 @@ func (muo *MemberUpdateOne) SetStatus(m member.Status) *MemberUpdateOne {
 	return muo
 }
 
+// AddPaPcResultIDs adds the "pa_pc_results" edge to the PaPc entity by IDs.
+func (muo *MemberUpdateOne) AddPaPcResultIDs(ids ...int) *MemberUpdateOne {
+	muo.mutation.AddPaPcResultIDs(ids...)
+	return muo
+}
+
+// AddPaPcResults adds the "pa_pc_results" edges to the PaPc entity.
+func (muo *MemberUpdateOne) AddPaPcResults(p ...*PaPc) *MemberUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return muo.AddPaPcResultIDs(ids...)
+}
+
 // Mutation returns the MemberMutation object of the builder.
 func (muo *MemberUpdateOne) Mutation() *MemberMutation {
 	return muo.mutation
+}
+
+// ClearPaPcResults clears all "pa_pc_results" edges to the PaPc entity.
+func (muo *MemberUpdateOne) ClearPaPcResults() *MemberUpdateOne {
+	muo.mutation.ClearPaPcResults()
+	return muo
+}
+
+// RemovePaPcResultIDs removes the "pa_pc_results" edge to PaPc entities by IDs.
+func (muo *MemberUpdateOne) RemovePaPcResultIDs(ids ...int) *MemberUpdateOne {
+	muo.mutation.RemovePaPcResultIDs(ids...)
+	return muo
+}
+
+// RemovePaPcResults removes "pa_pc_results" edges to PaPc entities.
+func (muo *MemberUpdateOne) RemovePaPcResults(p ...*PaPc) *MemberUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return muo.RemovePaPcResultIDs(ids...)
 }
 
 // Where appends a list predicates to the MemberUpdate builder.
@@ -543,6 +661,51 @@ func (muo *MemberUpdateOne) sqlSave(ctx context.Context) (_node *Member, err err
 	}
 	if value, ok := muo.mutation.Status(); ok {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
+	}
+	if muo.mutation.PaPcResultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.PaPcResultsTable,
+			Columns: []string{member.PaPcResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(papc.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedPaPcResultsIDs(); len(nodes) > 0 && !muo.mutation.PaPcResultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.PaPcResultsTable,
+			Columns: []string{member.PaPcResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(papc.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.PaPcResultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.PaPcResultsTable,
+			Columns: []string{member.PaPcResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(papc.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Member{config: muo.config}
 	_spec.Assign = _node.assignValues

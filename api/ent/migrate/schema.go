@@ -29,14 +29,72 @@ var (
 		Columns:    MemberColumns,
 		PrimaryKey: []*schema.Column{MemberColumns[0]},
 	}
+	// PaPcColumns holds the columns for the "pa_pc" table.
+	PaPcColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "technical_score", Type: field.TypeFloat32},
+		{Name: "productivity_score", Type: field.TypeFloat32},
+		{Name: "collaboration_score", Type: field.TypeFloat32},
+		{Name: "development_score", Type: field.TypeFloat32},
+		{Name: "period", Type: field.TypeString},
+		{Name: "member_id", Type: field.TypeInt},
+	}
+	// PaPcTable holds the schema information for the "pa_pc" table.
+	PaPcTable = &schema.Table{
+		Name:       "pa_pc",
+		Columns:    PaPcColumns,
+		PrimaryKey: []*schema.Column{PaPcColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "pa_pc_member_pa_pc_results",
+				Columns:    []*schema.Column{PaPcColumns[6]},
+				RefColumns: []*schema.Column{MemberColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// PaPcTechnicalScoreColumns holds the columns for the "pa_pc_technical_score" table.
+	PaPcTechnicalScoreColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"soft-skills", "hard-skills"}},
+		{Name: "skill", Type: field.TypeString},
+		{Name: "self_score", Type: field.TypeFloat32},
+		{Name: "peer_score", Type: field.TypeFloat32, Nullable: true},
+		{Name: "manager_score", Type: field.TypeFloat32},
+		{Name: "pa_pc_id", Type: field.TypeInt},
+	}
+	// PaPcTechnicalScoreTable holds the schema information for the "pa_pc_technical_score" table.
+	PaPcTechnicalScoreTable = &schema.Table{
+		Name:       "pa_pc_technical_score",
+		Columns:    PaPcTechnicalScoreColumns,
+		PrimaryKey: []*schema.Column{PaPcTechnicalScoreColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "pa_pc_technical_score_pa_pc_technical_score_details",
+				Columns:    []*schema.Column{PaPcTechnicalScoreColumns[6]},
+				RefColumns: []*schema.Column{PaPcColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		MemberTable,
+		PaPcTable,
+		PaPcTechnicalScoreTable,
 	}
 )
 
 func init() {
 	MemberTable.Annotation = &entsql.Annotation{
 		Table: "member",
+	}
+	PaPcTable.ForeignKeys[0].RefTable = MemberTable
+	PaPcTable.Annotation = &entsql.Annotation{
+		Table: "pa_pc",
+	}
+	PaPcTechnicalScoreTable.ForeignKeys[0].RefTable = PaPcTable
+	PaPcTechnicalScoreTable.Annotation = &entsql.Annotation{
+		Table: "pa_pc_technical_score",
 	}
 }

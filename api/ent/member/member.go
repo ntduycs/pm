@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -33,8 +34,17 @@ const (
 	FieldEndDate = "end_date"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// EdgePaPcResults holds the string denoting the pa_pc_results edge name in mutations.
+	EdgePaPcResults = "pa_pc_results"
 	// Table holds the table name of the member in the database.
 	Table = "member"
+	// PaPcResultsTable is the table that holds the pa_pc_results relation/edge.
+	PaPcResultsTable = "pa_pc"
+	// PaPcResultsInverseTable is the table name for the PaPc entity.
+	// It exists in this package in order to avoid circular dependency with the "papc" package.
+	PaPcResultsInverseTable = "pa_pc"
+	// PaPcResultsColumn is the table column denoting the pa_pc_results relation/edge.
+	PaPcResultsColumn = "member_id"
 )
 
 // Columns holds all SQL columns for member fields.
@@ -176,4 +186,25 @@ func ByEndDate(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByPaPcResultsCount orders the results by pa_pc_results count.
+func ByPaPcResultsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPaPcResultsStep(), opts...)
+	}
+}
+
+// ByPaPcResults orders the results by pa_pc_results terms.
+func ByPaPcResults(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPaPcResultsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newPaPcResultsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PaPcResultsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PaPcResultsTable, PaPcResultsColumn),
+	)
 }

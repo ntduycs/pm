@@ -139,5 +139,6 @@ func NewServer(props ServerProps) *fiber.App {
 
 var Module = fx.Provide(
 	asRouter(NewMemberRouter),
+	asRouter(NewPaPcRouter),
 	NewServer,
 )

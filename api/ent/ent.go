@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"project-management/ent/member"
+	"project-management/ent/papc"
+	"project-management/ent/papctechnicalscore"
 	"reflect"
 	"sync"
 
@@ -73,7 +75,9 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			member.Table: member.ValidColumn,
+			member.Table:             member.ValidColumn,
+			papc.Table:               papc.ValidColumn,
+			papctechnicalscore.Table: papctechnicalscore.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)
