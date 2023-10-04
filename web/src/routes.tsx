@@ -1,6 +1,6 @@
 import { RouteObject, useRoutes } from 'react-router-dom';
 import { DefaultLayout } from '@pm/layouts';
-import { Home, Members, PaPc } from '@pm/pages';
+import { Home, Members, PaPcResults } from '@pm/pages';
 
 const routes: RouteObject[] = [
   {
@@ -16,8 +16,8 @@ const routes: RouteObject[] = [
         element: <Members />,
       },
       {
-        path: '/pa-pc',
-        element: <PaPc />,
+        path: '/pa-pc-results',
+        element: <PaPcResults />,
       },
     ],
   },
