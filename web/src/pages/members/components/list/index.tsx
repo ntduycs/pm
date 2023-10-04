@@ -38,6 +38,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       defaultCurrent: 1,
       defaultPageSize: 10,
       showSizeChanger: true,
+      position: ['bottomRight', 'topRight'],
     },
   });
 
