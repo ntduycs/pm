@@ -46,7 +46,7 @@ export const ListPaPcResultsTable = ({
       const response = await listPaPcResultsAPI({
         page: tableParams.pagination?.current || ApiConstant.DefaultPage,
         size: tableParams.pagination?.pageSize || ApiConstant.DefaultPageSize,
-        sort: toString(tableParams.sorter?.field) || 'member_id',
+        sort: toString(tableParams.sorter?.field) || 'name',
         direction: tableParams.sorter?.order || ApiConstant.DefaultSortDirection,
         member_id: tableParams.filters?.member_id
           ? (tableParams.filters?.member_id as unknown as number)
@@ -91,6 +91,7 @@ export const ListPaPcResultsTable = ({
       },
       sorter: true,
       fixed: 'left',
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Level',
@@ -105,6 +106,10 @@ export const ListPaPcResultsTable = ({
       dataIndex: 'period',
       key: 'period',
       width: 100,
+      filters: ['2023-Q3'].map((value) => ({
+        text: value,
+        value: value,
+      })),
     },
     {
       title: 'Technical (20%)',
