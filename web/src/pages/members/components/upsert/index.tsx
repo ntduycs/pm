@@ -126,8 +126,8 @@ export const UpsertMemberModal = ({
         <Modal
           open={isModalOpened}
           title={member ? 'Edit Member' : 'Add Member'}
-          destroyOnClose
-          keyboard
+          destroyOnClose={true}
+          keyboard={true}
           closable={false}
           footer={null}
         >

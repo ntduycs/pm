@@ -7,6 +7,7 @@ export const StyledListMembers = styled.div`
   .table-button {
     position: absolute;
     top: 18px;
+    z-index: 9;
   }
 
   .active-row {

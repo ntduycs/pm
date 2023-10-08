@@ -68,17 +68,22 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       dataIndex: 'name',
       key: 'name',
       sorter: true,
+      width: 200,
+      fixed: 'left',
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
+      width: 280,
     },
     {
       title: 'Level',
       dataIndex: 'level',
       key: 'level',
       render: (level: number) => `Level ${level}`,
+      width: 100,
+      align: 'center',
     },
     {
       title: 'Positions',
@@ -89,12 +94,15 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
         text: value,
         value: value,
       })),
+      width: 180,
     },
     {
       title: 'KPI (%)',
       dataIndex: 'kpi',
       key: 'kpi',
       render: (kpi: number) => `${kpi}%`,
+      width: 120,
+      align: 'center',
     },
     {
       title: 'Category',
@@ -106,12 +114,16 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       })),
       filterMultiple: false,
       render: (category: TMemberCategory) => capitalize(category),
+      width: 120,
+      align: 'center',
     },
     {
       title: 'Total Effort (%)',
       dataIndex: 'total_effort',
       key: 'total_effort',
       render: (total_effort: number) => `${total_effort}%`,
+      width: 140,
+      align: 'center',
     },
     {
       title: 'Start Date',
@@ -121,6 +133,8 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
         start_date
           ? dayjs(start_date).format(UiConstant.DefaultDateFormat)
           : UiConstant.DefaultEmptyValue,
+      width: 120,
+      align: 'center',
     },
     {
       title: 'End Date',
@@ -130,6 +144,8 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
         end_date
           ? dayjs(end_date).format(UiConstant.DefaultDateFormat)
           : UiConstant.DefaultEmptyValue,
+      width: 120,
+      align: 'center',
     },
     {
       title: 'Status',
@@ -142,11 +158,15 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       })),
       filterMultiple: false,
       defaultFilteredValue: [MemberConstant.Status.ACTIVE],
+      width: 120,
+      align: 'center',
     },
     {
       title: 'Action(s)',
       dataIndex: 'actions',
       key: 'actions',
+      fixed: 'right',
+      width: 100,
       render: (_: unknown, rc: Member) => {
         return (
           <div className='actions'>
@@ -173,7 +193,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
   return (
     <StyledListMembers>
       <Button
-        className='new-member-btn table-button'
+        className='table-button'
         type='primary'
         onClick={() => toggleUpsertModal()}
       >
@@ -181,6 +201,8 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       </Button>
       <Table
         columns={columns}
+        sticky={true}
+        scroll={{ x: 1500 }}
         rowKey={(record: Member) => record.id}
         rowClassName={(record: Member) => `${record.status}-row`}
         pagination={tableParams.pagination}
