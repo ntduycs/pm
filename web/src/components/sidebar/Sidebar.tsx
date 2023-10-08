@@ -2,7 +2,7 @@ import { StyledSidebar } from '@pm/components/sidebar/styles.ts';
 import React, { Key, ReactNode, useEffect, useMemo } from 'react';
 import { Menu, MenuProps } from 'antd';
 import { AuditOutlined, UserSwitchOutlined } from '@ant-design/icons';
-import { useLocation, useNavigate, useParams, useRoutes } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 type MenuItem = Required<MenuProps>['items'][number];
 

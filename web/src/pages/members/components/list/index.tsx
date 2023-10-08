@@ -70,6 +70,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       sorter: true,
       width: 200,
       fixed: 'left',
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Email',

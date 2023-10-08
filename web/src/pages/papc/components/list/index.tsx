@@ -192,6 +192,7 @@ export const ListPaPcResultsTable = ({
       key: 'actions',
       width: 100,
       align: 'center',
+      fixed: 'right',
       render: (_, rc) => {
         return (
           <div className='actions'>
