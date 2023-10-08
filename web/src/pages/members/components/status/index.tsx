@@ -1,10 +1,10 @@
-import { MemberConstant, TStatus } from '@pm/common/constants';
+import { MemberConstant, TMemberStatus } from '@pm/common/constants';
 import { Tag } from 'antd';
 import { capitalize } from 'lodash';
 import { StyledStatus } from '@pm/pages/members/components/status/styles.ts';
 import { color } from '@pm/styles';
 
-export const Status = ({ status }: { status: TStatus }) => {
+export const Status = ({ status }: { status: TMemberStatus }) => {
   return (
     <StyledStatus>
       {status === MemberConstant.Status.ACTIVE ? (

@@ -93,6 +93,20 @@ func (ppu *PaPcUpdate) SetPeriod(s string) *PaPcUpdate {
 	return ppu
 }
 
+// SetNote sets the "note" field.
+func (ppu *PaPcUpdate) SetNote(s string) *PaPcUpdate {
+	ppu.mutation.SetNote(s)
+	return ppu
+}
+
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (ppu *PaPcUpdate) SetNillableNote(s *string) *PaPcUpdate {
+	if s != nil {
+		ppu.SetNote(*s)
+	}
+	return ppu
+}
+
 // SetMember sets the "member" edge to the Member entity.
 func (ppu *PaPcUpdate) SetMember(m *Member) *PaPcUpdate {
 	return ppu.SetMemberID(m.ID)
@@ -218,6 +232,9 @@ func (ppu *PaPcUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ppu.mutation.Period(); ok {
 		_spec.SetField(papc.FieldPeriod, field.TypeString, value)
+	}
+	if value, ok := ppu.mutation.Note(); ok {
+		_spec.SetField(papc.FieldNote, field.TypeString, value)
 	}
 	if ppu.mutation.MemberCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -377,6 +394,20 @@ func (ppuo *PaPcUpdateOne) SetPeriod(s string) *PaPcUpdateOne {
 	return ppuo
 }
 
+// SetNote sets the "note" field.
+func (ppuo *PaPcUpdateOne) SetNote(s string) *PaPcUpdateOne {
+	ppuo.mutation.SetNote(s)
+	return ppuo
+}
+
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (ppuo *PaPcUpdateOne) SetNillableNote(s *string) *PaPcUpdateOne {
+	if s != nil {
+		ppuo.SetNote(*s)
+	}
+	return ppuo
+}
+
 // SetMember sets the "member" edge to the Member entity.
 func (ppuo *PaPcUpdateOne) SetMember(m *Member) *PaPcUpdateOne {
 	return ppuo.SetMemberID(m.ID)
@@ -532,6 +563,9 @@ func (ppuo *PaPcUpdateOne) sqlSave(ctx context.Context) (_node *PaPc, err error)
 	}
 	if value, ok := ppuo.mutation.Period(); ok {
 		_spec.SetField(papc.FieldPeriod, field.TypeString, value)
+	}
+	if value, ok := ppuo.mutation.Note(); ok {
+		_spec.SetField(papc.FieldNote, field.TypeString, value)
 	}
 	if ppuo.mutation.MemberCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -90,6 +90,7 @@ func (r *PaPcRepository) Save(ctx context.Context, req *models.UpsertPaPcResultR
 		SetProductivityScore(req.ProductivityScore).
 		SetCollaborationScore(req.CollaborationScore).
 		SetDevelopmentScore(req.DevelopmentScore).
+		SetNote(req.Note).
 		OnConflictColumns(papc.FieldMemberID, papc.FieldPeriod).
 		UpdateNewValues().
 		ID(ctx)

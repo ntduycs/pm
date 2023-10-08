@@ -24,6 +24,8 @@ const (
 	FieldDevelopmentScore = "development_score"
 	// FieldPeriod holds the string denoting the period field in the database.
 	FieldPeriod = "period"
+	// FieldNote holds the string denoting the note field in the database.
+	FieldNote = "note"
 	// EdgeMember holds the string denoting the member edge name in mutations.
 	EdgeMember = "member"
 	// EdgeTechnicalScoreDetails holds the string denoting the technical_score_details edge name in mutations.
@@ -55,6 +57,7 @@ var Columns = []string{
 	FieldCollaborationScore,
 	FieldDevelopmentScore,
 	FieldPeriod,
+	FieldNote,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -66,6 +69,11 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// DefaultNote holds the default value on creation for the "note" field.
+	DefaultNote string
+)
 
 // OrderOption defines the ordering options for the PaPc queries.
 type OrderOption func(*sql.Selector)
@@ -103,6 +111,11 @@ func ByDevelopmentScore(opts ...sql.OrderTermOption) OrderOption {
 // ByPeriod orders the results by the period field.
 func ByPeriod(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPeriod, opts...).ToFunc()
+}
+
+// ByNote orders the results by the note field.
+func ByNote(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNote, opts...).ToFunc()
 }
 
 // ByMemberField orders the results by member field.

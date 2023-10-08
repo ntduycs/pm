@@ -380,6 +380,9 @@
                 "member": {
                     "$ref": "#/definitions/models.Member"
                 },
+                "note": {
+                    "type": "string"
+                },
                 "period": {
                     "type": "string"
                 },
@@ -467,6 +470,9 @@
                 },
                 "member_id": {
                     "type": "integer"
+                },
+                "note": {
+                    "type": "string"
                 },
                 "period": {
                     "type": "string"

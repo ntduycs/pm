@@ -37,6 +37,7 @@ var (
 		{Name: "collaboration_score", Type: field.TypeFloat32},
 		{Name: "development_score", Type: field.TypeFloat32},
 		{Name: "period", Type: field.TypeString},
+		{Name: "note", Type: field.TypeString, Default: ""},
 		{Name: "member_id", Type: field.TypeInt},
 	}
 	// PaPcTable holds the schema information for the "pa_pc" table.
@@ -47,7 +48,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "pa_pc_member_pa_pc_results",
-				Columns:    []*schema.Column{PaPcColumns[6]},
+				Columns:    []*schema.Column{PaPcColumns[7]},
 				RefColumns: []*schema.Column{MemberColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

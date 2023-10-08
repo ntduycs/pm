@@ -31,6 +31,7 @@ export const UpsertPaPcResultModal = ({
     onSuccess: async () => {
       await queryClient.refetchQueries(['pa-pc-results']);
       form.resetFields();
+      form.setFieldValue('period', import.meta.env.VITE_DEFAULT_PA_PC_PERIOD);
       closeModal();
     },
   });
@@ -54,7 +55,13 @@ export const UpsertPaPcResultModal = ({
 
   const onFormSubmit = async (values: UpsertPaPcResultRequest) => {
     try {
-      const { message } = await upsertPaPcResult(values);
+      const { message } = await upsertPaPcResult({
+        ...values,
+        technical_score: Number(values.technical_score),
+        productivity_score: Number(values.productivity_score),
+        collaboration_score: Number(values.collaboration_score),
+        development_score: Number(values.development_score),
+      });
       api.success({
         message: 'Success!',
         description: message,
@@ -80,7 +87,7 @@ export const UpsertPaPcResultModal = ({
     } else {
       form.resetFields();
       form.setFieldsValue({
-        period: '2023-Q3',
+        period: import.meta.env.VITE_DEFAULT_PA_PC_PERIOD,
       });
     }
   }, [form, paPcResult]);
@@ -113,6 +120,13 @@ export const UpsertPaPcResultModal = ({
               <Input />
             </Form.Item>
             <Form.Item
+              name='period'
+              label='Period'
+              hasFeedback
+            >
+              <Input disabled />
+            </Form.Item>
+            <Form.Item
               name='member_id'
               label='Member'
               hasFeedback
@@ -139,13 +153,6 @@ export const UpsertPaPcResultModal = ({
               />
             </Form.Item>
             <Form.Item
-              name='period'
-              label='Period'
-              hasFeedback
-            >
-              <Input disabled />
-            </Form.Item>
-            <Form.Item
               name='technical_score'
               label='Technical Score'
               hasFeedback
@@ -155,14 +162,12 @@ export const UpsertPaPcResultModal = ({
                   message: 'Please input technical score!',
                 },
                 {
-                  type: 'number',
-                  min: 1,
-                  max: 10,
-                  message: 'Please input number from 1 to 10!',
+                  pattern: new RegExp(/^[0-9](\.[0-9]{1,2})?$/),
+                  message: 'Please input number with 2 decimal places!',
                 },
               ]}
             >
-              <InputNumber />
+              <Input />
             </Form.Item>
             <Form.Item
               name='productivity_score'
@@ -174,15 +179,12 @@ export const UpsertPaPcResultModal = ({
                   message: 'Please input productivity score!',
                 },
                 {
-                  type: 'number',
-                  min: 1,
-                  max: 10,
-                  message: 'Please input number from 1 to 10!',
+                  pattern: new RegExp(/^[0-9](\.[0-9]{1,2})?$/),
+                  message: 'Please input number with 2 decimal places!',
                 },
               ]}
-              validateDebounce={400}
             >
-              <InputNumber />
+              <Input />
             </Form.Item>
             <Form.Item
               name='collaboration_score'
@@ -194,14 +196,12 @@ export const UpsertPaPcResultModal = ({
                   message: 'Please input collaboration score!',
                 },
                 {
-                  type: 'number',
-                  min: 1,
-                  max: 10,
-                  message: 'Please input number from 1 to 10!',
+                  pattern: new RegExp(/^[0-9](\.[0-9]{1,2})?$/),
+                  message: 'Please input number with 2 decimal places!',
                 },
               ]}
             >
-              <InputNumber />
+              <Input />
             </Form.Item>
             <Form.Item
               name='development_score'
@@ -213,14 +213,23 @@ export const UpsertPaPcResultModal = ({
                   message: 'Please input development score!',
                 },
                 {
-                  type: 'number',
-                  min: 1,
-                  max: 10,
-                  message: 'Please input number from 1 to 10!',
+                  pattern: new RegExp(/^[0-9](\.[0-9]{1,2})?$/),
+                  message: 'Please input number with 2 decimal places!',
                 },
               ]}
             >
-              <InputNumber />
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name='note'
+              label='Note'
+            >
+              <Input.TextArea
+                autoSize={{
+                  minRows: 3,
+                  maxRows: 10,
+                }}
+              />
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 12 }}>
               <Space>

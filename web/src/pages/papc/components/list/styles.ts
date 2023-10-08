@@ -6,5 +6,19 @@ export const StyledListMembers = styled.div`
   .table-button {
     position: absolute;
     top: 18px;
+    z-index: 9;
+  }
+
+  .member-info {
+    display: flex;
+    align-items: center;
+
+    .member-tooltip {
+      margin-left: 0.625em;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 `;

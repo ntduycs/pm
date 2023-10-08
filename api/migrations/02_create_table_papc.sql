@@ -11,7 +11,8 @@ create table pa_pc
         constraint pa_pc_collaboration_score_check check (collaboration_score >= 0),
     development_score   real         not null
         constraint pa_pc_development_score_check check (development_score >= 0),
-    period              varchar(127) not null -- in the format of yyyy-mm
+    period              varchar(127) not null, -- in the format of yyyy-mm
+    note                varchar(511) not null default ''
 );
 
 create unique index pa_pc_member_id_period_uindex

@@ -8,6 +8,7 @@ type PaPc struct {
 	CollaborationScore float32 `json:"collaboration_score"`
 	DevelopmentScore   float32 `json:"development_score"`
 	Period             string  `json:"period"`
+	Note               string  `json:"note"`
 }
 
 type PaPcTechnicalScore struct {
@@ -46,6 +47,7 @@ type UpsertPaPcResultRequest struct {
 	CollaborationScore float32 `json:"collaboration_score" validate:"required,gte=1"`
 	DevelopmentScore   float32 `json:"development_score" validate:"required,gte=1"`
 	Period             string  `json:"period" validate:"required"`
+	Note               string  `json:"note"`
 }
 
 type ListPaPcResultsResponse struct {

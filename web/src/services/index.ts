@@ -11,6 +11,8 @@ axios.interceptors.response.use(
   (error) => {
     if (error instanceof AxiosError && error.code === 'ECONNABORTED') {
       return Promise.reject(new Error('Request timed out'));
+    } else if (error.response?.status === 401) {
+      return Promise.reject(new Error('Unauthorized'));
     }
 
     return Promise.reject(error);

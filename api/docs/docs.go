@@ -384,6 +384,9 @@ const docTemplate = `{
                 "member": {
                     "$ref": "#/definitions/models.Member"
                 },
+                "note": {
+                    "type": "string"
+                },
                 "period": {
                     "type": "string"
                 },
@@ -471,6 +474,9 @@ const docTemplate = `{
                 },
                 "member_id": {
                     "type": "integer"
+                },
+                "note": {
+                    "type": "string"
                 },
                 "period": {
                     "type": "string"

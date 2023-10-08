@@ -29,6 +29,8 @@ type PaPc struct {
 	DevelopmentScore float32 `json:"development_score,omitempty"`
 	// Period holds the value of the "period" field.
 	Period string `json:"period,omitempty"`
+	// Note holds the value of the "note" field.
+	Note string `json:"note,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PaPcQuery when eager-loading is set.
 	Edges        PaPcEdges `json:"edges"`
@@ -77,7 +79,7 @@ func (*PaPc) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case papc.FieldID, papc.FieldMemberID:
 			values[i] = new(sql.NullInt64)
-		case papc.FieldPeriod:
+		case papc.FieldPeriod, papc.FieldNote:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -135,6 +137,12 @@ func (pp *PaPc) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field period", values[i])
 			} else if value.Valid {
 				pp.Period = value.String
+			}
+		case papc.FieldNote:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field note", values[i])
+			} else if value.Valid {
+				pp.Note = value.String
 			}
 		default:
 			pp.selectValues.Set(columns[i], values[i])
@@ -199,6 +207,9 @@ func (pp *PaPc) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("period=")
 	builder.WriteString(pp.Period)
+	builder.WriteString(", ")
+	builder.WriteString("note=")
+	builder.WriteString(pp.Note)
 	builder.WriteByte(')')
 	return builder.String()
 }

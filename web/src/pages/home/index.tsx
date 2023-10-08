@@ -18,7 +18,7 @@ export const Home = () => {
           <Module
             title={'PA/PC Report'}
             icon={<AuditOutlined className='module-icon' />}
-            path={'/pa-pc'}
+            path={'/pa-pc-results'}
           />
         </Col>
       </Row>

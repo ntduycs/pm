@@ -21,6 +21,7 @@ func (PaPc) Fields() []ent.Field {
 		field.Float32("collaboration_score"),
 		field.Float32("development_score"),
 		field.String("period"),
+		field.String("note").Default(""),
 	}
 }
 

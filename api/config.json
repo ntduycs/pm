@@ -8,6 +8,6 @@
     "name": "pm"
   },
   "server": {
-    "port": 4000
+    "port": 4444
   }
 }

@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { listMembersAPI } from '@pm/services';
 import {
   MemberConstant,
-  TCategory,
-  TPosition,
-  TStatus,
+  TMemberCategory,
+  TMemberPosition,
+  TMemberStatus,
   ApiConstant,
   UiConstant,
 } from '@pm/common/constants';
@@ -38,14 +38,14 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
         sort: toString(tableParams.sorter?.field) || 'name',
         direction: tableParams.sorter?.order || ApiConstant.DefaultSortDirection,
         category: tableParams.filters?.category
-          ? (tableParams.filters?.category as unknown as TCategory)
+          ? (tableParams.filters?.category as unknown as TMemberCategory)
           : undefined,
         positions: tableParams.filters?.positions
-          ? (tableParams.filters?.positions as unknown as TPosition[])
+          ? (tableParams.filters?.positions as unknown as TMemberPosition[])
           : undefined,
         status: tableParams.filters?.status
-          ? (tableParams.filters?.status as unknown as TStatus)
-          : undefined,
+          ? (tableParams.filters?.status as unknown as TMemberStatus)
+          : MemberConstant.Status.ACTIVE,
       });
       setTableParams({
         ...tableParams,
@@ -84,7 +84,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       title: 'Positions',
       dataIndex: 'positions',
       key: 'positions',
-      render: (positions: TPosition[]) => positions.join(', '),
+      render: (positions: TMemberPosition[]) => positions.join(', '),
       filters: Object.entries(MemberConstant.Position).map(([, value]) => ({
         text: value,
         value: value,
@@ -105,7 +105,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
         value: value,
       })),
       filterMultiple: false,
-      render: (category: TCategory) => capitalize(category),
+      render: (category: TMemberCategory) => capitalize(category),
     },
     {
       title: 'Total Effort (%)',
@@ -135,12 +135,13 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: TStatus) => <Status status={status} />,
+      render: (status: TMemberStatus) => <Status status={status} />,
       filters: Object.entries(MemberConstant.Status).map(([, value]) => ({
         text: capitalize(value),
         value: value,
       })),
       filterMultiple: false,
+      defaultFilteredValue: [MemberConstant.Status.ACTIVE],
     },
     {
       title: 'Action(s)',
@@ -176,7 +177,7 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
         type='primary'
         onClick={() => toggleUpsertModal()}
       >
-        New Member
+        New
       </Button>
       <Table
         columns={columns}

@@ -1100,6 +1100,7 @@ type PaPcMutation struct {
 	development_score              *float32
 	adddevelopment_score           *float32
 	period                         *string
+	note                           *string
 	clearedFields                  map[string]struct{}
 	member                         *int
 	clearedmember                  bool
@@ -1511,6 +1512,42 @@ func (m *PaPcMutation) ResetPeriod() {
 	m.period = nil
 }
 
+// SetNote sets the "note" field.
+func (m *PaPcMutation) SetNote(s string) {
+	m.note = &s
+}
+
+// Note returns the value of the "note" field in the mutation.
+func (m *PaPcMutation) Note() (r string, exists bool) {
+	v := m.note
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNote returns the old "note" field's value of the PaPc entity.
+// If the PaPc object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaPcMutation) OldNote(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNote is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNote requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNote: %w", err)
+	}
+	return oldValue.Note, nil
+}
+
+// ResetNote resets all changes to the "note" field.
+func (m *PaPcMutation) ResetNote() {
+	m.note = nil
+}
+
 // ClearMember clears the "member" edge to the Member entity.
 func (m *PaPcMutation) ClearMember() {
 	m.clearedmember = true
@@ -1626,7 +1663,7 @@ func (m *PaPcMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PaPcMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.member != nil {
 		fields = append(fields, papc.FieldMemberID)
 	}
@@ -1644,6 +1681,9 @@ func (m *PaPcMutation) Fields() []string {
 	}
 	if m.period != nil {
 		fields = append(fields, papc.FieldPeriod)
+	}
+	if m.note != nil {
+		fields = append(fields, papc.FieldNote)
 	}
 	return fields
 }
@@ -1665,6 +1705,8 @@ func (m *PaPcMutation) Field(name string) (ent.Value, bool) {
 		return m.DevelopmentScore()
 	case papc.FieldPeriod:
 		return m.Period()
+	case papc.FieldNote:
+		return m.Note()
 	}
 	return nil, false
 }
@@ -1686,6 +1728,8 @@ func (m *PaPcMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDevelopmentScore(ctx)
 	case papc.FieldPeriod:
 		return m.OldPeriod(ctx)
+	case papc.FieldNote:
+		return m.OldNote(ctx)
 	}
 	return nil, fmt.Errorf("unknown PaPc field %s", name)
 }
@@ -1736,6 +1780,13 @@ func (m *PaPcMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPeriod(v)
+		return nil
+	case papc.FieldNote:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNote(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PaPc field %s", name)
@@ -1854,6 +1905,9 @@ func (m *PaPcMutation) ResetField(name string) error {
 		return nil
 	case papc.FieldPeriod:
 		m.ResetPeriod()
+		return nil
+	case papc.FieldNote:
+		m.ResetNote()
 		return nil
 	}
 	return fmt.Errorf("unknown PaPc field %s", name)

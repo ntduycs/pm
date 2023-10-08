@@ -23,6 +23,7 @@ func (m *PaPcMapper) ToModel(paPc *ent.PaPc) *models.PaPc {
 		CollaborationScore: paPc.CollaborationScore,
 		DevelopmentScore:   paPc.DevelopmentScore,
 		Period:             paPc.Period,
+		Note:               paPc.Note,
 	}
 
 	return model

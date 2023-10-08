@@ -59,6 +59,20 @@ func (ppc *PaPcCreate) SetPeriod(s string) *PaPcCreate {
 	return ppc
 }
 
+// SetNote sets the "note" field.
+func (ppc *PaPcCreate) SetNote(s string) *PaPcCreate {
+	ppc.mutation.SetNote(s)
+	return ppc
+}
+
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (ppc *PaPcCreate) SetNillableNote(s *string) *PaPcCreate {
+	if s != nil {
+		ppc.SetNote(*s)
+	}
+	return ppc
+}
+
 // SetID sets the "id" field.
 func (ppc *PaPcCreate) SetID(i int) *PaPcCreate {
 	ppc.mutation.SetID(i)
@@ -92,6 +106,7 @@ func (ppc *PaPcCreate) Mutation() *PaPcMutation {
 
 // Save creates the PaPc in the database.
 func (ppc *PaPcCreate) Save(ctx context.Context) (*PaPc, error) {
+	ppc.defaults()
 	return withHooks(ctx, ppc.sqlSave, ppc.mutation, ppc.hooks)
 }
 
@@ -117,6 +132,14 @@ func (ppc *PaPcCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ppc *PaPcCreate) defaults() {
+	if _, ok := ppc.mutation.Note(); !ok {
+		v := papc.DefaultNote
+		ppc.mutation.SetNote(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ppc *PaPcCreate) check() error {
 	if _, ok := ppc.mutation.MemberID(); !ok {
@@ -136,6 +159,9 @@ func (ppc *PaPcCreate) check() error {
 	}
 	if _, ok := ppc.mutation.Period(); !ok {
 		return &ValidationError{Name: "period", err: errors.New(`ent: missing required field "PaPc.period"`)}
+	}
+	if _, ok := ppc.mutation.Note(); !ok {
+		return &ValidationError{Name: "note", err: errors.New(`ent: missing required field "PaPc.note"`)}
 	}
 	if _, ok := ppc.mutation.MemberID(); !ok {
 		return &ValidationError{Name: "member", err: errors.New(`ent: missing required edge "PaPc.member"`)}
@@ -192,6 +218,10 @@ func (ppc *PaPcCreate) createSpec() (*PaPc, *sqlgraph.CreateSpec) {
 	if value, ok := ppc.mutation.Period(); ok {
 		_spec.SetField(papc.FieldPeriod, field.TypeString, value)
 		_node.Period = value
+	}
+	if value, ok := ppc.mutation.Note(); ok {
+		_spec.SetField(papc.FieldNote, field.TypeString, value)
+		_node.Note = value
 	}
 	if nodes := ppc.mutation.MemberIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -374,6 +404,18 @@ func (u *PaPcUpsert) UpdatePeriod() *PaPcUpsert {
 	return u
 }
 
+// SetNote sets the "note" field.
+func (u *PaPcUpsert) SetNote(v string) *PaPcUpsert {
+	u.Set(papc.FieldNote, v)
+	return u
+}
+
+// UpdateNote sets the "note" field to the value that was provided on create.
+func (u *PaPcUpsert) UpdateNote() *PaPcUpsert {
+	u.SetExcluded(papc.FieldNote)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -534,6 +576,20 @@ func (u *PaPcUpsertOne) UpdatePeriod() *PaPcUpsertOne {
 	})
 }
 
+// SetNote sets the "note" field.
+func (u *PaPcUpsertOne) SetNote(v string) *PaPcUpsertOne {
+	return u.Update(func(s *PaPcUpsert) {
+		s.SetNote(v)
+	})
+}
+
+// UpdateNote sets the "note" field to the value that was provided on create.
+func (u *PaPcUpsertOne) UpdateNote() *PaPcUpsertOne {
+	return u.Update(func(s *PaPcUpsert) {
+		s.UpdateNote()
+	})
+}
+
 // Exec executes the query.
 func (u *PaPcUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -586,6 +642,7 @@ func (ppcb *PaPcCreateBulk) Save(ctx context.Context) ([]*PaPc, error) {
 	for i := range ppcb.builders {
 		func(i int, root context.Context) {
 			builder := ppcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PaPcMutation)
 				if !ok {
@@ -856,6 +913,20 @@ func (u *PaPcUpsertBulk) SetPeriod(v string) *PaPcUpsertBulk {
 func (u *PaPcUpsertBulk) UpdatePeriod() *PaPcUpsertBulk {
 	return u.Update(func(s *PaPcUpsert) {
 		s.UpdatePeriod()
+	})
+}
+
+// SetNote sets the "note" field.
+func (u *PaPcUpsertBulk) SetNote(v string) *PaPcUpsertBulk {
+	return u.Update(func(s *PaPcUpsert) {
+		s.SetNote(v)
+	})
+}
+
+// UpdateNote sets the "note" field to the value that was provided on create.
+func (u *PaPcUpsertBulk) UpdateNote() *PaPcUpsertBulk {
+	return u.Update(func(s *PaPcUpsert) {
+		s.UpdateNote()
 	})
 }
 

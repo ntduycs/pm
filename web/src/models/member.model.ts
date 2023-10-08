@@ -1,36 +1,41 @@
 import { PageRequest, PageResponse, SingularResponse } from '@pm/models/common.model.ts';
-import { TCategory, TLevel, TPosition, TStatus } from '@pm/common/constants';
+import {
+  TMemberCategory,
+  TMemberLevel,
+  TMemberPosition,
+  TMemberStatus,
+} from '@pm/common/constants';
 
 export interface Member {
   id: number;
   name: string;
   email: string;
-  level: TLevel;
-  positions: TPosition[];
-  category: TCategory;
+  level: TMemberLevel;
+  positions: TMemberPosition[];
+  category: TMemberCategory;
   start_date?: string;
   end_date?: string;
-  status: TStatus;
+  status: TMemberStatus;
   total_effort: number;
   kpi: number;
 }
 
 export interface ListMembersRequest extends PageRequest {
-  category?: TCategory;
-  positions?: TPosition[];
-  status?: TStatus;
+  category?: TMemberCategory;
+  positions?: TMemberPosition[];
+  status?: TMemberStatus;
 }
 
 export interface UpsertMemberRequest {
   id?: number;
   name: string;
   email: string;
-  level: TLevel;
-  position: TPosition[];
-  category: TCategory;
+  level: TMemberLevel;
+  position: TMemberPosition[];
+  category: TMemberCategory;
   start_date?: string;
   end_date?: string;
-  status: TStatus;
+  status: TMemberStatus;
   total_effort: number;
   kpi: number;
 }

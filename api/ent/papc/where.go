@@ -84,6 +84,11 @@ func Period(v string) predicate.PaPc {
 	return predicate.PaPc(sql.FieldEQ(FieldPeriod, v))
 }
 
+// Note applies equality check predicate on the "note" field. It's identical to NoteEQ.
+func Note(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldEQ(FieldNote, v))
+}
+
 // MemberIDEQ applies the EQ predicate on the "member_id" field.
 func MemberIDEQ(v int) predicate.PaPc {
 	return predicate.PaPc(sql.FieldEQ(FieldMemberID, v))
@@ -327,6 +332,71 @@ func PeriodEqualFold(v string) predicate.PaPc {
 // PeriodContainsFold applies the ContainsFold predicate on the "period" field.
 func PeriodContainsFold(v string) predicate.PaPc {
 	return predicate.PaPc(sql.FieldContainsFold(FieldPeriod, v))
+}
+
+// NoteEQ applies the EQ predicate on the "note" field.
+func NoteEQ(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldEQ(FieldNote, v))
+}
+
+// NoteNEQ applies the NEQ predicate on the "note" field.
+func NoteNEQ(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldNEQ(FieldNote, v))
+}
+
+// NoteIn applies the In predicate on the "note" field.
+func NoteIn(vs ...string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldIn(FieldNote, vs...))
+}
+
+// NoteNotIn applies the NotIn predicate on the "note" field.
+func NoteNotIn(vs ...string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldNotIn(FieldNote, vs...))
+}
+
+// NoteGT applies the GT predicate on the "note" field.
+func NoteGT(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldGT(FieldNote, v))
+}
+
+// NoteGTE applies the GTE predicate on the "note" field.
+func NoteGTE(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldGTE(FieldNote, v))
+}
+
+// NoteLT applies the LT predicate on the "note" field.
+func NoteLT(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldLT(FieldNote, v))
+}
+
+// NoteLTE applies the LTE predicate on the "note" field.
+func NoteLTE(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldLTE(FieldNote, v))
+}
+
+// NoteContains applies the Contains predicate on the "note" field.
+func NoteContains(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldContains(FieldNote, v))
+}
+
+// NoteHasPrefix applies the HasPrefix predicate on the "note" field.
+func NoteHasPrefix(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldHasPrefix(FieldNote, v))
+}
+
+// NoteHasSuffix applies the HasSuffix predicate on the "note" field.
+func NoteHasSuffix(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldHasSuffix(FieldNote, v))
+}
+
+// NoteEqualFold applies the EqualFold predicate on the "note" field.
+func NoteEqualFold(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldEqualFold(FieldNote, v))
+}
+
+// NoteContainsFold applies the ContainsFold predicate on the "note" field.
+func NoteContainsFold(v string) predicate.PaPc {
+	return predicate.PaPc(sql.FieldContainsFold(FieldNote, v))
 }
 
 // HasMember applies the HasEdge predicate on the "member" edge.

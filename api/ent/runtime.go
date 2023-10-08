@@ -4,6 +4,7 @@ package ent
 
 import (
 	"project-management/ent/member"
+	"project-management/ent/papc"
 	"project-management/ent/schema"
 )
 
@@ -71,4 +72,10 @@ func init() {
 			return nil
 		}
 	}()
+	papcFields := schema.PaPc{}.Fields()
+	_ = papcFields
+	// papcDescNote is the schema descriptor for note field.
+	papcDescNote := papcFields[7].Descriptor()
+	// papc.DefaultNote holds the default value on creation for the note field.
+	papc.DefaultNote = papcDescNote.Default.(string)
 }

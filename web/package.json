@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "prettier:fix": "prettier --write .",
     "compile": "tsc --noEmit",
-    "format": "yarn compile && yarn prettier:fix && yarn lint:fix"
+    "format": "yarn prettier:fix && yarn lint:fix && yarn compile"
   },
   "browserslist": [
     "defaults"
@@ -22,7 +22,7 @@
   "packageManager": "yarn@1.22.19",
   "dependencies": {
     "@ant-design/icons": "^5.2.5",
-    "@tanstack/react-query": "^4.35.7",
+    "@tanstack/react-query": "^4.36.1",
     "antd": "^5.9.4",
     "axios": "^1.5.1",
     "dayjs": "^1.11.9",
@@ -36,16 +36,16 @@
     "styled-components": "^6.0.7"
   },
   "devDependencies": {
-    "@tanstack/eslint-plugin-query": "^4.36.0",
+    "@tanstack/eslint-plugin-query": "^4.36.1",
     "@types/lodash": "^4.14.199",
-    "@types/node": "^20.8.2",
-    "@types/react": "^18.2.24",
-    "@types/react-dom": "^18.2.9",
+    "@types/node": "^20.8.3",
+    "@types/react": "^18.2.25",
+    "@types/react-dom": "^18.2.11",
     "@types/styled-components": "^5.1.28",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "@vitejs/plugin-react": "^4.1.0",
-    "eslint": "^8.45.0",
+    "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.33.2",
@@ -53,6 +53,6 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "prettier": "^3.0.2",
     "typescript": "^5.0.2",
-    "vite": "^4.4.10"
+    "vite": "^4.4.11"
   }
 }
