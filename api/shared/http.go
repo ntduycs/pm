@@ -78,6 +78,8 @@ func Do[T any](config *Config, empty T) (T, error) {
 
 	request.Header = header
 
+	logger.Debug("Sending request", zap.String("url", config.BaseUrl), zap.String("method", config.Method))
+
 	response, err := httpClient.Do(request)
 	if err != nil {
 		return empty, err
