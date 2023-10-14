@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -15,10 +14,12 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"project-management/controllers"
+	"project-management/integrations"
 	"project-management/mappers"
 	"project-management/repositories"
 	"project-management/routers"
 	"project-management/services"
+	"project-management/shared"
 	"project-management/validators"
 )
 
@@ -57,20 +58,12 @@ func main() {
 				Logger: logger.WithOptions(zap.IncreaseLevel(zapcore.WarnLevel)),
 			}
 		}),
-		fx.Provide(func() *zap.Logger {
-			config := zap.NewDevelopmentConfig()
-			config.EncoderConfig.ConsoleSeparator = "  |  "
-			config.EncoderConfig.EncodeTime = func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-				encoder.AppendString(t.Format("2006-01-02 15:04:05"))
-			}
-
-			logger, _ := config.Build()
-			return logger
-		}),
+		shared.Module,
 		repositories.Module,
 		mappers.Module,
 		validators.Module,
 		services.Module,
+		integrations.Module,
 		controllers.Module,
 		routers.Module,
 		fx.Invoke(func(*fiber.App) {}),

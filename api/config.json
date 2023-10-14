@@ -9,5 +9,9 @@
   },
   "server": {
     "port": 4444
+  },
+  "jira": {
+    "username": "",
+    "password": ""
   }
 }

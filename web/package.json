@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start:dev": "vite",
-    "build:prod": "tsc && vite build --mode production",
+    "dev": "vite",
+    "build": "tsc && vite build --mode production",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview",
@@ -33,12 +33,12 @@
     "react-json-pretty": "^2.2.0",
     "react-router-dom": "^6.15.0",
     "recoil": "^0.7.7",
-    "styled-components": "^6.0.9"
+    "styled-components": "^6.1.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.36.1",
     "@types/lodash": "^4.14.199",
-    "@types/node": "^20.8.4",
+    "@types/node": "^20.8.6",
     "@types/react": "^18.2.28",
     "@types/react-dom": "^18.2.13",
     "@types/styled-components": "^5.1.28",
