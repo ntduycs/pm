@@ -27,6 +27,7 @@ func (Member) Fields() []ent.Field {
 		field.Time("start_date").Optional().Nillable().Comment("start date of member"),
 		field.Time("end_date").Optional().Nillable().Comment("end date of member"),
 		field.Enum("status").Values(constants.CommonStatuses...),
+		field.String("jira_name").Default(""),
 	}
 }
 

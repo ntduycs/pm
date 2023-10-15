@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var logger = NewLogger()
+var Logger = NewLogger()
 
 func NewLogger() *zap.Logger {
 	config := zap.NewDevelopmentConfig()

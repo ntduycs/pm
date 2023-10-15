@@ -138,6 +138,20 @@ func (mu *MemberUpdate) SetStatus(m member.Status) *MemberUpdate {
 	return mu
 }
 
+// SetJiraName sets the "jira_name" field.
+func (mu *MemberUpdate) SetJiraName(s string) *MemberUpdate {
+	mu.mutation.SetJiraName(s)
+	return mu
+}
+
+// SetNillableJiraName sets the "jira_name" field if the given value is not nil.
+func (mu *MemberUpdate) SetNillableJiraName(s *string) *MemberUpdate {
+	if s != nil {
+		mu.SetJiraName(*s)
+	}
+	return mu
+}
+
 // AddPaPcResultIDs adds the "pa_pc_results" edge to the PaPc entity by IDs.
 func (mu *MemberUpdate) AddPaPcResultIDs(ids ...int) *MemberUpdate {
 	mu.mutation.AddPaPcResultIDs(ids...)
@@ -297,6 +311,9 @@ func (mu *MemberUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := mu.mutation.Status(); ok {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := mu.mutation.JiraName(); ok {
+		_spec.SetField(member.FieldJiraName, field.TypeString, value)
 	}
 	if mu.mutation.PaPcResultsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -469,6 +486,20 @@ func (muo *MemberUpdateOne) ClearEndDate() *MemberUpdateOne {
 // SetStatus sets the "status" field.
 func (muo *MemberUpdateOne) SetStatus(m member.Status) *MemberUpdateOne {
 	muo.mutation.SetStatus(m)
+	return muo
+}
+
+// SetJiraName sets the "jira_name" field.
+func (muo *MemberUpdateOne) SetJiraName(s string) *MemberUpdateOne {
+	muo.mutation.SetJiraName(s)
+	return muo
+}
+
+// SetNillableJiraName sets the "jira_name" field if the given value is not nil.
+func (muo *MemberUpdateOne) SetNillableJiraName(s *string) *MemberUpdateOne {
+	if s != nil {
+		muo.SetJiraName(*s)
+	}
 	return muo
 }
 
@@ -661,6 +692,9 @@ func (muo *MemberUpdateOne) sqlSave(ctx context.Context) (_node *Member, err err
 	}
 	if value, ok := muo.mutation.Status(); ok {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := muo.mutation.JiraName(); ok {
+		_spec.SetField(member.FieldJiraName, field.TypeString, value)
 	}
 	if muo.mutation.PaPcResultsCleared() {
 		edge := &sqlgraph.EdgeSpec{

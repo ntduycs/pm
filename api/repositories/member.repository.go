@@ -105,6 +105,7 @@ func (r *MemberRepository) Save(ctx context.Context, req *models.UpsertMemberReq
 		SetCategory(member.Category(req.Category)).
 		SetStatus(member.Status(req.Status)).
 		SetTotalEffort(req.TotalEffort).
+		SetJiraName(req.JiraName).
 		OnConflictColumns(member.FieldEmail).
 		UpdateNewValues()
 
@@ -126,6 +127,14 @@ func (r *MemberRepository) FindAllByIDIn(ctx context.Context, ids []int, txClien
 
 	return client.Member.Query().
 		Where(member.IDIn(ids...)).
+		All(ctx)
+}
+
+func (r *MemberRepository) FindAllByJiraNameIn(ctx context.Context, jiraNames []string, txClient ...*ent.Client) ([]*ent.Member, error) {
+	client := useClient(r.ent, txClient...)
+
+	return client.Member.Query().
+		Where(member.JiraNameIn(jiraNames...)).
 		All(ctx)
 }
 

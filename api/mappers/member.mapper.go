@@ -26,6 +26,7 @@ func (m *MemberMapper) ToModel(member *ent.Member) *models.Member {
 		Category:    string(member.Category),
 		TotalEffort: member.TotalEffort,
 		Status:      string(member.Status),
+		JiraName:    member.JiraName,
 	}
 
 	if member.StartDate != nil {

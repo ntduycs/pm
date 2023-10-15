@@ -1,6 +1,6 @@
 import { Member, PaPcResult } from '@pm/models';
 import { useQuery } from '@tanstack/react-query';
-import { listPaPcResultsAPI } from '@pm/services/papc.service.ts';
+import { listPaPcResultsAPI } from '@pm/services';
 import { ApiConstant } from '@pm/common/constants';
 import { toString } from 'lodash';
 import { ColumnProps } from 'antd/es/table';

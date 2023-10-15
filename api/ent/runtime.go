@@ -72,6 +72,10 @@ func init() {
 			return nil
 		}
 	}()
+	// memberDescJiraName is the schema descriptor for jira_name field.
+	memberDescJiraName := memberFields[11].Descriptor()
+	// member.DefaultJiraName holds the default value on creation for the jira_name field.
+	member.DefaultJiraName = memberDescJiraName.Default.(string)
 	papcFields := schema.PaPc{}.Fields()
 	_ = papcFields
 	// papcDescNote is the schema descriptor for note field.

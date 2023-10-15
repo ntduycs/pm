@@ -1,6 +1,6 @@
 import { StyledAddMember } from '@pm/pages/members/components/upsert/styles.ts';
 import React, { useEffect } from 'react';
-import { ApiConstant, MemberConstant } from '@pm/common/constants';
+import { ApiConstant, MemberConstant, UiConstant } from '@pm/common/constants';
 import dayjs from 'dayjs';
 import { Button, DatePicker, Form, Input, Modal, notification, Select, Space } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -78,14 +78,14 @@ export const UpsertMemberModal = ({
       };
       const { message } = await upsertMember(values);
       api.success({
-        message: 'Success!',
+        message: UiConstant.SuccessMessage,
         description: message,
         placement: 'topRight',
         duration: 2,
       });
     } catch (error: unknown) {
       api.error({
-        message: 'Error!',
+        message: UiConstant.ErrorMessage,
         description: error instanceof Error ? error.message : 'Unknown error',
         placement: 'topRight',
         duration: 3,
@@ -99,6 +99,7 @@ export const UpsertMemberModal = ({
         id: member.id,
         name: member.name,
         email: member.email.substring(0, member.email.indexOf('@')),
+        jira_name: member.jira_name,
         level: member.level,
         positions: member.positions,
         kpi: member.kpi,
@@ -173,6 +174,19 @@ export const UpsertMemberModal = ({
               ]}
             >
               <Input addonAfter={<span>@banvien.com.vn</span>} />
+            </Form.Item>
+            <Form.Item
+              name='jira_name'
+              label='Jira Name'
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input Jira name',
+                },
+              ]}
+            >
+              <Input />
             </Form.Item>
             <Form.Item
               name='level'

@@ -99,6 +99,20 @@ func (mc *MemberCreate) SetStatus(m member.Status) *MemberCreate {
 	return mc
 }
 
+// SetJiraName sets the "jira_name" field.
+func (mc *MemberCreate) SetJiraName(s string) *MemberCreate {
+	mc.mutation.SetJiraName(s)
+	return mc
+}
+
+// SetNillableJiraName sets the "jira_name" field if the given value is not nil.
+func (mc *MemberCreate) SetNillableJiraName(s *string) *MemberCreate {
+	if s != nil {
+		mc.SetJiraName(*s)
+	}
+	return mc
+}
+
 // SetID sets the "id" field.
 func (mc *MemberCreate) SetID(i int) *MemberCreate {
 	mc.mutation.SetID(i)
@@ -127,6 +141,7 @@ func (mc *MemberCreate) Mutation() *MemberMutation {
 
 // Save creates the Member in the database.
 func (mc *MemberCreate) Save(ctx context.Context) (*Member, error) {
+	mc.defaults()
 	return withHooks(ctx, mc.sqlSave, mc.mutation, mc.hooks)
 }
 
@@ -149,6 +164,14 @@ func (mc *MemberCreate) Exec(ctx context.Context) error {
 func (mc *MemberCreate) ExecX(ctx context.Context) {
 	if err := mc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (mc *MemberCreate) defaults() {
+	if _, ok := mc.mutation.JiraName(); !ok {
+		v := member.DefaultJiraName
+		mc.mutation.SetJiraName(v)
 	}
 }
 
@@ -207,6 +230,9 @@ func (mc *MemberCreate) check() error {
 		if err := member.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Member.status": %w`, err)}
 		}
+	}
+	if _, ok := mc.mutation.JiraName(); !ok {
+		return &ValidationError{Name: "jira_name", err: errors.New(`ent: missing required field "Member.jira_name"`)}
 	}
 	return nil
 }
@@ -280,6 +306,10 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.Status(); ok {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
 		_node.Status = value
+	}
+	if value, ok := mc.mutation.JiraName(); ok {
+		_spec.SetField(member.FieldJiraName, field.TypeString, value)
+		_node.JiraName = value
 	}
 	if nodes := mc.mutation.PaPcResultsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -496,6 +526,18 @@ func (u *MemberUpsert) SetStatus(v member.Status) *MemberUpsert {
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *MemberUpsert) UpdateStatus() *MemberUpsert {
 	u.SetExcluded(member.FieldStatus)
+	return u
+}
+
+// SetJiraName sets the "jira_name" field.
+func (u *MemberUpsert) SetJiraName(v string) *MemberUpsert {
+	u.Set(member.FieldJiraName, v)
+	return u
+}
+
+// UpdateJiraName sets the "jira_name" field to the value that was provided on create.
+func (u *MemberUpsert) UpdateJiraName() *MemberUpsert {
+	u.SetExcluded(member.FieldJiraName)
 	return u
 }
 
@@ -722,6 +764,20 @@ func (u *MemberUpsertOne) UpdateStatus() *MemberUpsertOne {
 	})
 }
 
+// SetJiraName sets the "jira_name" field.
+func (u *MemberUpsertOne) SetJiraName(v string) *MemberUpsertOne {
+	return u.Update(func(s *MemberUpsert) {
+		s.SetJiraName(v)
+	})
+}
+
+// UpdateJiraName sets the "jira_name" field to the value that was provided on create.
+func (u *MemberUpsertOne) UpdateJiraName() *MemberUpsertOne {
+	return u.Update(func(s *MemberUpsert) {
+		s.UpdateJiraName()
+	})
+}
+
 // Exec executes the query.
 func (u *MemberUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -774,6 +830,7 @@ func (mcb *MemberCreateBulk) Save(ctx context.Context) ([]*Member, error) {
 	for i := range mcb.builders {
 		func(i int, root context.Context) {
 			builder := mcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*MemberMutation)
 				if !ok {
@@ -1107,6 +1164,20 @@ func (u *MemberUpsertBulk) SetStatus(v member.Status) *MemberUpsertBulk {
 func (u *MemberUpsertBulk) UpdateStatus() *MemberUpsertBulk {
 	return u.Update(func(s *MemberUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetJiraName sets the "jira_name" field.
+func (u *MemberUpsertBulk) SetJiraName(v string) *MemberUpsertBulk {
+	return u.Update(func(s *MemberUpsert) {
+		s.SetJiraName(v)
+	})
+}
+
+// UpdateJiraName sets the "jira_name" field to the value that was provided on create.
+func (u *MemberUpsertBulk) UpdateJiraName() *MemberUpsertBulk {
+	return u.Update(func(s *MemberUpsert) {
+		s.UpdateJiraName()
 	})
 }
 

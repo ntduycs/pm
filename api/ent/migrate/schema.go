@@ -22,6 +22,7 @@ var (
 		{Name: "start_date", Type: field.TypeTime, Nullable: true},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"active", "inactive", "pending"}},
+		{Name: "jira_name", Type: field.TypeString, Default: ""},
 	}
 	// MemberTable holds the schema information for the "member" table.
 	MemberTable = &schema.Table{

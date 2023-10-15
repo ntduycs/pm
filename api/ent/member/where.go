@@ -95,6 +95,11 @@ func EndDate(v time.Time) predicate.Member {
 	return predicate.Member(sql.FieldEQ(FieldEndDate, v))
 }
 
+// JiraName applies equality check predicate on the "jira_name" field. It's identical to JiraNameEQ.
+func JiraName(v string) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldJiraName, v))
+}
+
 // EmailEQ applies the EQ predicate on the "email" field.
 func EmailEQ(v string) predicate.Member {
 	return predicate.Member(sql.FieldEQ(FieldEmail, v))
@@ -548,6 +553,71 @@ func StatusIn(vs ...Status) predicate.Member {
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...Status) predicate.Member {
 	return predicate.Member(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// JiraNameEQ applies the EQ predicate on the "jira_name" field.
+func JiraNameEQ(v string) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldJiraName, v))
+}
+
+// JiraNameNEQ applies the NEQ predicate on the "jira_name" field.
+func JiraNameNEQ(v string) predicate.Member {
+	return predicate.Member(sql.FieldNEQ(FieldJiraName, v))
+}
+
+// JiraNameIn applies the In predicate on the "jira_name" field.
+func JiraNameIn(vs ...string) predicate.Member {
+	return predicate.Member(sql.FieldIn(FieldJiraName, vs...))
+}
+
+// JiraNameNotIn applies the NotIn predicate on the "jira_name" field.
+func JiraNameNotIn(vs ...string) predicate.Member {
+	return predicate.Member(sql.FieldNotIn(FieldJiraName, vs...))
+}
+
+// JiraNameGT applies the GT predicate on the "jira_name" field.
+func JiraNameGT(v string) predicate.Member {
+	return predicate.Member(sql.FieldGT(FieldJiraName, v))
+}
+
+// JiraNameGTE applies the GTE predicate on the "jira_name" field.
+func JiraNameGTE(v string) predicate.Member {
+	return predicate.Member(sql.FieldGTE(FieldJiraName, v))
+}
+
+// JiraNameLT applies the LT predicate on the "jira_name" field.
+func JiraNameLT(v string) predicate.Member {
+	return predicate.Member(sql.FieldLT(FieldJiraName, v))
+}
+
+// JiraNameLTE applies the LTE predicate on the "jira_name" field.
+func JiraNameLTE(v string) predicate.Member {
+	return predicate.Member(sql.FieldLTE(FieldJiraName, v))
+}
+
+// JiraNameContains applies the Contains predicate on the "jira_name" field.
+func JiraNameContains(v string) predicate.Member {
+	return predicate.Member(sql.FieldContains(FieldJiraName, v))
+}
+
+// JiraNameHasPrefix applies the HasPrefix predicate on the "jira_name" field.
+func JiraNameHasPrefix(v string) predicate.Member {
+	return predicate.Member(sql.FieldHasPrefix(FieldJiraName, v))
+}
+
+// JiraNameHasSuffix applies the HasSuffix predicate on the "jira_name" field.
+func JiraNameHasSuffix(v string) predicate.Member {
+	return predicate.Member(sql.FieldHasSuffix(FieldJiraName, v))
+}
+
+// JiraNameEqualFold applies the EqualFold predicate on the "jira_name" field.
+func JiraNameEqualFold(v string) predicate.Member {
+	return predicate.Member(sql.FieldEqualFold(FieldJiraName, v))
+}
+
+// JiraNameContainsFold applies the ContainsFold predicate on the "jira_name" field.
+func JiraNameContainsFold(v string) predicate.Member {
+	return predicate.Member(sql.FieldContainsFold(FieldJiraName, v))
 }
 
 // HasPaPcResults applies the HasEdge predicate on the "pa_pc_results" edge.

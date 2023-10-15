@@ -1,6 +1,6 @@
 import { RouteObject, useRoutes } from 'react-router-dom';
 import { DefaultLayout } from '@pm/layouts';
-import { Home, Members, PaPcResults } from '@pm/pages';
+import { EffortAllocation, Home, Members, PaPcResults } from '@pm/pages';
 
 const routes: RouteObject[] = [
   {
@@ -18,6 +18,10 @@ const routes: RouteObject[] = [
       {
         path: '/pa-pc-results',
         element: <PaPcResults />,
+      },
+      {
+        path: '/effort-allocation',
+        element: <EffortAllocation />,
       },
     ],
   },

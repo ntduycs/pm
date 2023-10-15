@@ -34,6 +34,8 @@ const (
 	FieldEndDate = "end_date"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldJiraName holds the string denoting the jira_name field in the database.
+	FieldJiraName = "jira_name"
 	// EdgePaPcResults holds the string denoting the pa_pc_results edge name in mutations.
 	EdgePaPcResults = "pa_pc_results"
 	// Table holds the table name of the member in the database.
@@ -60,6 +62,7 @@ var Columns = []string{
 	FieldStartDate,
 	FieldEndDate,
 	FieldStatus,
+	FieldJiraName,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -81,6 +84,8 @@ var (
 	KpiValidator func(int) error
 	// TotalEffortValidator is a validator for the "total_effort" field. It is called by the builders before save.
 	TotalEffortValidator func(float32) error
+	// DefaultJiraName holds the default value on creation for the "jira_name" field.
+	DefaultJiraName string
 )
 
 // Category defines the type for the "category" enum field.
@@ -186,6 +191,11 @@ func ByEndDate(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByJiraName orders the results by the jira_name field.
+func ByJiraName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldJiraName, opts...).ToFunc()
 }
 
 // ByPaPcResultsCount orders the results by pa_pc_results count.

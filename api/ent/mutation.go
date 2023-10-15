@@ -50,6 +50,7 @@ type MemberMutation struct {
 	start_date           *time.Time
 	end_date             *time.Time
 	status               *member.Status
+	jira_name            *string
 	clearedFields        map[string]struct{}
 	pa_pc_results        map[int]struct{}
 	removedpa_pc_results map[int]struct{}
@@ -609,6 +610,42 @@ func (m *MemberMutation) ResetStatus() {
 	m.status = nil
 }
 
+// SetJiraName sets the "jira_name" field.
+func (m *MemberMutation) SetJiraName(s string) {
+	m.jira_name = &s
+}
+
+// JiraName returns the value of the "jira_name" field in the mutation.
+func (m *MemberMutation) JiraName() (r string, exists bool) {
+	v := m.jira_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldJiraName returns the old "jira_name" field's value of the Member entity.
+// If the Member object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberMutation) OldJiraName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldJiraName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldJiraName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldJiraName: %w", err)
+	}
+	return oldValue.JiraName, nil
+}
+
+// ResetJiraName resets all changes to the "jira_name" field.
+func (m *MemberMutation) ResetJiraName() {
+	m.jira_name = nil
+}
+
 // AddPaPcResultIDs adds the "pa_pc_results" edge to the PaPc entity by ids.
 func (m *MemberMutation) AddPaPcResultIDs(ids ...int) {
 	if m.pa_pc_results == nil {
@@ -697,7 +734,7 @@ func (m *MemberMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MemberMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.email != nil {
 		fields = append(fields, member.FieldEmail)
 	}
@@ -728,6 +765,9 @@ func (m *MemberMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, member.FieldStatus)
 	}
+	if m.jira_name != nil {
+		fields = append(fields, member.FieldJiraName)
+	}
 	return fields
 }
 
@@ -756,6 +796,8 @@ func (m *MemberMutation) Field(name string) (ent.Value, bool) {
 		return m.EndDate()
 	case member.FieldStatus:
 		return m.Status()
+	case member.FieldJiraName:
+		return m.JiraName()
 	}
 	return nil, false
 }
@@ -785,6 +827,8 @@ func (m *MemberMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldEndDate(ctx)
 	case member.FieldStatus:
 		return m.OldStatus(ctx)
+	case member.FieldJiraName:
+		return m.OldJiraName(ctx)
 	}
 	return nil, fmt.Errorf("unknown Member field %s", name)
 }
@@ -863,6 +907,13 @@ func (m *MemberMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case member.FieldJiraName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetJiraName(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Member field %s", name)
@@ -996,6 +1047,9 @@ func (m *MemberMutation) ResetField(name string) error {
 		return nil
 	case member.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case member.FieldJiraName:
+		m.ResetJiraName()
 		return nil
 	}
 	return fmt.Errorf("unknown Member field %s", name)

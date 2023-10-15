@@ -24,7 +24,7 @@ const getMenuItem = (
   } as MenuItem;
 };
 
-const rootMenuKeys: string[] = ['members', 'pa-pc-results'];
+const rootMenuKeys: string[] = ['members', 'pa-pc-results', 'effort-allocation'];
 
 const Sidebar = () => {
   const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
@@ -39,6 +39,14 @@ const Sidebar = () => {
       ),
       getMenuItem('PA/PC Report', 'pa-pc-results', <AuditOutlined />, undefined, undefined, () =>
         navigate('/pa-pc-results'),
+      ),
+      getMenuItem(
+        'Effort Allocation',
+        'effort-allocation',
+        <AuditOutlined />,
+        undefined,
+        undefined,
+        () => navigate('/effort-allocation'),
       ),
     ],
     [navigate],

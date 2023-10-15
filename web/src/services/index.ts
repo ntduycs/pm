@@ -13,6 +13,8 @@ axios.interceptors.response.use(
       return Promise.reject(new Error('Request timed out'));
     } else if (error.response?.status === 401) {
       return Promise.reject(new Error('Unauthorized'));
+    } else if (error.response?.status === 404) {
+      return Promise.reject(new Error('Not found'));
     }
 
     return Promise.reject(error);
@@ -26,3 +28,5 @@ axios.interceptors.request.use((config) => {
 });
 
 export * from './member.service';
+export * from './effort-allocation.service';
+export * from './papc.service';

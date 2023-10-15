@@ -78,7 +78,7 @@ func Do[T any](config *Config, empty T) (T, error) {
 
 	request.Header = header
 
-	logger.Debug("Sending request", zap.String("url", config.BaseUrl), zap.String("method", config.Method))
+	Logger.Debug("Sending request", zap.String("url", config.BaseUrl), zap.String("method", config.Method))
 
 	response, err := httpClient.Do(request)
 	if err != nil {
@@ -111,7 +111,7 @@ func Do[T any](config *Config, empty T) (T, error) {
 		go func() {
 			defer func() {
 				if e := recover(); e != nil {
-					logger.Error("panic occurred but being recovered", zap.Error(errors.New(fmt.Sprintf("%v", e))))
+					Logger.Error("panic occurred but being recovered", zap.Error(errors.New(fmt.Sprintf("%v", e))))
 				}
 			}()
 

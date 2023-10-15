@@ -7,6 +7,11 @@ type PageRequest struct {
 	Direction string `json:"direction" default:"asc"`
 }
 
+type ListRequest struct {
+	Sort      string `json:"sort" default:"name"`
+	Direction string `json:"direction" default:"asc"`
+}
+
 type IDRequest struct {
 	ID int `json:"id" validate:"required,min=1"`
 }
@@ -17,6 +22,10 @@ type PageResponse struct {
 	Pages int `json:"pages"`
 	Total int `json:"total"`
 	Count int `json:"count"`
+}
+
+type ListResponse struct {
+	Total int `json:"total"`
 }
 
 type EmptyResponse struct {

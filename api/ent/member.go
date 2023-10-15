@@ -37,6 +37,8 @@ type Member struct {
 	EndDate *time.Time `json:"end_date,omitempty"`
 	// Status holds the value of the "status" field.
 	Status member.Status `json:"status,omitempty"`
+	// JiraName holds the value of the "jira_name" field.
+	JiraName string `json:"jira_name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MemberQuery when eager-loading is set.
 	Edges        MemberEdges `json:"edges"`
@@ -70,7 +72,7 @@ func (*Member) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case member.FieldID, member.FieldLevel, member.FieldKpi:
 			values[i] = new(sql.NullInt64)
-		case member.FieldEmail, member.FieldName, member.FieldPositions, member.FieldCategory, member.FieldStatus:
+		case member.FieldEmail, member.FieldName, member.FieldPositions, member.FieldCategory, member.FieldStatus, member.FieldJiraName:
 			values[i] = new(sql.NullString)
 		case member.FieldStartDate, member.FieldEndDate:
 			values[i] = new(sql.NullTime)
@@ -157,6 +159,12 @@ func (m *Member) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.Status = member.Status(value.String)
 			}
+		case member.FieldJiraName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field jira_name", values[i])
+			} else if value.Valid {
+				m.JiraName = value.String
+			}
 		default:
 			m.selectValues.Set(columns[i], values[i])
 		}
@@ -231,6 +239,9 @@ func (m *Member) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", m.Status))
+	builder.WriteString(", ")
+	builder.WriteString("jira_name=")
+	builder.WriteString(m.JiraName)
 	builder.WriteByte(')')
 	return builder.String()
 }

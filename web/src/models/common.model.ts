@@ -9,6 +9,11 @@ export interface PageResponse<T> {
   items: T[];
 }
 
+export interface ListResponse<T> {
+  items: T[];
+  total: number;
+}
+
 export interface SingularResponse<T> {
   item: T;
 }
@@ -24,6 +29,11 @@ export interface ErrorResponse {
 export interface PageRequest {
   page: number;
   size: number;
+  sort: string;
+  direction: TSortDirection;
+}
+
+export interface ListRequest {
   sort: string;
   direction: TSortDirection;
 }

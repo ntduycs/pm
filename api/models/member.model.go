@@ -18,6 +18,7 @@ type Member struct {
 	StartDate   *string               `json:"start_date" format:"date"`
 	EndDate     *string               `json:"end_date" format:"date"`
 	Status      string                `json:"status"`
+	JiraName    string                `json:"jira_name"`
 }
 
 type ListMembersRequest struct {
@@ -65,6 +66,7 @@ type UpsertMemberRequest struct {
 	StartDate   *string               `json:"start_date"`
 	EndDate     *string               `json:"end_date"`
 	Status      string                `json:"status" validate:"required"`
+	JiraName    string                `json:"jira_name" validate:"required"`
 }
 
 type ListMembersResponse struct {

@@ -1,12 +1,12 @@
 import { PaPcResult, UpsertPaPcResultRequest } from '@pm/models';
-import { Button, Form, Input, InputNumber, Modal, notification, Select, Space } from 'antd';
+import { Button, Form, Input, Modal, notification, Select, Space } from 'antd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { upsertPaPcResultAPI } from '@pm/services/papc.service.ts';
+import { upsertPaPcResultAPI } from '@pm/services';
 import { useEffect } from 'react';
 import { StyledUpsertPaPcResult } from '@pm/pages/papc/components/upsert/styles.ts';
 import { listMembersAPI } from '@pm/services';
-import { TSortDirection } from '@pm/common/constants';
-import { capitalize, deburr, toString } from 'lodash';
+import { TSortDirection, UiConstant } from '@pm/common/constants';
+import { capitalize, toString } from 'lodash';
 import { Strings } from '@pm/common/utils';
 
 type UpsertPaPcResultModalProps = {
@@ -63,14 +63,14 @@ export const UpsertPaPcResultModal = ({
         development_score: Number(values.development_score),
       });
       api.success({
-        message: 'Success!',
+        message: UiConstant.SuccessMessage,
         description: message,
         placement: 'topRight',
         duration: 2,
       });
     } catch (error: unknown) {
       api.error({
-        message: 'Error!',
+        message: UiConstant.ErrorMessage,
         description: error instanceof Error ? error.message : 'Something went wrong!',
         placement: 'topRight',
         duration: 3,

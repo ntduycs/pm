@@ -3,4 +3,7 @@ export const UiConstant = {
   DefaultDateTimeFormat: 'MMM DD, YYYY HH:mm:ss',
 
   DefaultEmptyValue: '--/--',
+
+  SuccessMessage: 'Success!',
+  ErrorMessage: 'Error!',
 };
