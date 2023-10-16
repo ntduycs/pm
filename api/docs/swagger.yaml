@@ -1,4 +1,22 @@
 definitions:
+  models.EaWeeklyEffort:
+    properties:
+      category:
+        type: string
+      is_product_time:
+        type: boolean
+      time:
+        type: number
+    type: object
+  models.EaWeeklyMember:
+    properties:
+      efforts:
+        items:
+          $ref: '#/definitions/models.EaWeeklyEffort'
+        type: array
+      member:
+        $ref: '#/definitions/models.Member'
+    type: object
   models.EmptyResponse:
     properties:
       message:
@@ -93,6 +111,15 @@ definitions:
       technical_score:
         type: number
     type: object
+  models.UploadEaWeeklyReportResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.EaWeeklyMember'
+        type: array
+      total:
+        type: integer
+    type: object
   models.UpsertMemberRequest:
     properties:
       category:
@@ -172,6 +199,26 @@ info:
   title: Project Management API Document
   version: "1.0"
 paths:
+  /effort-allocation/weekly:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UploadEaWeeklyReportResponse'
+      summary: Upload weekly report
+      tags:
+      - Effort Allocation
   /members:
     get:
       consumes:

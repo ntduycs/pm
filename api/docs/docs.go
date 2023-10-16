@@ -19,6 +19,37 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/effort-allocation/weekly": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Effort Allocation"
+                ],
+                "summary": "Upload weekly report",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UploadEaWeeklyReportResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "consumes": [
@@ -258,6 +289,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.EaWeeklyEffort": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "is_product_time": {
+                    "type": "boolean"
+                },
+                "time": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.EaWeeklyMember": {
+            "type": "object",
+            "properties": {
+                "efforts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.EaWeeklyEffort"
+                    }
+                },
+                "member": {
+                    "$ref": "#/definitions/models.Member"
+                }
+            }
+        },
         "models.EmptyResponse": {
             "type": "object",
             "properties": {
@@ -398,6 +457,20 @@ const docTemplate = `{
                 },
                 "technical_score": {
                     "type": "number"
+                }
+            }
+        },
+        "models.UploadEaWeeklyReportResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.EaWeeklyMember"
+                    }
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

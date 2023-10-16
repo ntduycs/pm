@@ -23,6 +23,14 @@ func NewEffortAllocController(
 	}
 }
 
+// UploadWeeklyReport ...
+// @Summary Upload weekly report
+// @Tags    Effort Allocation
+// @Accept  multipart/form-data
+// @Produce json
+// @Param   file formData file true "File"
+// @Success 200  {object} models.UploadEaWeeklyReportResponse
+// @Router  /effort-allocation/weekly [post]
 func (c *EffortAllocController) UploadWeeklyReport(ctx *fiber.Ctx) error {
 	rows, err := utils.ReadExcelFile(ctx, "file")
 
