@@ -338,6 +338,9 @@
                 "id": {
                     "type": "integer"
                 },
+                "jira_name": {
+                    "type": "string"
+                },
                 "kpi": {
                     "type": "integer"
                 },
@@ -399,6 +402,7 @@
             "required": [
                 "category",
                 "email",
+                "jira_name",
                 "kpi",
                 "level",
                 "name",
@@ -418,6 +422,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "jira_name": {
+                    "type": "string"
                 },
                 "kpi": {
                     "type": "integer"

@@ -4,6 +4,7 @@ import { Member } from '@pm/models';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteMemberAPI } from '@pm/services';
 import React from 'react';
+import { Apis } from '@pm/common/utils';
 
 type DeleteMemberProps = {
   member?: Member;
@@ -39,7 +40,7 @@ export const DeleteMemberModal = ({ member, isOpen, setOpen }: DeleteMemberProps
     } catch (error) {
       api.error({
         message: 'Error!',
-        description: error instanceof Error ? error.message : 'Something went wrong',
+        description: Apis.getErrorDescription(error),
         placement: 'topRight',
         duration: 3,
       });

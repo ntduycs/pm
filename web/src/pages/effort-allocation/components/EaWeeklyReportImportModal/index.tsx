@@ -3,37 +3,46 @@ import { Button, notification, Upload, UploadProps } from 'antd';
 import { UiConstant } from '@pm/common/constants';
 import { color } from '@pm/styles';
 import { UploadOutlined } from '@ant-design/icons';
+import { useMutation } from '@tanstack/react-query';
+import { uploadEaWeeklyReportAPI } from '@pm/services';
+import { RcFile } from 'antd/es/upload';
+import { Apis } from '@pm/common/utils';
+import { useResetRecoilState, useSetRecoilState } from 'recoil';
+import { effortAllocationState } from '@pm/atoms';
 
 export const EaWeeklyReportImportModal = () => {
   const [api, contextHolder] = notification.useNotification();
+  const setEaState = useSetRecoilState(effortAllocationState);
+  const resetEaState = useResetRecoilState(effortAllocationState);
+  const { mutateAsync: uploadWeeklyReport } = useMutation({
+    mutationKey: ['effort-allocations'],
+    mutationFn: uploadEaWeeklyReportAPI,
+  });
 
   const props: UploadProps = {
     name: 'file',
     accept: '.xlsx, .xls, .csv',
-    beforeUpload: () => false,
     customRequest: async (options) => {
       const { file, onError, onSuccess } = options;
-    },
-    maxCount: 1,
-    showUploadList: false,
-    multiple: false,
-    onChange(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
 
-      if (info.file.status === 'done') {
+      try {
+        const { items: eaState } = await uploadWeeklyReport(file as RcFile);
+        setEaState(eaState);
         api.success({
           message: UiConstant.SuccessMessage,
           description: 'Upload weekly report successfully',
         });
-      } else if (info.file.status) {
+      } catch (error) {
+        resetEaState();
         api.error({
           message: UiConstant.ErrorMessage,
-          description: 'Upload weekly report failed',
+          description: Apis.getErrorDescription(error),
         });
       }
     },
+    maxCount: 1,
+    showUploadList: false,
+    multiple: false,
     progress: {
       strokeColor: {
         '0%': color.blue,

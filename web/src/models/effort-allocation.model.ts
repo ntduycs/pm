@@ -9,8 +9,11 @@ export interface EaWeeklyMember {
 export interface EaWeeklyEffort {
   category: string;
   time: number;
+  is_product_time: boolean;
 }
 
 export interface GetEaWeeklyReportRequest extends ListRequest {}
 
 export interface GetEaWeeklyReportResponse extends ListResponse<EaWeeklyMember> {}
+
+export interface UploadEaWeeklyReportResponse extends ListResponse<EaWeeklyMember> {}

@@ -7,7 +7,7 @@ import { StyledUpsertPaPcResult } from '@pm/pages/papc/components/upsert/styles.
 import { listMembersAPI } from '@pm/services';
 import { TSortDirection, UiConstant } from '@pm/common/constants';
 import { capitalize, toString } from 'lodash';
-import { Strings } from '@pm/common/utils';
+import { Apis, Strings } from '@pm/common/utils';
 
 type UpsertPaPcResultModalProps = {
   paPcResult?: PaPcResult;
@@ -71,7 +71,7 @@ export const UpsertPaPcResultModal = ({
     } catch (error: unknown) {
       api.error({
         message: UiConstant.ErrorMessage,
-        description: error instanceof Error ? error.message : 'Something went wrong!',
+        description: Apis.getErrorDescription(error),
         placement: 'topRight',
         duration: 3,
       });

@@ -33,10 +33,10 @@ const Position = {
   PM: 'Project Manager' as TMemberPosition,
   BE: 'Backend Engineer' as TMemberPosition,
   FE: 'Frontend Engineer' as TMemberPosition,
-  QC: 'QA Engineer' as TMemberPosition,
+  QC: 'QC Engineer' as TMemberPosition,
   BA: 'Business Analyst' as TMemberPosition,
-  DESIGNER: 'UI/UX Designer' as TMemberPosition,
-  MOBILE: 'Mobile Developer' as TMemberPosition,
+  DESIGNER: 'Designer' as TMemberPosition,
+  MOBILE: 'Mobile Engineer' as TMemberPosition,
 };
 
 export const MemberConstant = {

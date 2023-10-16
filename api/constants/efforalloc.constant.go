@@ -257,4 +257,17 @@ var (
 		LabelApiTestReview:    LabelCategoryTestExecution,
 		LabelBugReport:        LabelCategoryTestExecution,
 	}
+
+	ProductiveLabelCategories = []LabelCategory{
+		LabelCategoryManagement,
+		LabelCategoryDevelopment,
+		LabelCategoryTestCases,
+		LabelCategoryTestExecution,
+		LabelCategoryBA,
+		LabelCategoryDesign,
+		LabelCategoryTraining,
+		LabelCategoryDocumentation,
+		LabelCategorySupport,
+		LabelCategoryCompanyActivities,
+	}
 )

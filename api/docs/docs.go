@@ -342,6 +342,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "jira_name": {
+                    "type": "string"
+                },
                 "kpi": {
                     "type": "integer"
                 },
@@ -403,6 +406,7 @@ const docTemplate = `{
             "required": [
                 "category",
                 "email",
+                "jira_name",
                 "kpi",
                 "level",
                 "name",
@@ -422,6 +426,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "jira_name": {
+                    "type": "string"
                 },
                 "kpi": {
                     "type": "integer"

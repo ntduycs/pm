@@ -1,5 +1,9 @@
-import axios from 'axios';
-import { GetEaWeeklyReportRequest, GetEaWeeklyReportResponse } from '@pm/models';
+import {
+  GetEaWeeklyReportRequest,
+  GetEaWeeklyReportResponse,
+  UploadEaWeeklyReportResponse,
+} from '@pm/models';
+import { axios } from '@pm/services/index.ts';
 
 export const getEaWeeklyReportAPI = async (
   req: GetEaWeeklyReportRequest,
@@ -10,13 +14,21 @@ export const getEaWeeklyReportAPI = async (
   return response.data;
 };
 
-export const uploadEaWeeklyReportAPI = async (file: File): Promise<void> => {
+export const uploadEaWeeklyReportAPI = async (
+  file: File,
+): Promise<UploadEaWeeklyReportResponse> => {
   const formData = new FormData();
   formData.append('file', file);
 
-  await axios.post(`effort-allocation/weekly`, formData, {
+  const response = await axios.post(`effort-allocation/weekly`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+
+  if (response.status > 299) {
+    throw new Error(response.data.message);
+  }
+
+  return response.data;
 };

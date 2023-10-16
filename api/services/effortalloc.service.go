@@ -108,7 +108,7 @@ func (s *EffortAllocService) ParseWeeklyReport(ctx context.Context, rows [][]str
 	lastEffortRow := endRow - 1
 	lastEffortCol := len(memberList) + startColumn - 1
 
-	effortAllocation := make(map[string]map[constants.LabelCategory]int)
+	effortAllocation := make(map[string]map[constants.LabelCategory]float64)
 
 	// Print effort usage area
 	for col := firstEffortCol; col <= lastEffortCol; col++ {
@@ -118,10 +118,10 @@ func (s *EffortAllocService) ParseWeeklyReport(ctx context.Context, rows [][]str
 			label := getLabelByRow(row, labelList)
 			labelCategory := constants.LabelCategoryMap[label]
 
-			timeLogged, _ := strconv.Atoi(strings.TrimSuffix(rows[row][col], "h"))
+			timeLogged, _ := strconv.ParseFloat(strings.TrimSuffix(rows[row][col], "h"), 64)
 
 			if _, ok := effortAllocation[member]; !ok {
-				effortAllocation[member] = make(map[constants.LabelCategory]int)
+				effortAllocation[member] = make(map[constants.LabelCategory]float64)
 			}
 
 			effortAllocation[member][labelCategory] += timeLogged
@@ -132,13 +132,14 @@ func (s *EffortAllocService) ParseWeeklyReport(ctx context.Context, rows [][]str
 		ListResponse: models.ListResponse{
 			Total: len(effortAllocation),
 		},
-		Items: lo.MapToSlice(effortAllocation, func(jiraName string, efforts map[constants.LabelCategory]int) models.EaWeeklyMember {
+		Items: lo.MapToSlice(effortAllocation, func(jiraName string, efforts map[constants.LabelCategory]float64) models.EaWeeklyMember {
 			return models.EaWeeklyMember{
 				Member: memberByJiraName[jiraName],
-				Efforts: lo.MapToSlice(efforts, func(category constants.LabelCategory, timeLogged int) *models.EaWeeklyEffort {
+				Efforts: lo.MapToSlice(efforts, func(category constants.LabelCategory, timeLogged float64) *models.EaWeeklyEffort {
 					return &models.EaWeeklyEffort{
-						Category: category,
-						Time:     timeLogged,
+						Category:      category,
+						Time:          timeLogged,
+						IsProductTime: lo.Contains(constants.ProductiveLabelCategories, category),
 					}
 				}),
 			}

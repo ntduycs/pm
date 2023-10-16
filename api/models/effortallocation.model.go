@@ -8,8 +8,9 @@ type EaWeeklyMember struct {
 }
 
 type EaWeeklyEffort struct {
-	Category constants.LabelCategory `json:"category"`
-	Time     int                     `json:"time"`
+	Category      constants.LabelCategory `json:"category"`
+	Time          float64                 `json:"time"`
+	IsProductTime bool                    `json:"is_product_time"`
 }
 
 type GetEaWeeklyReportRequest struct {
