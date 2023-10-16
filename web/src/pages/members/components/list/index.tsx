@@ -79,6 +79,12 @@ export const ListMembersTable = ({ toggleUpsertModal, toggleDeleteModal }: ListM
       width: 280,
     },
     {
+      title: 'Jira Name',
+      dataIndex: 'jira_name',
+      key: 'jira_name',
+      width: 200,
+    },
+    {
       title: 'Level',
       dataIndex: 'level',
       key: 'level',

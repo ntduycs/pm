@@ -18,6 +18,7 @@ export interface Member {
   status: TMemberStatus;
   total_effort: number;
   kpi: number;
+  jira_name: string;
 }
 
 export interface ListMembersRequest extends PageRequest {
@@ -38,6 +39,7 @@ export interface UpsertMemberRequest {
   status: TMemberStatus;
   total_effort: number;
   kpi: number;
+  jira_name: string;
 }
 
 export interface ListMembersResponse extends PageResponse<Member> {}
