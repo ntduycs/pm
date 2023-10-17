@@ -6,7 +6,7 @@ require (
 	entgo.io/ent v0.12.4
 	github.com/go-playground/validator/v10 v10.15.4
 	github.com/goccy/go-json v0.10.2
-	github.com/gofiber/fiber/v2 v2.49.2
+	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/gofiber/swagger v0.1.13
 	github.com/lib/pq v1.10.9
 	github.com/pkg/errors v0.9.1
@@ -73,7 +73,7 @@ require (
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.15.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
